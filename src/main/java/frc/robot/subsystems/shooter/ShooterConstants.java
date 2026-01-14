@@ -1,4 +1,4 @@
-package frc.robot.shooter;
+package frc.robot.subsystems.shooter;
 
 public class ShooterConstants {
     public static int GEAR_RATIO = 1;
