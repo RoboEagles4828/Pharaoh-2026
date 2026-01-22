@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -14,6 +12,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.limelight.Limelight;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -31,43 +31,56 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  /*** Flags which control which subsystems are instantiated. ***/
+  private static final boolean ENABLE_DRIVETRAIN = false;
+  private static final boolean ENABLE_SHOOTER = false;
+  private static final boolean ENABLE_INTAKE = false;
+  private static final boolean ENABLE_LIMELIGHT = false;
+  private static final boolean ENABLE_CLIMBER = false;
+
+
   /*** DRIVETRAIN SUBSYSTEM ***/
-  public final CommandSwerveDrivetrain drivetrain;
-  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
-                                                                                      // speed
-  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max
-                                                                                    // angular velocity
+  public CommandSwerveDrivetrain drivetrain = null;
   private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDeadband(DrivetrainConstants.MAX_SPEED * DrivetrainConstants.DEADBAND)
+      .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND) 
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
   /*** SHOOTER SUBSYSTEM ***/
-  private final Shooter shooter;
+  private Shooter shooter = null;
+
+  /*** INTAKE SUBSYSTEM ***/
+  private Intake intake = null;
 
   /*** CLIMBER SUBSYSTEM ***/
-  private final Climber climber;
+  private Climber climber = null;
 
   /*** LIMELIGHT SUBSYSTEM ***/
-  private final Limelight limelight;
+  private Limelight limelight = null;
 
   /*** INPUT DEVICES ***/
-  private final CommandXboxController driverController;
-  private final CommandXboxController operatorController;
+  private CommandXboxController driverController;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    drivetrain = TunerConstants.createDrivetrain();
+    if (ENABLE_DRIVETRAIN)
+      drivetrain = TunerConstants.createDrivetrain();
 
-    shooter = new Shooter();
-    
-    climber = new Climber();
+    if (ENABLE_SHOOTER)
+      shooter = new Shooter();
 
-    limelight = new Limelight(drivetrain);
+    if (ENABLE_INTAKE)
+      intake = new Intake();
+
+    if (ENABLE_CLIMBER)
+      climber = new Climber();
+
+    if (ENABLE_LIMELIGHT)
+      limelight = new Limelight(drivetrain);
     
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
-    operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
 
     // Configure the trigger bindings
     configureBindings();
@@ -75,41 +88,52 @@ public class RobotContainer {
 
   private void configureBindings() {
     /*** DRIVETRAIN ***/
-    // Default command for drivetrain - drive according to driver controller joystick
-    drivetrain.setDefaultCommand(
-        drivetrain.applyRequest(() -> driveRequest
-            .withVelocityX(driverController.getLeftY() * MaxSpeed) // Drive forward with positive Y (forward)
-            .withVelocityY(driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));
-    
-    // While disabled, idle.
-    final var idle = new SwerveRequest.Idle();
-    RobotModeTriggers.disabled().whileTrue(
-        drivetrain.applyRequest(() -> idle).ignoringDisable(true)
-    );
-    
-    // Run SysId routines when holding back/start and X/Y.
-    // Note that each routine should be run exactly once in a single log.
-    driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    if (drivetrain != null) {
+      // Default command for drivetrain - drive according to driver controller joystick
+      drivetrain.setDefaultCommand(
+          drivetrain.applyRequest(() -> driveRequest
+              .withVelocityX(driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) // Drive forward with positive Y (forward)
+              .withVelocityY(driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+              .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) // Drive counterclockwise with negative X (left)
+          ));
+      
+      // While disabled, idle.
+      final var idle = new SwerveRequest.Idle();
+      RobotModeTriggers.disabled().whileTrue(
+          drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+      );
+      
+      // Run SysId routines when holding back/start and X/Y.
+      // Note that each routine should be run exactly once in a single log.
+      driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+      driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+      driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+      driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-    // Reset the field-centric heading on left bumper press.
-    driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+      // Reset the field-centric heading on left bumper press.
+      driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
-    driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+      driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
+      driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+    }
 
     /*** SHOOTER ***/
-    driverController.a().onTrue(shooter.shoot());
-    driverController.b().onTrue(shooter.stop());
+    if (shooter != null) {
+      driverController.a().onTrue(shooter.shoot());
+      driverController.b().onTrue(shooter.stop());
+    }
 
     /*** CLIMBER ***/
-    driverController.x().onTrue(climber.climbUp());
-    driverController.x().onFalse(climber.stop());
-    driverController.y().onTrue(climber.climbDown());
-    driverController.y().onFalse(climber.stop());
+    if (climber != null) {
+      climber.setDefaultCommand(climber.stop());
+      driverController.x().whileTrue(climber.climbUp());
+      driverController.y().whileTrue(climber.climbDown());
+    }
+
+    /*** INTAKE ***/
+    if (intake != null) {
+      intake.setDefaultCommand(intake.stop());
+      driverController.leftBumper().whileTrue(intake.start());
+    }
   }
 }
