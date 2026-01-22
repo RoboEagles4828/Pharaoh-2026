@@ -43,10 +43,4 @@ public class RobotContainer {
     m_driverController.a().onTrue(m_shooterSubsystem.shoot());
     m_driverController.b().onTrue(m_shooterSubsystem.stop());
   }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
 }
