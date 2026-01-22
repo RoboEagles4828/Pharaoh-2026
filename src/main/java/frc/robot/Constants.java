@@ -17,8 +17,7 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
-  public static class RioBusCANIds {
-    public static int SHOOTER_TOP_MOTOR_ID = 0;
-    public static int SHOOTER_BOTTOM_MOTOR_ID = 1;
+public static class RioBusCANIds {
+    public static int SHOOTER_MOTOR_ID = 1;
   }
 }
