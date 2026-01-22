@@ -3,7 +3,6 @@ package frc.robot.subsystems.shooter;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,7 +16,7 @@ public class Shooter extends SubsystemBase {
     private static final String NT_SPEED_RPS = "Tuning/Shooter/SpeedRPS";
 
     /** Motor controlling the line of wheels */
-    private static TalonFX motor;
+    private final TalonFX motor;
 
     private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0);
 
@@ -39,31 +38,16 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber(NT_SPEED_RPS, ShooterConstants.DEFAULT_SPEED_RPS);
     }
 
-    /**
-     * Sets both motors to the speed provided.
-     * 
-     * @param speed
-     */
-    private void setControl(ControlRequest request) {
-        motor.setControl(request);
-    }
-    /**
-     * Sets the speed of both motors to 0.
-     */
-    private void stopMotors() {
-        motor.set(0);
-    }
-
     /** Command to shoot the fuel. */
-    public Command shoot() {
-        return Commands.runOnce(() -> {
-            this.setControl(velocityVoltageRequest.withVelocity(SmartDashboard.getNumber(NT_SPEED_RPS, ShooterConstants.DEFAULT_SPEED_RPS)));
-        });
+    public Command start() {
+        return Commands.run(() -> {
+            motor.setControl(velocityVoltageRequest.withVelocity(SmartDashboard.getNumber(NT_SPEED_RPS, ShooterConstants.DEFAULT_SPEED_RPS)));
+        }, this);
     }
     
     /** Command to stop shooting fuel. */
     public Command stop() {
-        return Commands.runOnce(() -> this.stopMotors());
+        return Commands.runOnce(() -> motor.stopMotor(), this);
     }
 
 }

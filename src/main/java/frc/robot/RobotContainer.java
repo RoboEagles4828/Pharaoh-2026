@@ -119,7 +119,7 @@ public class RobotContainer {
 
     /*** SHOOTER ***/
     if (shooter != null) {
-      driverController.a().onTrue(shooter.shoot());
+      driverController.a().onTrue(shooter.start());
       driverController.b().onTrue(shooter.stop());
     }
 

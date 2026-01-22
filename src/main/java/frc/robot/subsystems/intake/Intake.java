@@ -15,10 +15,10 @@ public class Intake extends SubsystemBase {
     }
 
     public Command start() {
-        return Commands.runOnce(() -> motor.set(IntakeConstants.INTAKE_SPEED_DUTY_CYCLE));
+        return Commands.runOnce(() -> motor.set(IntakeConstants.INTAKE_SPEED_DUTY_CYCLE), this);
     }
 
     public Command stop() {
-        return Commands.runOnce(() -> motor.stopMotor());
+        return Commands.runOnce(() -> motor.stopMotor(), this);
     }
 }

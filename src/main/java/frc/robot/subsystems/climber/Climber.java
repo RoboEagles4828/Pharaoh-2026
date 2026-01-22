@@ -22,14 +22,14 @@ public class Climber extends SubsystemBase {
     }
 
     public Command climbUp() {
-       return Commands.runOnce(() -> motor.set(SmartDashboard.getNumber(NT_CLIMB_UP_DUTY_CYCLE, ClimberConstants.CLIMB_UP_DUTY_CYCLE)));
+       return Commands.runOnce(() -> motor.set(SmartDashboard.getNumber(NT_CLIMB_UP_DUTY_CYCLE, ClimberConstants.CLIMB_UP_DUTY_CYCLE)), this);
     }
 
     public Command climbDown() {
-        return Commands.runOnce(() -> motor.set(SmartDashboard.getNumber(NT_CLIMB_DOWN_DUTY_CYCLE, ClimberConstants.CLIMB_DOWN_DUTY_CYCLE)));
+        return Commands.runOnce(() -> motor.set(SmartDashboard.getNumber(NT_CLIMB_DOWN_DUTY_CYCLE, ClimberConstants.CLIMB_DOWN_DUTY_CYCLE)), this);
     }
 
     public Command stop() {
-        return Commands.runOnce(() -> motor.stopMotor());
+        return Commands.runOnce(() -> motor.stopMotor(), this);
     }
 }
