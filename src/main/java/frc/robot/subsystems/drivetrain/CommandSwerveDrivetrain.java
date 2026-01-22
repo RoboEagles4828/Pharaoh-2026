@@ -18,6 +18,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -131,6 +132,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        init();
     }
 
     /**
@@ -155,6 +157,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        init();
     }
 
     /**
@@ -187,6 +190,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        init();
     }
 
     /**
@@ -221,6 +225,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
+    private static final String NT_SEED_X = "seedX";
+    private static final String NT_SEED_Y = "seedY";
+    private static final String NT_SEED_THETA = "seedThetaDegrees";
+    private static final String NT_SEED_TRIGGER = "seedTrigger";
+
+    private void init(){
+        SmartDashboard.putNumber(NT_SEED_X, 0);
+        SmartDashboard.putNumber(NT_SEED_Y, 0);
+        SmartDashboard.putNumber(NT_SEED_THETA, 0);
+        SmartDashboard.putBoolean(NT_SEED_TRIGGER, false);
+    }
+
     @Override
     public void periodic() {
         /*
@@ -230,6 +246,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          * Otherwise, only check and apply the operator perspective if the DS is disabled.
          * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
          */
+        if (SmartDashboard.getBoolean(NT_SEED_TRIGGER, false)){
+            double seedX = SmartDashboard.getNumber(NT_SEED_X, 0);
+            double seedY = SmartDashboard.getNumber(NT_SEED_Y, 0);
+            double seedThetaDegrees = SmartDashboard.getNumber(NT_SEED_THETA, 0);
+
+            Pose2d seedPose = new Pose2d(seedX, seedY, Rotation2d.fromDegrees(seedThetaDegrees));
+
+            resetPose(seedPose);
+
+            SmartDashboard.putBoolean(NT_SEED_TRIGGER, false);
+        }
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
@@ -241,8 +268,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        // Public pose to the field
         Util4828.FIELD.setRobotPose(getState().Pose);
+
+        SmartDashboard.putString("Robot Pose", Util4828.formatPose(getState().Pose));
     }
 
     private void startSimThread() {
