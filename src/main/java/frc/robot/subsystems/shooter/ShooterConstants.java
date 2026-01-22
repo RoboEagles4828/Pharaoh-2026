@@ -2,7 +2,7 @@ package frc.robot.subsystems.shooter;
 
 public class ShooterConstants {
     public static int GEAR_RATIO = 1;
-    public static int shooterSpeed = 1;
+    public static int DEFAULT_SPEED_RPS = 30;
 
     static class PID_CONFIG {
         static final double GRAVITY = 0.0;

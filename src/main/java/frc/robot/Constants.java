@@ -18,7 +18,8 @@ public final class Constants {
     public static final int kOperatorControllerPort = 1;
   }
 
-public static class RioBusCANIds {
+  public static class RioBusCANIds {
     public static int SHOOTER_MOTOR_ID = 1;
+    public static int CLIMBER_MOTOR_ID = 15;
   }
 }
