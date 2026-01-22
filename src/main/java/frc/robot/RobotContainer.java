@@ -4,42 +4,93 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.shooter.Shooter;
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.shooter.Shooter;
+
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.*/
-
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
+ * subsystems, commands, and trigger mappings) should be declared here.
+ */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  /*** DRIVETRAIN SUBSYSTEM ***/
+  public final CommandSwerveDrivetrain drivetrain;
+  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
+                                                                                      // speed
+  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max
+                                                                                    // angular velocity
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
+  /*** SHOOTER SUBSYSTEM ***/
   private final Shooter m_shooterSubsystem;
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
+  /*** INPUT DEVICES ***/
   private final CommandXboxController m_driverController;
+  private final CommandXboxController m_operatorController;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
+    drivetrain = TunerConstants.createDrivetrain();
     m_shooterSubsystem = new Shooter();
     m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+    m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
+
     // Configure the trigger bindings
     configureBindings();
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
   private void configureBindings() {
+    /*** DRIVETRAIN ***/
+    // Default command for drivetrain - drive according to driver controller joystick
+    drivetrain.setDefaultCommand(
+        // Drivetrain will execute this command periodically
+        drivetrain.applyRequest(() -> drive
+            .withVelocityX(m_driverController.getLeftY() * MaxSpeed) // Drive forward with positive Y (forward)
+            .withVelocityY(m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        ));
+    
+    // While disabled, idle.
+    final var idle = new SwerveRequest.Idle();
+    RobotModeTriggers.disabled().whileTrue(
+        drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+    );
+    
+    // Run SysId routines when holding back/start and X/Y.
+    // Note that each routine should be run exactly once in a single log.
+    m_driverController.back().and(m_driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    m_driverController.back().and(m_driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    m_driverController.start().and(m_driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    m_driverController.start().and(m_driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+    // Reset the field-centric heading on left bumper press.
+    m_driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+    
+    m_driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
+    m_driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+
+    /*** SHOOTER ***/
     m_driverController.a().onTrue(m_shooterSubsystem.shoot());
     m_driverController.b().onTrue(m_shooterSubsystem.stop());
   }
