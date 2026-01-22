@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.util.Util4828;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -239,6 +240,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        // Public pose to the field
+        Util4828.FIELD.setRobotPose(getState().Pose);
     }
 
     private void startSimThread() {

@@ -6,9 +6,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,14 +14,12 @@ import frc.robot.Constants.RioBusCANIds;
 
 /** The shooter subsystem controls the output of fuel. */
 public class Shooter extends SubsystemBase {
-    private static final String MOTOR_SPEED = "MotorSpeed";
-    private final NetworkTable debugTable = NetworkTableInstance.getDefault().getTable("Debug");
-    private final DoubleSubscriber motorSpeedElasticEntry = debugTable.getDoubleTopic(MOTOR_SPEED).subscribe(0.0);
-
-    private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0);
+    private static final String NT_SPEED_RPS = "Tuning/Shooter/SpeedRPS";
 
     /** Motor controlling the line of wheels */
     private static TalonFX motor;
+
+    private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0);
 
     public Shooter() {
         motor = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_ID);
@@ -37,10 +33,10 @@ public class Shooter extends SubsystemBase {
         motorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
         motorCfg.Slot0.kV = ShooterConstants.PID_CONFIG.VELOCITY;
 
-        debugTable.getDoubleTopic(MOTOR_SPEED).publish().setDefault(ShooterConstants.DEFAULT_SPEED_RPS);
-
-        /** Applying the configuration to both motors. */
+        /** Applying the configuration */
         motor.getConfigurator().apply(motorCfg);
+
+        SmartDashboard.putNumber(NT_SPEED_RPS, ShooterConstants.DEFAULT_SPEED_RPS);
     }
 
     /**
@@ -61,7 +57,7 @@ public class Shooter extends SubsystemBase {
     /** Command to shoot the fuel. */
     public Command shoot() {
         return Commands.runOnce(() -> {
-            this.setControl(velocityVoltageRequest.withVelocity(motorSpeedElasticEntry.get()));
+            this.setControl(velocityVoltageRequest.withVelocity(SmartDashboard.getNumber(NT_SPEED_RPS, ShooterConstants.DEFAULT_SPEED_RPS)));
         });
     }
     

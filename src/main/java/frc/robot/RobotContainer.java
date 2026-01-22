@@ -14,6 +14,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.limelight.Limelight;
 import frc.robot.subsystems.shooter.Shooter;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -31,37 +32,42 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
  */
 public class RobotContainer {
   /*** DRIVETRAIN SUBSYSTEM ***/
-  public final CommandSwerveDrivetrain m_drivetrain;
+  public final CommandSwerveDrivetrain drivetrain;
   private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
                                                                                       // speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max
                                                                                     // angular velocity
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+  private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
   /*** SHOOTER SUBSYSTEM ***/
-  private final Shooter m_shooter;
+  private final Shooter shooter;
 
   /*** CLIMBER SUBSYSTEM ***/
-  private final Climber m_climber;
+  private final Climber climber;
+
+  /*** LIMELIGHT SUBSYSTEM ***/
+  private final Limelight limelight;
 
   /*** INPUT DEVICES ***/
-  private final CommandXboxController m_driverController;
-  private final CommandXboxController m_operatorController;
+  private final CommandXboxController driverController;
+  private final CommandXboxController operatorController;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_drivetrain = TunerConstants.createDrivetrain();
+    drivetrain = TunerConstants.createDrivetrain();
 
-    m_shooter = new Shooter();
+    shooter = new Shooter();
     
-    m_climber = new Climber();
+    climber = new Climber();
+
+    limelight = new Limelight(drivetrain);
     
-    m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
-    m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
+    driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+    operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
 
     // Configure the trigger bindings
     configureBindings();
@@ -70,41 +76,40 @@ public class RobotContainer {
   private void configureBindings() {
     /*** DRIVETRAIN ***/
     // Default command for drivetrain - drive according to driver controller joystick
-    m_drivetrain.setDefaultCommand(
-        m_drivetrain.applyRequest(() -> drive
-            .withVelocityX(m_driverController.getLeftY() * MaxSpeed) // Drive forward with positive Y (forward)
-            .withVelocityY(m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+    drivetrain.setDefaultCommand(
+        drivetrain.applyRequest(() -> driveRequest
+            .withVelocityX(driverController.getLeftY() * MaxSpeed) // Drive forward with positive Y (forward)
+            .withVelocityY(driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
     
     // While disabled, idle.
     final var idle = new SwerveRequest.Idle();
     RobotModeTriggers.disabled().whileTrue(
-        m_drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+        drivetrain.applyRequest(() -> idle).ignoringDisable(true)
     );
     
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    m_driverController.back().and(m_driverController.y()).whileTrue(m_drivetrain.sysIdDynamic(Direction.kForward));
-    m_driverController.back().and(m_driverController.x()).whileTrue(m_drivetrain.sysIdDynamic(Direction.kReverse));
-    m_driverController.start().and(m_driverController.y()).whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kForward));
-    m_driverController.start().and(m_driverController.x()).whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kReverse));
+    driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // Reset the field-centric heading on left bumper press.
-    m_driverController.leftBumper().onTrue(m_drivetrain.runOnce(m_drivetrain::seedFieldCentric));
+    driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    
-    m_driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
-    m_driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+    driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
+    driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
 
     /*** SHOOTER ***/
-    m_driverController.a().onTrue(m_shooter.shoot());
-    m_driverController.b().onTrue(m_shooter.stop());
+    driverController.a().onTrue(shooter.shoot());
+    driverController.b().onTrue(shooter.stop());
 
     /*** CLIMBER ***/
-    m_driverController.x().onTrue(m_climber.climbUp());
-    m_driverController.x().onFalse(m_climber.stop());
-    m_driverController.y().onTrue(m_climber.climbDown());
-    m_driverController.y().onFalse(m_climber.stop());
+    driverController.x().onTrue(climber.climbUp());
+    driverController.x().onFalse(climber.stop());
+    driverController.y().onTrue(climber.climbDown());
+    driverController.y().onFalse(climber.stop());
   }
 }
