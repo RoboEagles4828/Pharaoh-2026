@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.util.Util4828;
 
@@ -268,7 +268,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        Util4828.FIELD.setRobotPose(getState().Pose);
+        Constants.FieldConstants.FIELD.setRobotPose(getState().Pose);
 
         SmartDashboard.putString("Robot Pose", Util4828.formatPose(getState().Pose));
     }

@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -13,6 +18,14 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static class FieldConstants {
+    public static final AprilTagFields APRIL_TAG_FIELD_TYPE = AprilTagFields.k2025ReefscapeWelded;
+    public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(APRIL_TAG_FIELD_TYPE);
+    public static final Field2d FIELD = new Field2d();
+    public static final Translation2d BLUE_HUB_CENTER = new Translation2d(0, 0); // TODO
+    public static final Translation2d RED_HUB_CENTER = new Translation2d(0, 0); // TODO
+  }
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;

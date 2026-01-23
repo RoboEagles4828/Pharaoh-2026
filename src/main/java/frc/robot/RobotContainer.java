@@ -13,9 +13,11 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.limelight.Limelight;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.util.Util4828;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -96,12 +98,23 @@ public class RobotContainer {
               .withVelocityY(driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
               .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) // Drive counterclockwise with negative X (left)
           ));
-      
+
       // While disabled, idle.
       final var idle = new SwerveRequest.Idle();
       RobotModeTriggers.disabled().whileTrue(
           drivetrain.applyRequest(() -> idle).ignoringDisable(true)
       );
+
+      // Lock-on to HUB while holding right trigger
+      driverController.rightBumper().whileTrue(
+        new LockOnDriveCommand(
+          drivetrain,
+          () -> driverController.getLeftY() * DrivetrainConstants.MAX_SPEED,
+          () -> driverController.getLeftX() * DrivetrainConstants.MAX_SPEED,
+          Util4828.getHubLocation()
+        )
+      );
+
       
       // Run SysId routines when holding back/start and X/Y.
       // Note that each routine should be run exactly once in a single log.
