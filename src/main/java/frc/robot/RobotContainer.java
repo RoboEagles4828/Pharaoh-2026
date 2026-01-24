@@ -34,7 +34,7 @@ public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
   private static final boolean ENABLE_DRIVETRAIN = false;
   private static final boolean ENABLE_SHOOTER = false;
-  private static final boolean ENABLE_INTAKE = false;
+  private static final boolean ENABLE_INTAKE = true;
   private static final boolean ENABLE_LIMELIGHT = false;
   private static final boolean ENABLE_CLIMBER = false;
 

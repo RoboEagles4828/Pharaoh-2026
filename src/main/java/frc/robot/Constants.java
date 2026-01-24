@@ -20,7 +20,7 @@ public final class Constants {
 
   public static class RioBusCANIds {
     // NOTE - 1 to 12 are reserved for the swerve drivetrain.
-    public static int INTAKE_MOTOR_ID = 0; //(TODO) This should be a different value.
+    public static int INTAKE_MOTOR_ID = 21; //(TODO) This should be a different value.
     public static int SHOOTER_MOTOR_ID = 1; //(TODO) This needs to be a different value.
     public static int CLIMBER_MOTOR_ID = 15;
   }
