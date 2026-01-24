@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -19,6 +22,7 @@ import frc.robot.subsystems.shooter.Shooter;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 /**
@@ -61,6 +65,9 @@ public class RobotContainer {
   /*** INPUT DEVICES ***/
   private CommandXboxController driverController;
 
+  /*** PATHPLANNER WIDGET ***/
+  private final SendableChooser<Command> autonomousChooser;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -81,6 +88,12 @@ public class RobotContainer {
       limelight = new Limelight(drivetrain);
     
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+    // Pathplanner
+    // TODO - register commands here
+    // NamedCommands.registerCommand("CommandName", command);
+    autonomousChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Autonomous Chooser", autonomousChooser);
 
     // Configure the trigger bindings
     configureBindings();
