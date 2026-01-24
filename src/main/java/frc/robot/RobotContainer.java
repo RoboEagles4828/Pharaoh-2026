@@ -19,6 +19,7 @@ import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.limelight.Limelight;
+import frc.robot.subsystems.limelight.Vision;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.util.Util4828;
 
@@ -66,8 +67,8 @@ public class RobotContainer {
   /*** CLIMBER SUBSYSTEM ***/
   private Climber climber = null;
 
-  /*** LIMELIGHT SUBSYSTEM ***/
-  private Limelight limelight = null;
+  /*** VISION SUBSYSTEM ***/
+  private Vision vision = null;
 
   /*** INPUT DEVICES ***/
   private CommandXboxController driverController;
@@ -91,8 +92,8 @@ public class RobotContainer {
     if (ENABLE_CLIMBER)
       climber = new Climber();
 
-    if (ENABLE_LIMELIGHT)
-      limelight = new Limelight(drivetrain);
+    if (ENABLE_VISION)
+      vision = new Vision(drivetrain);
     
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
