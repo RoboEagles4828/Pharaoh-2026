@@ -23,6 +23,16 @@ public class Util4828 {
     }
 
     /*** Generic utility functions ***/
+    public static double metersPerSecondToMotorRPS(
+            double metersPerSecond,
+            double wheelDiameterMeters,
+            double gearRatio
+    ) {
+        double wheelCircumference = Math.PI * wheelDiameterMeters;
+        double wheelRPS = metersPerSecond / wheelCircumference;
+        return wheelRPS * gearRatio;
+    }
+
     public static String formatPose(Pose2d pose) {
         return String.format(
             "x: %.3f  y: %.3f  rot: %.3f°",
