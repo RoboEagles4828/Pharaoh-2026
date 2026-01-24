@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -229,12 +230,22 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final String NT_SEED_Y = "seedY";
     private static final String NT_SEED_THETA = "seedThetaDegrees";
     private static final String NT_SEED_TRIGGER = "seedTrigger";
+    /* Network tables fields for more easily seeding pose given tag and distance from tag. */
+    private static final String NT_AUTOSEED_TAG_ID = "AutoSeedTagID";
+    private static final String NT_AUTOSEED_DISTANCE_FT = "AutoSeedDistanceFt";
+    private static final String NT_AUTOSEED_FACE_TAG = "AutoSeedFaceTag";
+    private static final String NT_AUTOSEED_TRIGGER = "AutoSeedPoseTrigger";
 
     private void init(){
         SmartDashboard.putNumber(NT_SEED_X, 0);
         SmartDashboard.putNumber(NT_SEED_Y, 0);
         SmartDashboard.putNumber(NT_SEED_THETA, 0);
         SmartDashboard.putBoolean(NT_SEED_TRIGGER, false);
+
+        SmartDashboard.putNumber(NT_AUTOSEED_TAG_ID, 4);
+        SmartDashboard.putNumber(NT_AUTOSEED_DISTANCE_FT, 8);
+        SmartDashboard.putBoolean(NT_AUTOSEED_FACE_TAG, true);
+        SmartDashboard.putBoolean(NT_AUTOSEED_TRIGGER, false);
     }
 
     @Override
@@ -246,6 +257,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          * Otherwise, only check and apply the operator perspective if the DS is disabled.
          * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
          */
+        if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
+            DriverStation.getAlliance().ifPresent(allianceColor -> {
+                setOperatorPerspectiveForward(
+                    allianceColor == Alliance.Red
+                        ? kRedAlliancePerspectiveRotation
+                        : kBlueAlliancePerspectiveRotation
+                );
+                m_hasAppliedOperatorPerspective = true;
+            });
+        }
+
         if (SmartDashboard.getBoolean(NT_SEED_TRIGGER, false)){
             double seedX = SmartDashboard.getNumber(NT_SEED_X, 0);
             double seedY = SmartDashboard.getNumber(NT_SEED_Y, 0);
@@ -257,15 +279,32 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
             SmartDashboard.putBoolean(NT_SEED_TRIGGER, false);
         }
-        if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
-            DriverStation.getAlliance().ifPresent(allianceColor -> {
-                setOperatorPerspectiveForward(
-                    allianceColor == Alliance.Red
-                        ? kRedAlliancePerspectiveRotation
-                        : kBlueAlliancePerspectiveRotation
-                );
-                m_hasAppliedOperatorPerspective = true;
-            });
+
+        // Automatically calculate and seed the current field position when button is clicked in dashboard
+        if (SmartDashboard.getBoolean(NT_AUTOSEED_TRIGGER, false)) {
+            int tagId = (int) SmartDashboard.getNumber(NT_AUTOSEED_TAG_ID, 1);
+            double distanceFt = SmartDashboard.getNumber(NT_AUTOSEED_DISTANCE_FT, 8);
+            boolean faceTag = SmartDashboard.getBoolean(NT_AUTOSEED_FACE_TAG, true);
+
+            // Convert distance from ft to meters
+            double distanceMeters = Units.feetToMeters(distanceFt);
+
+            // Calculate robot pose using helper
+            Pose2d newPose = Util4828.calculateRobotPoseFromTagId(
+                    tagId,
+                    distanceMeters,
+                    0.0,
+                    Constants.RobotConstants.DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS,   // robot front-to-center in meters
+                    faceTag
+            );
+
+            // set new pose
+            if (newPose != null) {
+                resetPose(newPose);
+            }
+            
+            // unset the button
+            SmartDashboard.putBoolean(NT_AUTOSEED_TRIGGER, false);
         }
 
         Constants.FieldConstants.FIELD.setRobotPose(getState().Pose);

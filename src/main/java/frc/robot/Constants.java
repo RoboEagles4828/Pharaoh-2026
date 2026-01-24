@@ -19,11 +19,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
  */
 public final class Constants {
   public static class FieldConstants {
-    public static final AprilTagFields APRIL_TAG_FIELD_TYPE = AprilTagFields.k2025ReefscapeWelded;
+    public static final AprilTagFields APRIL_TAG_FIELD_TYPE = AprilTagFields.k2026RebuiltAndymark;
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(APRIL_TAG_FIELD_TYPE);
     public static final Field2d FIELD = new Field2d();
-    public static final Translation2d BLUE_HUB_CENTER = new Translation2d(0, 0); // TODO
-    public static final Translation2d RED_HUB_CENTER = new Translation2d(0, 0); // TODO
+    public static final Translation2d BLUE_HUB_CENTER = new Translation2d(4.6116, 4.0213); // AndyMark measurements - which NC uses
+    public static final Translation2d RED_HUB_CENTER = new Translation2d(11.9014, 4.0213); // AndyMark measurements - which NC uses
   }
 
   public static class OperatorConstants {
@@ -36,5 +36,11 @@ public final class Constants {
     public static int SHOOTER_MOTOR_ID = 13;
     public static int CLIMBER_MOTOR_ID = 15;
     public static int INTAKE_MOTOR_ID = 21;
+  }
+
+  public static class RobotConstants {
+    public static double DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS = 0.3556;
+    public static double ROBOT_BUMPER_SIZE_METERS = 0.0889;
+    public static double DISTANCE_BUMPER_EDGE_TO_CENTER_METERS = DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS + ROBOT_BUMPER_SIZE_METERS;
   }
 }

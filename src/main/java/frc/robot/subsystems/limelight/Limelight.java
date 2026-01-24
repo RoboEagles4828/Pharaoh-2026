@@ -3,6 +3,9 @@ package frc.robot.subsystems.limelight;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -26,7 +29,7 @@ public class Limelight extends SubsystemBase {
     public Limelight(CommandSwerveDrivetrain drive) {
         drivetrain = drive;
 
-        SmartDashboard.putBoolean(NT_USE_VISION_BUTTON, false);
+        SmartDashboard.putBoolean(NT_USE_VISION_BUTTON, true);
     }
 
     @Override
@@ -41,18 +44,26 @@ public class Limelight extends SubsystemBase {
         LimelightHelpers.PoseEstimate poseEstimateMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.LIMELIGHT_NAME);
         
         if (poseEstimateMT1 != null) {
-            Constants.FieldConstants.FIELD.getObject("MegaTag1").setPose(poseEstimateMT1.pose);
+            //Constants.FieldConstants.FIELD.getObject("MegaTag1").setPose(poseEstimateMT1.pose);
         }
 
         boolean isPoseEstimateGood = verifyPoseEstimate(poseEstimateMT2);
         if (isPoseEstimateGood) {
-            Constants.FieldConstants.FIELD.getObject("MegaTag2").setPose(poseEstimateMT2.pose);
-
             // If vision is enabled on dashboard, feed this reading to the drivetrain
-            if (SmartDashboard.getBoolean(NT_USE_VISION_BUTTON, false)) {
+            if (SmartDashboard.getBoolean(NT_USE_VISION_BUTTON, true)) {
                 drivetrain.addVisionMeasurement(poseEstimateMT2.pose, poseEstimateMT2.timestampSeconds);
             }
         }
+
+        // Display the estimate on the field, or at (0, 0) if we have no estimate
+        Constants.FieldConstants.FIELD.getObject("MegaTag2").setPose(
+            isPoseEstimateGood ?
+            poseEstimateMT2.pose :
+            new Pose2d(new Translation2d(0, 0), new Rotation2d(0))
+        );
+
+        Constants.FieldConstants.FIELD.getObject("Red Hub").setPose(new Pose2d(Constants.FieldConstants.RED_HUB_CENTER, new Rotation2d(0)));
+        Constants.FieldConstants.FIELD.getObject("Blue Hub").setPose(new Pose2d(Constants.FieldConstants.BLUE_HUB_CENTER, new Rotation2d(0)));
 
         SmartDashboard.putNumber(NT_TX, LimelightHelpers.getTX(LimelightConstants.LIMELIGHT_NAME));
         SmartDashboard.putNumber(NT_TY, LimelightHelpers.getTY(LimelightConstants.LIMELIGHT_NAME));
@@ -65,7 +76,7 @@ public class Limelight extends SubsystemBase {
 
     // Checks if a pose estimate (limelight reading) is of sufficient quality to be used.
     final static double AMBIGUITY_THRESHOLD = 0.7; //< Reject the pose if ambiguity is above this.
-    final static double DISTANCE_THRESHOLD = 3.0; //< Reject the pose if distance is above this (meters). 
+    final static double DISTANCE_THRESHOLD = 15.0; //< Reject the pose if distance is above this (meters). 
     private static boolean verifyPoseEstimate(PoseEstimate pose) {
         // if we have no estimate or see no tags, reject
         if (pose == null || pose.tagCount == 0 || pose.rawFiducials.length == 0) {

@@ -47,6 +47,11 @@ public class RobotContainer {
       .withDeadband(DrivetrainConstants.MAX_SPEED * DrivetrainConstants.DEADBAND)
       .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND) 
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+	private final SwerveRequest.RobotCentric driveRequestRobotCentric = new SwerveRequest.RobotCentric()
+      .withDeadband(DrivetrainConstants.MAX_SPEED * DrivetrainConstants.DEADBAND)
+      .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND) 
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
 
   /*** SHOOTER SUBSYSTEM ***/
   private Shooter shooter = null;
@@ -109,19 +114,43 @@ public class RobotContainer {
       driverController.rightBumper().whileTrue(
         new LockOnDriveCommand(
           drivetrain,
-          () -> driverController.getLeftY() * DrivetrainConstants.MAX_SPEED,
-          () -> driverController.getLeftX() * DrivetrainConstants.MAX_SPEED,
+          driverController,
           Util4828.getHubLocation()
         )
       );
 
-      
       // Run SysId routines when holding back/start and X/Y.
       // Note that each routine should be run exactly once in a single log.
       driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
       driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
       driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
       driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+      // Use dpad for basic movement in the 4 cardinal directions
+      // Drive straight forward slowly
+      driverController.povUp().whileTrue(
+        drivetrain.applyRequest(() -> driveRequestRobotCentric
+          .withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED)
+          .withVelocityY(0.0)
+          .withRotationalRate(0.0)));
+      // Drive straight backward slowly
+      driverController.povDown().whileTrue(
+        drivetrain.applyRequest(() -> driveRequestRobotCentric
+          .withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED)
+          .withVelocityY(0.0)
+          .withRotationalRate(0.0)));
+      // Drive straight right slowly
+      driverController.povRight().whileTrue(
+        drivetrain.applyRequest(() -> driveRequestRobotCentric
+          .withVelocityX(0.0)
+          .withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED)
+          .withRotationalRate(0)));
+      // Drive straight left slowly
+      driverController.povLeft().whileTrue(
+        drivetrain.applyRequest(() -> driveRequestRobotCentric
+          .withVelocityX(0.0)
+          .withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED)
+          .withRotationalRate(0)));
 
       // Reset the field-centric heading on left bumper press.
       driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));

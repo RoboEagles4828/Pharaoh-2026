@@ -1,7 +1,6 @@
 package frc.robot.subsystems.drivetrain;
 
-import java.util.function.DoubleSupplier;
-
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -10,64 +9,78 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class LockOnDriveCommand extends Command {
+	private static final String NT_LOCK_ON_PID_P = "Tuning/LockOn/PID_P";
+	private static final String NT_LOCK_ON_PID_I = "Tuning/LockOn/PID_I";
+	private static final String NT_LOCK_ON_PID_D = "Tuning/LockOn/PID_D";
+	private static final String NT_LOCK_ON_MAX_VELOCITY = "Tuning/LockOn/MaxRotVelo";
+	private static final String NT_LOCK_ON_MAX_ACCELERATION = "Tuning/LockOn/MaxRotAccel";
+	private static final String NT_LOCK_ON_TOLERANCE = "Tuning/LockOn/Tolerance";
 
 	private final CommandSwerveDrivetrain drivetrain;
 
 	// Driver translation input (field-relative)
-	private final DoubleSupplier xSupplier;
-	private final DoubleSupplier ySupplier;
+	private final CommandXboxController controller;
 
 	// Target location
 	private final Translation2d hubPosition;
 
 	// Rotation controller
-	private final ProfiledPIDController headingPID;
+	private ProfiledPIDController headingPID;
 
 	// CTRE drive request
 	private final SwerveRequest.FieldCentric driveRequest =
 		new SwerveRequest.FieldCentric()
-			.withDeadband(0.05)
-			.withRotationalDeadband(0.05);
+			.withDeadband(DrivetrainConstants.MAX_SPEED * DrivetrainConstants.DEADBAND)
+			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND)
+      		.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
 	// ===== TUNING CONSTANTS =====
-	private static final double kP = 4.0; // TODO tune
+	private static final double kP = 12.0; 
 	private static final double kI = 0.0;
-	private static final double kD = 0.25; // TODO tune
-
-	private static final double MAX_OMEGA = 6.0; // rad/s (reasonable for swerve)
-	private static final double MAX_ALPHA = 12.0; // rad/s² (example acceleration limit)
-	private static final double AIM_TOLERANCE_RAD = Math.toRadians(1.5);
+	private static final double kD = 0.5;
+	private static final double MAX_ROTATIONAL_VELOCITY = 12.0; // rad/s
+	private static final double MAX_ROTATIONAL_ACCELERATION = 18.0; // rad/s²
+	private static final double AIM_TOLERANCE_DEGREES = 1.5; // degrees
 
 	public LockOnDriveCommand(
 		CommandSwerveDrivetrain drivetrain,
-		DoubleSupplier xSupplier,
-		DoubleSupplier ySupplier,
+		CommandXboxController controller,
 		Translation2d hubPosition
 	) {
 		this.drivetrain = drivetrain;
-		this.xSupplier = xSupplier;
-		this.ySupplier = ySupplier;
+		this.controller = controller;
 		this.hubPosition = hubPosition;
 
-		// Create a trapezoid-profiled PID controller
-		this.headingPID = new ProfiledPIDController(
-			kP,
-			kI,
-			kD,
-			new TrapezoidProfile.Constraints(MAX_OMEGA, MAX_ALPHA)
-		);
-
-		// Enable wraparound for circular heading
-		this.headingPID.enableContinuousInput(-Math.PI, Math.PI);
+		SmartDashboard.putNumber(NT_LOCK_ON_PID_P, kP);
+		SmartDashboard.putNumber(NT_LOCK_ON_PID_I, kI);
+		SmartDashboard.putNumber(NT_LOCK_ON_PID_D, kD);
+		SmartDashboard.putNumber(NT_LOCK_ON_MAX_VELOCITY, MAX_ROTATIONAL_VELOCITY);
+		SmartDashboard.putNumber(NT_LOCK_ON_MAX_ACCELERATION, MAX_ROTATIONAL_ACCELERATION);
+		SmartDashboard.putNumber(NT_LOCK_ON_TOLERANCE, AIM_TOLERANCE_DEGREES);
 
 		addRequirements(drivetrain);
 	}
 
     @Override
     public void initialize() {
+		// Create a trapezoid-profiled PID controller
+		this.headingPID = new ProfiledPIDController(
+			SmartDashboard.getNumber(NT_LOCK_ON_PID_P, kP),
+			SmartDashboard.getNumber(NT_LOCK_ON_PID_I, kI),
+			SmartDashboard.getNumber(NT_LOCK_ON_PID_D, kD),
+			new TrapezoidProfile.Constraints(
+				SmartDashboard.getNumber(NT_LOCK_ON_MAX_VELOCITY, MAX_ROTATIONAL_VELOCITY),
+				SmartDashboard.getNumber(NT_LOCK_ON_MAX_ACCELERATION, MAX_ROTATIONAL_ACCELERATION))
+		);
+		
+		// Enable wraparound for circular heading
+		this.headingPID.enableContinuousInput(-Math.PI, Math.PI);
+
         Pose2d robotPose = drivetrain.getState().Pose;
         headingPID.reset(robotPose.getRotation().getRadians());
     }
@@ -91,25 +104,18 @@ public class LockOnDriveCommand extends Command {
 			desiredHeading.getRadians()
 		);
 
-		// Clamp rotational velocity
-		omega = MathUtil.clamp(omega, -MAX_OMEGA, MAX_OMEGA);
-
 		// Optional aim deadband (prevents jitter when lined up)
 		if (Math.abs(
 			desiredHeading.minus(currentHeading).getRadians()
-		) < AIM_TOLERANCE_RAD) {
+		) < Math.toRadians(AIM_TOLERANCE_DEGREES)) {
 			omega = 0.0;
 		}
-
-		// === Driver translation ===
-		double vx = xSupplier.getAsDouble();
-		double vy = ySupplier.getAsDouble();
 
 		// === Apply CTRE request ===
 		drivetrain.setControl(
 			driveRequest
-				.withVelocityX(vx)
-				.withVelocityY(vy)
+				.withVelocityX(controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
+				.withVelocityY(controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
 				.withRotationalRate(omega)
 		);
 	}
