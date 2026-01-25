@@ -7,19 +7,19 @@
         {
           "type": "named",
           "data": {
-            "name": null
+            "name": "Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CenterToClimb"
+            "pathName": "ShootToClimbCenter"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": null
+            "name": "ClimbL1"
           }
         }
       ]
