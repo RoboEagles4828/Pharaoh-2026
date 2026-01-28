@@ -42,7 +42,7 @@ public class RobotContainer {
   private static final boolean ENABLE_DRIVETRAIN = true;
   private static final boolean ENABLE_SHOOTER = false;
   private static final boolean ENABLE_INTAKE = false;
-  private static final boolean ENABLE_LIMELIGHT = true;
+  private static final boolean ENABLE_VISION = true;
   private static final boolean ENABLE_CLIMBER = false;
 
 

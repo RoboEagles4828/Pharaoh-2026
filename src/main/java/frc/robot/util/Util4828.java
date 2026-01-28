@@ -1,10 +1,13 @@
 package frc.robot.util;
 
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -43,6 +46,15 @@ public class Util4828 {
             pose.getX(),
             pose.getY(),
             pose.getRotation().getDegrees()
+        );
+    }
+
+    public static String formatMatrix3x1(Matrix<N3, N1> m) {
+        return String.format(
+            "[%.3f, %.3f, %.3f]",
+            m.get(0, 0),
+            m.get(1, 0),
+            m.get(2, 0)
         );
     }
 
