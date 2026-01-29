@@ -13,7 +13,7 @@ import frc.robot.util.TunableNumber;
 
 /** The shooter subsystem controls the output of fuel. */
 public class Shooter extends SubsystemBase {
-    private static final TunableNumber shootingSpeedRPS = new TunableNumber(ShooterConstants.NT_SHOOTING_SPEED_KEY, ShooterConstants.DEFAULT_SPEED_RPS);
+    private static final TunableNumber shootingSpeedRPS = new TunableNumber(ShooterConstants.NT_SHOOTING_SPEED_KEY, ShooterConstants.DEFAULT_SHOOTING_SPEED_RPS);
     /** Motor controlling the line of wheels */
     private final TalonFX motor;
 

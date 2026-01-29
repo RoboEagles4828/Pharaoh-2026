@@ -12,7 +12,7 @@ import frc.robot.Constants;
 import frc.robot.util.TunableNumber;
 
 public class Intake extends SubsystemBase {
-    private static final TunableNumber intakeSpeedRPS = new TunableNumber(IntakeConstants.NT_INTAKE_SPEED_KEY, IntakeConstants.DEFAULT_INTAKE_SPEED);
+    private static final TunableNumber intakeSpeedRPS = new TunableNumber(IntakeConstants.NT_INTAKE_SPEED_KEY, IntakeConstants.DEFAULT_INTAKE_SPEED_DUTY_CYCLE);
 
     private final TalonFX motor;
 
