@@ -9,21 +9,26 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.TunableNumber;
 
 public class Intake extends SubsystemBase {
-    private static final String IT_SPEED_RPS = "Tuning/Intake/SpeedRPS";
+    private static final TunableNumber intakeSpeedRPS = new TunableNumber(IntakeConstants.NT_INTAKE_SPEED_KEY, IntakeConstants.DEFAULT_INTAKE_SPEED_DUTY_CYCLE);
 
     private final TalonFX motor;
 
     public Intake() {
         motor = new TalonFX(Constants.RioBusCANIds.INTAKE_MOTOR_ID);
 
-        /** Applying the configuration */
-        SmartDashboard.putNumber(IT_SPEED_RPS, IntakeConstants.INTAKE_SPEED_DUTY_CYCLE);
+        /** Used to configure motors and PID slots */
+        final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
+        motorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+        // Applying the configuration
+        motor.getConfigurator().apply(motorCfg);
     }
 
     public Command start() {
-        return Commands.run(() -> motor.set(SmartDashboard.getNumber(IT_SPEED_RPS, IntakeConstants.INTAKE_SPEED_DUTY_CYCLE)), this);
+        return Commands.run(() -> motor.set(intakeSpeedRPS.get()), this);
     }
 
     public Command stop() {
