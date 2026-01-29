@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 public class ShooterConstants {
     public static int GEAR_RATIO = 1;
     public static int DEFAULT_SPEED_RPS = 30;
+    public static final String NT_SHOOTING_SPEED_KEY = "Tuning/Shooter/SpeedRPS";
 
     static class PID_CONFIG {
         static final double GRAVITY = 0.0;

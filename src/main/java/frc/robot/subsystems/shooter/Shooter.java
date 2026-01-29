@@ -5,16 +5,15 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RioBusCANIds;
+import frc.robot.util.TunableNumber;
 
 /** The shooter subsystem controls the output of fuel. */
 public class Shooter extends SubsystemBase {
-    private static final String NT_SPEED_RPS = "Tuning/Shooter/SpeedRPS";
-
+    private static final TunableNumber shootingSpeedRPS = new TunableNumber(ShooterConstants.NT_SHOOTING_SPEED_KEY, ShooterConstants.DEFAULT_SPEED_RPS);
     /** Motor controlling the line of wheels */
     private final TalonFX motor;
 
@@ -23,7 +22,7 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         motor = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_ID);
 
-        /** Used to configure motors and PID slots. */
+        /** Used to configure motors and PID slots */
         final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
         motorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.GEAR_RATIO;
         motorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -32,16 +31,14 @@ public class Shooter extends SubsystemBase {
         motorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
         motorCfg.Slot0.kV = ShooterConstants.PID_CONFIG.VELOCITY;
 
-        /** Applying the configuration */
+        // Applying the configuration
         motor.getConfigurator().apply(motorCfg);
-
-        SmartDashboard.putNumber(NT_SPEED_RPS, ShooterConstants.DEFAULT_SPEED_RPS);
     }
 
     /** Command to shoot the fuel. */
     public Command start() {
         return Commands.run(() -> {
-            motor.setControl(velocityVoltageRequest.withVelocity(SmartDashboard.getNumber(NT_SPEED_RPS, ShooterConstants.DEFAULT_SPEED_RPS)));
+            motor.setControl(velocityVoltageRequest.withVelocity(shootingSpeedRPS.get()));
         }, this);
     }
     
