@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "ShootToIntakeHFCenter"
+                  "pathName": "ShootToIntakeTop"
                 }
               },
               {
@@ -42,21 +42,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "ShootToClimbTop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ClimbL1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "ShootToIntakeTop"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "ShootIntakeShootClimbHF",
+  "folder": "ShootIntakeShootIntake",
   "choreoAuto": false
 }
