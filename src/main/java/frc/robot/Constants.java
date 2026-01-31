@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -13,6 +18,14 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static class FieldConstants {
+    public static final AprilTagFields APRIL_TAG_FIELD_TYPE = AprilTagFields.k2026RebuiltAndymark;
+    public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(APRIL_TAG_FIELD_TYPE);
+    public static final Field2d FIELD = new Field2d();
+    public static final Translation2d BLUE_HUB_CENTER = new Translation2d(4.6116, 4.0213); // AndyMark measurements - which NC uses
+    public static final Translation2d RED_HUB_CENTER = new Translation2d(11.9014, 4.0213); // AndyMark measurements - which NC uses
+  }
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
@@ -23,5 +36,11 @@ public final class Constants {
     public static int SHOOTER_MOTOR_ID = 13;
     public static int CLIMBER_MOTOR_ID = 15;
     public static int INTAKE_MOTOR_ID = 21;
+  }
+
+  public static class RobotConstants {
+    public static double DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS = 0.3556;
+    public static double ROBOT_BUMPER_SIZE_METERS = 0.0889;
+    public static double DISTANCE_BUMPER_EDGE_TO_CENTER_METERS = DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS + ROBOT_BUMPER_SIZE_METERS;
   }
 }

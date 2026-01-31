@@ -14,11 +14,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.drivetrain.AutoAlignToTowerCommand;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.limelight.Limelight;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.util.Util4828;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -36,11 +39,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
  */
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
-  private static final boolean ENABLE_DRIVETRAIN = false;
-  private static final boolean ENABLE_SHOOTER = false;
-  private static final boolean ENABLE_INTAKE = false;
-  private static final boolean ENABLE_LIMELIGHT = false;
-  private static final boolean ENABLE_CLIMBER = false;
+  private static final boolean ENABLE_DRIVETRAIN = true;
+  private static final boolean ENABLE_SHOOTER = true;
+  private static final boolean ENABLE_INTAKE = true;
+  private static final boolean ENABLE_LIMELIGHT = true;
+  private static final boolean ENABLE_CLIMBER = true;
 
 
   /*** DRIVETRAIN SUBSYSTEM ***/
@@ -49,6 +52,11 @@ public class RobotContainer {
       .withDeadband(DrivetrainConstants.MAX_SPEED * DrivetrainConstants.DEADBAND)
       .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND) 
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+	private final SwerveRequest.RobotCentric driveRequestRobotCentric = new SwerveRequest.RobotCentric()
+      .withDeadband(DrivetrainConstants.MAX_SPEED * DrivetrainConstants.DEADBAND)
+      .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND) 
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
 
   /*** SHOOTER SUBSYSTEM ***/
   private Shooter shooter = null;
@@ -109,13 +117,22 @@ public class RobotContainer {
               .withVelocityY(driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
               .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) // Drive counterclockwise with negative X (left)
           ));
-      
+
       // While disabled, idle.
       final var idle = new SwerveRequest.Idle();
       RobotModeTriggers.disabled().whileTrue(
           drivetrain.applyRequest(() -> idle).ignoringDisable(true)
       );
-      
+
+      // Lock-on to HUB while holding right trigger
+      driverController.rightBumper().whileTrue(
+        new LockOnDriveCommand(
+          drivetrain,
+          driverController,
+          Util4828.getHubLocation()
+        )
+      );
+
       // Run SysId routines when holding back/start and X/Y.
       // Note that each routine should be run exactly once in a single log.
       driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -123,11 +140,39 @@ public class RobotContainer {
       driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
       driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
+      // Use dpad for basic movement in the 4 cardinal directions
+      // Drive straight forward slowly
+      driverController.povUp().whileTrue(
+        drivetrain.applyRequest(() -> driveRequestRobotCentric
+          .withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED)
+          .withVelocityY(0.0)
+          .withRotationalRate(0.0)));
+      // Drive straight backward slowly
+      driverController.povDown().whileTrue(
+        drivetrain.applyRequest(() -> driveRequestRobotCentric
+          .withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED)
+          .withVelocityY(0.0)
+          .withRotationalRate(0.0)));
+      // Drive straight right slowly
+      driverController.povRight().whileTrue(
+        drivetrain.applyRequest(() -> driveRequestRobotCentric
+          .withVelocityX(0.0)
+          .withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED)
+          .withRotationalRate(0)));
+      // Drive straight left slowly
+      driverController.povLeft().whileTrue(
+        drivetrain.applyRequest(() -> driveRequestRobotCentric
+          .withVelocityX(0.0)
+          .withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED)
+          .withRotationalRate(0)));
+
       // Reset the field-centric heading on left bumper press.
       driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
       driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
       driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+
+      driverController.rightBumper().onTrue(new AutoAlignToTowerCommand(drivetrain));
     }
 
     /*** SHOOTER ***/

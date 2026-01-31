@@ -1,22 +1,42 @@
 package frc.robot.util;
 
 import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
+import frc.robot.Constants;
 
 public class Util4828 {
-    public static final AprilTagFields APRIL_TAG_FIELD_TYPE = AprilTagFields.k2025ReefscapeWelded;
-    public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(APRIL_TAG_FIELD_TYPE);
- 
-    public static final Field2d FIELD = new Field2d();
+    public static double getDistance(double robotX, double robotY, double targetX, double targetY) {
+        double distanceFromTarget = Math.sqrt(Math.abs(Math.pow(targetX-robotX, 2) + Math.pow(targetY-robotY, 2)));
+        return distanceFromTarget;
+    }
+
+    /*** Game specific utility functions ***/
+    public static Translation2d getHubLocation() {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        return (alliance == Alliance.Red)
+            ? Constants.FieldConstants.RED_HUB_CENTER
+            : Constants.FieldConstants.BLUE_HUB_CENTER;
+    }
+
+    /*** Generic utility functions ***/
+    public static double metersPerSecondToMotorRPS(
+            double metersPerSecond,
+            double wheelDiameterMeters,
+            double gearRatio
+    ) {
+        double wheelCircumference = Math.PI * wheelDiameterMeters;
+        double wheelRPS = metersPerSecond / wheelCircumference;
+        return wheelRPS * gearRatio;
+    }
 
     public static String formatPose(Pose2d pose) {
         return String.format(
@@ -32,8 +52,8 @@ public class Util4828 {
         NetworkTable tagTable = NetworkTableInstance.getDefault().getTable("AprilTags");
 
         int index = 0; // List index
-        for (AprilTag tag : APRIL_TAG_FIELD_LAYOUT.getTags()) {
-            Pose3d tagPose3d = APRIL_TAG_FIELD_LAYOUT.getTagPose(tag.ID).get();
+        for (AprilTag tag : Constants.FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTags()) {
+            Pose3d tagPose3d = Constants.FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose(tag.ID).get();
 
             if (tagPose3d != null) {
                 Pose2d tagPose2d = tagPose3d.toPose2d();
@@ -80,12 +100,12 @@ public class Util4828 {
             boolean faceTag
     ) {
         // Verify tag exists
-        if (!APRIL_TAG_FIELD_LAYOUT.getTags().stream().anyMatch(tag -> tag.ID == tagId)) {
+        if (!Constants.FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTags().stream().anyMatch(tag -> tag.ID == tagId)) {
             DriverStation.reportWarning("AprilTag ID " + tagId + " not found in layout", false);
             return null;
         }
 
-        Pose3d tagPose3d = APRIL_TAG_FIELD_LAYOUT.getTagPose(tagId).orElse(null);
+        Pose3d tagPose3d = Constants.FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose(tagId).orElse(null);
         if (tagPose3d == null) {
             DriverStation.reportWarning("Pose for tag " + tagId + " not found", false);
             return null;
