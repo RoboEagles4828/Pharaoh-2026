@@ -1,0 +1,65 @@
+package frc.robot.subsystems.drivetrain;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+
+public class AutoAlignToTowerCommand extends Command {
+    private Command internalCommand = null;
+
+    public AutoAlignToTowerCommand(
+            CommandSwerveDrivetrain drivetrain
+    ) {
+        addRequirements(drivetrain);
+    }
+
+    @Override
+    public void initialize() {
+        //Auto Align values
+        double x = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_X, 1.581);
+        double y = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_Y, 3.757);
+        double theta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_THETA, -90);
+
+        Pose2d scoringPose = new Pose2d(x, y, Rotation2d.fromDegrees(theta));
+
+
+
+        // PathPlanner constraints (tune these!)
+        PathConstraints constraints = new PathConstraints(
+                0.5,  // max velocity (m/s)
+                0.5,  // max accel (m/s^2)
+                0.5,  // max angular vel (rad/s)
+                1.0   // max angular accel
+        );
+
+        // Generate the PP pathfinding command
+        internalCommand = AutoBuilder.pathfindToPose(scoringPose, constraints);
+
+        internalCommand.initialize();
+    }
+
+    @Override
+    public void execute() {
+        if (internalCommand != null) {
+            internalCommand.execute();
+        }
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        if (internalCommand != null) {
+            internalCommand.end(interrupted);
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return internalCommand != null && internalCommand.isFinished();
+    }
+}

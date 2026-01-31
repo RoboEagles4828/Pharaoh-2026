@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.util.TunableNumber;
 import frc.robot.util.Util4828;
 
 /**
@@ -235,6 +236,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final String NT_AUTOSEED_DISTANCE_FT = "AutoSeedDistanceFt";
     private static final String NT_AUTOSEED_FACE_TAG = "AutoSeedFaceTag";
     private static final String NT_AUTOSEED_TRIGGER = "AutoSeedPoseTrigger";
+    public static final String NT_AUTOALIGN_X = "AutoAlign_X";
+    public static final String NT_AUTOALIGN_Y = "AutoALign_Y";
+    public static final String NT_AUTOALIGN_THETA = "AutoAlign_Theta";
 
     private void init(){
         SmartDashboard.putNumber(NT_SEED_X, 0);
@@ -246,6 +250,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber(NT_AUTOSEED_DISTANCE_FT, 8);
         SmartDashboard.putBoolean(NT_AUTOSEED_FACE_TAG, true);
         SmartDashboard.putBoolean(NT_AUTOSEED_TRIGGER, false);
+
+        SmartDashboard.putNumber(NT_AUTOALIGN_X, 1.581);
+        SmartDashboard.putNumber(NT_AUTOALIGN_Y, 3.757);
+        SmartDashboard.putNumber(NT_AUTOALIGN_THETA, -90);
     }
 
     @Override
