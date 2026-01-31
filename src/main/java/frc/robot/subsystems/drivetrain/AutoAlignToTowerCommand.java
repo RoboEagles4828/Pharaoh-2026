@@ -5,6 +5,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.util.Util4828;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,23 +13,34 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutoAlignToTowerCommand extends Command {
     private Command internalCommand = null;
+    private boolean canceled = false;
+    private CommandSwerveDrivetrain drive = null;
 
-    public AutoAlignToTowerCommand(
-            CommandSwerveDrivetrain drivetrain
-    ) {
+    public AutoAlignToTowerCommand(CommandSwerveDrivetrain drivetrain) {
+        drive = drivetrain;
         addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
         //Auto Align values
-        double x = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_X, 1.581);
-        double y = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_Y, 3.757);
+        double targetX = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_X, 1.581);
+        double targetY = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_Y, 3.757);
         double theta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_THETA, -90);
 
         Pose2d scoringPose = new Pose2d(x, y, Rotation2d.fromDegrees(theta));
 
+        double robotX = drive.getState().Pose.getX();
+        double robotY = drive.getState().Pose.getY();
 
+        double distanceFromTarget = Util4828.getDistance(robotX, robotY, targx, y);
+        
+        if(distanceFromTarget > DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE)
+        {
+            System.out.println("Aborted tower auto align, robot was too far away.");
+            canceled = true;
+            return;
+        }
 
         // PathPlanner constraints (tune these!)
         PathConstraints constraints = new PathConstraints(
@@ -60,6 +72,9 @@ public class AutoAlignToTowerCommand extends Command {
 
     @Override
     public boolean isFinished() {
+        if (canceled) {
+            return true;
+        }
         return internalCommand != null && internalCommand.isFinished();
     }
 }
