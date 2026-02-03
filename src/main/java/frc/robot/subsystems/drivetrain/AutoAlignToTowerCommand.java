@@ -24,9 +24,9 @@ public class AutoAlignToTowerCommand extends Command {
     @Override
     public void initialize() {
         //Auto Align values
-        double targetX = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_X, 1.581);
-        double targetY = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_Y, 3.757);
-        double targetTheta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_AUTOALIGN_THETA, -90);
+        double targetX = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_X, DrivetrainConstants.TOWER_ALIGN_X);
+        double targetY = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_Y, DrivetrainConstants.TOWER_ALIGN_Y);
+        double targetTheta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_THETA, DrivetrainConstants.TOWER_ALIGN_THETA);
 
         Pose2d scoringPose = new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
 
@@ -46,7 +46,7 @@ public class AutoAlignToTowerCommand extends Command {
         PathConstraints constraints = new PathConstraints(
                 0.5,  // max velocity (m/s)
                 0.5,  // max accel (m/s^2)
-                0.5,  // max angular vel (rad/s)
+                1.0,  // max angular vel (rad/s)
                 1.0   // max angular accel
         );
 

@@ -244,9 +244,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final String NT_AUTOSEED_DISTANCE_FT = "AutoSeedDistanceFt";
     private static final String NT_AUTOSEED_FACE_TAG = "AutoSeedFaceTag";
     private static final String NT_AUTOSEED_TRIGGER = "AutoSeedPoseTrigger";
-    public static final String NT_AUTOALIGN_X = "AutoAlign_X";
-    public static final String NT_AUTOALIGN_Y = "AutoALign_Y";
-    public static final String NT_AUTOALIGN_THETA = "AutoAlign_Theta";
+    public static final String NT_TOWERALIGN_X = "TowerAlign/X";
+    public static final String NT_TOWERALIGN_Y = "TowerAlign/Y";
+    public static final String NT_TOWERALIGN_THETA = "TowerAlign/Theta";
 
     private void init(){
         SmartDashboard.putNumber(NT_SEED_X, 0);
@@ -260,9 +260,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putBoolean(NT_AUTOSEED_FACE_TAG, true);
         SmartDashboard.putBoolean(NT_AUTOSEED_TRIGGER, false);
 
-        SmartDashboard.putNumber(NT_AUTOALIGN_X, 1.581);
-        SmartDashboard.putNumber(NT_AUTOALIGN_Y, 3.757);
-        SmartDashboard.putNumber(NT_AUTOALIGN_THETA, -90);
+        SmartDashboard.putNumber(NT_TOWERALIGN_X, DrivetrainConstants.TOWER_ALIGN_X);
+        SmartDashboard.putNumber(NT_TOWERALIGN_Y, DrivetrainConstants.TOWER_ALIGN_Y);
+        SmartDashboard.putNumber(NT_TOWERALIGN_THETA, DrivetrainConstants.TOWER_ALIGN_THETA);
     }
 
     @Override
@@ -325,6 +325,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         Constants.FieldConstants.FIELD.setRobotPose(getState().Pose);
+
+        // Draw the target climb position on Elastic
+        double targetX = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_X, DrivetrainConstants.TOWER_ALIGN_X);
+        double targetY = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_Y, DrivetrainConstants.TOWER_ALIGN_Y);
+        double targetTheta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_THETA, DrivetrainConstants.TOWER_ALIGN_THETA);
+        Pose2d climbPose = new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
+        Constants.FieldConstants.FIELD.getObject("Tower").setPose(climbPose);
 
         SmartDashboard.putString("Robot Pose", Util4828.formatPose(getState().Pose));
     }

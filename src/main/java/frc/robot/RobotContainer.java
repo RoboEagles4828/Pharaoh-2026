@@ -40,10 +40,10 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
   private static final boolean ENABLE_DRIVETRAIN = true;
-  private static final boolean ENABLE_SHOOTER = true;
-  private static final boolean ENABLE_INTAKE = true;
+  private static final boolean ENABLE_SHOOTER = false;
+  private static final boolean ENABLE_INTAKE = false;
   private static final boolean ENABLE_LIMELIGHT = true;
-  private static final boolean ENABLE_CLIMBER = true;
+  private static final boolean ENABLE_CLIMBER = false;
 
 
   /*** DRIVETRAIN SUBSYSTEM ***/
@@ -167,12 +167,12 @@ public class RobotContainer {
           .withRotationalRate(0)));
 
       // Reset the field-centric heading on left bumper press.
-      driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+      //driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
       driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
       driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
 
-      driverController.rightBumper().onTrue(new AutoAlignToTowerCommand(drivetrain));
+      driverController.leftBumper().onTrue(new AutoAlignToTowerCommand(drivetrain));
     }
 
     /*** SHOOTER ***/
