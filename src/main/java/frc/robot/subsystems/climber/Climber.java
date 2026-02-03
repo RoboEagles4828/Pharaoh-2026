@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,7 +15,8 @@ public class Climber extends SubsystemBase {
     private static TunableNumber climbUpDutyCycle = new TunableNumber(ClimberConstants.NT_CLIMB_UP_DUTY_CYCLE, ClimberConstants.DEFAULT_CLIMB_UP_DUTY_CYCLE);
     private static TunableNumber climbDownDutyCycle = new TunableNumber(ClimberConstants.NT_CLIMB_DOWN_DUTY_CYCLE, ClimberConstants.DEFAULT_CLIMB_DOWN_DUTY_CYCLE);
 
-    public final TalonFX motor;
+    private final TalonFX motor;
+    private final Encoder encoder;
 
     public Climber() {
         motor = new TalonFX(Constants.RioBusCANIds.CLIMBER_MOTOR_ID);
@@ -24,6 +26,11 @@ public class Climber extends SubsystemBase {
 
         // Applying the configuration
         motor.getConfigurator().apply(motorCfg);
+
+        encoder = motor.
+    }
+    public void setMotorSpeed(double speed){
+        motor.set(speed);
     }
 
     public Command climbUp() {
@@ -36,5 +43,9 @@ public class Climber extends SubsystemBase {
 
     public Command stop() {
         return Commands.runOnce(() -> motor.stopMotor(), this);
+    }
+
+    public double getPosition(){
+        return motor.getPosition().getValueAsDouble();
     }
 }
