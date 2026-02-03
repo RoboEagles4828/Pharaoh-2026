@@ -12,21 +12,36 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class AutoAlignToTowerCommand extends Command {
-    private Command internalCommand = null;
+    enum Step {
+        ONE, TWO, FINISHED
+    }
+
+    private Command ppCommand = null;
     private boolean canceled = false;
     private CommandSwerveDrivetrain drive = null;
+    private Step step;
 
     public AutoAlignToTowerCommand(CommandSwerveDrivetrain drivetrain) {
         drive = drivetrain;
         addRequirements(drivetrain);
     }
 
+    private Command getPPStep1Command() {
+        return null; // todo
+    }
+
+    private Command getPPStep2Command() {
+        return null; // todo
+    }
+
     @Override
     public void initialize() {
+        step = Step.ONE;
+
         //Auto Align values
-        double targetX = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_X, DrivetrainConstants.TOWER_ALIGN_X);
-        double targetY = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_Y, DrivetrainConstants.TOWER_ALIGN_Y);
-        double targetTheta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_THETA, DrivetrainConstants.TOWER_ALIGN_THETA);
+        double targetX = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X, DrivetrainConstants.TOWER_ALIGN_STEP1_X);
+        double targetY = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y, DrivetrainConstants.TOWER_ALIGN_STEP1_Y);
+        double targetTheta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA, DrivetrainConstants.TOWER_ALIGN_STEP1_THETA);
 
         Pose2d scoringPose = new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
 
@@ -51,22 +66,42 @@ public class AutoAlignToTowerCommand extends Command {
         );
 
         // Generate the PP pathfinding command
-        internalCommand = AutoBuilder.pathfindToPose(scoringPose, constraints);
+        ppCommand = AutoBuilder.pathfindToPose(scoringPose, constraints);
 
-        internalCommand.initialize();
+        ppCommand.initialize();
     }
 
     @Override
     public void execute() {
-        if (internalCommand != null) {
-            internalCommand.execute();
+        // something has gone horribly wrong; abort the command
+        if (ppCommand == null) {
+            step = Step.FINISHED;
+            return;
+        }
+        
+        // If one of our pathplanner commands is done, either move to the next step
+        // or, if the last step is done, note that we're finished.
+        if (ppCommand.isFinished()) {
+            if (step == Step.ONE) {
+                ppCommand = getPPStep2Command();
+                step = Step.TWO;
+            }
+            else if (step == Step.TWO) {
+                ppCommand = null;
+                step = Step.FINISHED;
+            }
+        }
+
+        // run the pathplanner command
+        if (ppCommand != null) {
+            ppCommand.execute();
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        if (internalCommand != null) {
-            internalCommand.end(interrupted);
+        if (ppCommand != null) {
+            ppCommand.end(interrupted);
         }
     }
 
@@ -75,6 +110,6 @@ public class AutoAlignToTowerCommand extends Command {
         if (canceled) {
             return true;
         }
-        return internalCommand != null && internalCommand.isFinished();
+        return step == Step.FINISHED;
     }
 }
