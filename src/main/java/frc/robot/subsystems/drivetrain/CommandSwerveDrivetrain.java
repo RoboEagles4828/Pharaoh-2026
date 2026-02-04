@@ -3,6 +3,7 @@ package frc.robot.subsystems.drivetrain;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -377,7 +379,55 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
+    /* Returns a command which drives to a set pose using pathplanner, with the given constraints (velocity, accel) */
     public Command driveToPose(Pose2d targetPose, PathConstraints constraints) {
         return AutoBuilder.pathfindToPose(targetPose, constraints);
     }
+
+    private Pose2d getTowerAlignPoseStep1() {
+        // todo(ben) - test for both towers
+        // todo(ben) - have a way to choose between left/right sides of tower
+
+        double targetX = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X, DrivetrainConstants.TOWER_ALIGN_STEP1_X);
+        double targetY = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y, DrivetrainConstants.TOWER_ALIGN_STEP1_Y);
+        double targetTheta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA, DrivetrainConstants.TOWER_ALIGN_STEP1_THETA);
+        return new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
+    }
+
+    private Pose2d getTowerAlignPoseStep2() {
+        // todo(ben) - test for both towers
+        // todo(ben) - have a way to choose between left/right sides of tower
+
+        double targetX = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X, DrivetrainConstants.TOWER_ALIGN_STEP2_X);
+        double targetY = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y, DrivetrainConstants.TOWER_ALIGN_STEP2_Y);
+        double targetTheta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_THETA, DrivetrainConstants.TOWER_ALIGN_STEP2_THETA);
+        return new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
+    }
+
+    /* Returns a command which performs a 2-step alignment to the tower. Does nothing if the distance from the tower is too large. */
+    public Command alignToTower() {
+        // use defer so we read smartdashboard values at runtime instead of initialization
+        return Commands.defer(() -> {
+            // get the target positions for the towers
+            Pose2d step1Target = getTowerAlignPoseStep1();
+            Pose2d step2Target = getTowerAlignPoseStep2();
+
+            // calculate distance from robot -> tower
+            double robotX = getState().Pose.getX();
+            double robotY = getState().Pose.getY();
+            double distanceFromTarget = Util4828.getDistance(robotX, robotY,step1Target.getX(),step1Target.getY());
+
+            // now, either run the two step drive sequence, or just print that we're too far away, depending on distance
+            return Commands.either(
+                    Commands.sequence(
+                            driveToPose(step1Target, DrivetrainConstants.PathPlannerConstraints.SAFE),
+                            driveToPose(step2Target, DrivetrainConstants.PathPlannerConstraints.SAFE)),
+                    Commands.print("Too far for auto align"),
+                    () -> distanceFromTarget <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE);
+
+        }, 
+        Set.of(this)); // < the drivetrain (this) is a requirement for the command
+    }
 }
+
+

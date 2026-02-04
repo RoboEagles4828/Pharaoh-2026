@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.drivetrain.AutoAlignToTowerCommand;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
@@ -172,7 +171,7 @@ public class RobotContainer {
       driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
       driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
 
-      driverController.leftBumper().onTrue(new AutoAlignToTowerCommand(drivetrain));
+      driverController.leftBumper().onTrue(drivetrain.alignToTower());
     }
 
     /*** SHOOTER ***/
