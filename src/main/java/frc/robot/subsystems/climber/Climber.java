@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -51,6 +52,7 @@ public class Climber extends SubsystemBase {
         motorCfg.Slot0.kD = dValue.get();
         // Applying the configuration
         motor.getConfigurator().apply(motorCfg);
+
 
         // Setting the default position control to the starting position
         positionControl = new PositionVoltage(climbStartingPosition.get())
@@ -108,6 +110,12 @@ public class Climber extends SubsystemBase {
             // climbToPeak(),
             // retractClimb()
         );
+    }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Climber Position", getPosition());
     }
     
 }
