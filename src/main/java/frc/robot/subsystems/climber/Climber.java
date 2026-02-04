@@ -1,16 +1,15 @@
 package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+
+import frc.robot.Constants.RioBusCANIds;
 import frc.robot.util.TunableNumber;
 
 public class Climber extends SubsystemBase {
@@ -41,7 +40,7 @@ public class Climber extends SubsystemBase {
 
     /** Constructs a climber subsystem */
     public Climber() {
-        motor = new TalonFX(Constants.RioBusCANIds.CLIMBER_MOTOR_ID);
+        motor = new TalonFX(RioBusCANIds.CLIMBER_MOTOR_ID);
         
         // Configuring the motor
         final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
@@ -66,15 +65,15 @@ public class Climber extends SubsystemBase {
     }
     /** Command to move the climber up at the constant duty cycle */
     public Command climbUp() {
-       return Commands.runOnce(() -> motor.set(climbUpDutyCycle.get()), this);
+       return this.runOnce(() -> motor.set(climbUpDutyCycle.get()));
     }
     /** Command to move the climber down at the constant duty cycle */
     public Command climbDown() {
-        return Commands.runOnce(() -> motor.set(climbDownDutyCycle.get()), this);
+        return this.runOnce(() -> motor.set(climbDownDutyCycle.get()));
     }
     /** Command to stop the climber motor */
     public Command stop() {
-        return Commands.runOnce(() -> motor.stopMotor(), this);
+        return this.runOnce(() -> motor.stopMotor());
     }
 
     /** Gets the current position of the climber */
