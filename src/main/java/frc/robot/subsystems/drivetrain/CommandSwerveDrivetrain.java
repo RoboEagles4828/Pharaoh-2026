@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,8 +25,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -42,10 +41,6 @@ import frc.robot.util.Util4828;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final double kSimLoopPeriod = 0.004; // 4 ms
-    private Notifier m_simNotifier = null;
-    private double m_lastSimTime;
-
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -61,6 +56,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Swerve request for pathplanner */
     private final SwerveRequest.ApplyRobotSpeeds pathplannerApplyAutoSpeedsRequest = new SwerveRequest.ApplyRobotSpeeds();
 
+    /* Network table entries */
+    private static final String NT_SEED_X = "seedX";
+    private static final String NT_SEED_Y = "seedY";
+    private static final String NT_SEED_THETA = "seedThetaDegrees";
+    private static final String NT_SEED_TRIGGER = "seedTrigger";
+    /* Network tables fields for more easily seeding pose given tag and distance from tag. */
+    private static final String NT_AUTOSEED_TAG_ID = "AutoSeedTagID";
+    private static final String NT_AUTOSEED_DISTANCE_FT = "AutoSeedDistanceFt";
+    private static final String NT_AUTOSEED_FACE_TAG = "AutoSeedFaceTag";
+    private static final String NT_AUTOSEED_TRIGGER = "AutoSeedPoseTrigger";
+
+    public static final String NT_TOWERALIGN_STEP1_X = "TowerAlign/Step1X";
+    public static final String NT_TOWERALIGN_STEP1_Y = "TowerAlign/Step1Y";
+    public static final String NT_TOWERALIGN_STEP1_THETA = "TowerAlign/Step1Theta";
+    public static final String NT_TOWERALIGN_STEP2_X = "TowerAlign/Step2X";
+    public static final String NT_TOWERALIGN_STEP2_Y = "TowerAlign/Step2Y";
+    public static final String NT_TOWERALIGN_STEP2_THETA = "TowerAlign/Step2Theta";
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -131,52 +143,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * the devices themselves. If they need the devices, they can access them through
      * getters in the classes.
      *
-     * @param drivetrainConstants   Drivetrain-wide constants for the swerve drive
-     * @param modules               Constants for each specific module
-     */
-    public CommandSwerveDrivetrain(
-        SwerveDrivetrainConstants drivetrainConstants,
-        SwerveModuleConstants<?, ?, ?>... modules
-    ) {
-        super(drivetrainConstants, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        init();
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not construct
-     * the devices themselves. If they need the devices, they can access them through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants     Drivetrain-wide constants for the swerve drive
-     * @param odometryUpdateFrequency The frequency to run the odometry loop. If
-     *                                unspecified or set to 0 Hz, this is 250 Hz on
-     *                                CAN FD, and 100 Hz on CAN 2.0.
-     * @param modules                 Constants for each specific module
-     */
-    public CommandSwerveDrivetrain(
-        SwerveDrivetrainConstants drivetrainConstants,
-        double odometryUpdateFrequency,
-        SwerveModuleConstants<?, ?, ?>... modules
-    ) {
-        super(drivetrainConstants, odometryUpdateFrequency, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        init();
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not construct
-     * the devices themselves. If they need the devices, they can access them through
-     * getters in the classes.
-     *
      * @param drivetrainConstants       Drivetrain-wide constants for the swerve drive
      * @param odometryUpdateFrequency   The frequency to run the odometry loop. If
      *                                  unspecified or set to 0 Hz, this is 250 Hz on
@@ -197,9 +163,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
+        init();
+    }
+    public CommandSwerveDrivetrain(
+        SwerveDrivetrainConstants drivetrainConstants,
+        double odometryUpdateFrequency,
+        SwerveModuleConstants<?, ?, ?>... modules
+    ) {
+        super(drivetrainConstants, odometryUpdateFrequency, modules);
+        init();
+    }
+    public CommandSwerveDrivetrain(
+        SwerveDrivetrainConstants drivetrainConstants,
+        SwerveModuleConstants<?, ?, ?>... modules
+    ) {
+        super(drivetrainConstants, modules);
         init();
     }
 
@@ -235,29 +213,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    private static final String NT_SEED_X = "seedX";
-    private static final String NT_SEED_Y = "seedY";
-    private static final String NT_SEED_THETA = "seedThetaDegrees";
-    private static final String NT_SEED_TRIGGER = "seedTrigger";
-    /* Network tables fields for more easily seeding pose given tag and distance from tag. */
-    private static final String NT_AUTOSEED_TAG_ID = "AutoSeedTagID";
-    private static final String NT_AUTOSEED_DISTANCE_FT = "AutoSeedDistanceFt";
-    private static final String NT_AUTOSEED_FACE_TAG = "AutoSeedFaceTag";
-    private static final String NT_AUTOSEED_TRIGGER = "AutoSeedPoseTrigger";
-    public static final String NT_TOWERALIGN_STEP1_X = "TowerAlign/Step1X";
-    public static final String NT_TOWERALIGN_STEP1_Y = "TowerAlign/Step1Y";
-    public static final String NT_TOWERALIGN_STEP1_THETA = "TowerAlign/Step1Theta";
-    public static final String NT_TOWERALIGN_STEP2_X = "TowerAlign/Step2X";
-    public static final String NT_TOWERALIGN_STEP2_Y = "TowerAlign/Step2Y";
-    public static final String NT_TOWERALIGN_STEP2_THETA = "TowerAlign/Step2Theta";
-
     private void init(){
+        configureAutoBuilder();
+
         SmartDashboard.putNumber(NT_SEED_X, 0);
         SmartDashboard.putNumber(NT_SEED_Y, 0);
         SmartDashboard.putNumber(NT_SEED_THETA, 0);
         SmartDashboard.putBoolean(NT_SEED_TRIGGER, false);
 
-        configureAutoBuilder();
         SmartDashboard.putNumber(NT_AUTOSEED_TAG_ID, 4);
         SmartDashboard.putNumber(NT_AUTOSEED_DISTANCE_FT, 8);
         SmartDashboard.putBoolean(NT_AUTOSEED_FACE_TAG, true);
@@ -348,33 +311,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putString("Robot Pose", Util4828.formatPose(getState().Pose));
     }
 
-    private void startSimThread() {
-        m_lastSimTime = Utils.getCurrentTimeSeconds();
-
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - m_lastSimTime;
-            m_lastSimTime = currentTime;
-
-            /* use the measured time delta, get battery voltage from WPILib */
-            updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(kSimLoopPeriod);
-    }
-
-    /**
-     * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
-     * while still accounting for measurement noise.
-     *
-     * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
-     * @param timestampSeconds The timestamp of the vision measurement in seconds.
-     */
-    @Override
-    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
-    }
-
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
      * while still accounting for measurement noise.
@@ -395,6 +331,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Matrix<N3, N1> visionMeasurementStdDevs
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+    @Override
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
     }
 
     /**
@@ -435,5 +375,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
+    }
+
+    public Command driveToPose(Pose2d targetPose, PathConstraints constraints) {
+        return AutoBuilder.pathfindToPose(targetPose, constraints);
     }
 }
