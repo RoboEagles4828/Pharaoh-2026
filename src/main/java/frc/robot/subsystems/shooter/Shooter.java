@@ -28,22 +28,15 @@ public class Shooter extends SubsystemBase {
 
         /** Used to configure motors and PID slots */
         final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
-        motorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.GEAR_RATIO;
         motorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        
+        motorCfg.Slot0.kV = ShooterConstants.PID_CONFIG.VELOCITY;
         motorCfg.Slot0.kP = ShooterConstants.PID_CONFIG.PROPORTIONAL;
         motorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
         motorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
-        motorCfg.Slot0.kV = ShooterConstants.PID_CONFIG.VELOCITY;
 
         // Applying the configuration
         motor.getConfigurator().apply(motorCfg);
-    }
-
-    @Override
-    public void periodic() {
-        // output the current measured speed of the flywheel, for verification/tuning
-        double actualMPS = motor.getVelocity().getValueAsDouble() / ShooterConstants.GEAR_RATIO * Math.PI * ShooterConstants.WHEEL_DIAMETER;
-        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS);
     }
 
     /** Command to shoot the fuel. */
@@ -58,6 +51,13 @@ public class Shooter extends SubsystemBase {
     /** Command to stop shooting fuel. */
     public Command stop() {
         return Commands.runOnce(() -> motor.stopMotor(), this);
+    }
+
+    @Override
+    public void periodic() {
+        // output the current measured speed of the flywheel, for verification/tuning
+        double actualMPS = motor.getVelocity().getValueAsDouble() / ShooterConstants.GEAR_RATIO * Math.PI * ShooterConstants.WHEEL_DIAMETER;
+        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS);
     }
 
 }
