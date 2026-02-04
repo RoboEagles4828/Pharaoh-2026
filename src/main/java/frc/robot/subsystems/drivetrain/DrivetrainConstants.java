@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drivetrain;
 
-import frc.robot.generated.TunerConstants;
 import static edu.wpi.first.units.Units.*;
 
 public class DrivetrainConstants {
