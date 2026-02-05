@@ -19,6 +19,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
  */
 public final class Constants {
   public static class FieldConstants {
+    public enum TowerSide {
+        LEFT, RIGHT
+    }
+
     public static final AprilTagFields APRIL_TAG_FIELD_TYPE = AprilTagFields.k2026RebuiltAndymark;
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(APRIL_TAG_FIELD_TYPE);
     public static final Field2d FIELD = new Field2d();
