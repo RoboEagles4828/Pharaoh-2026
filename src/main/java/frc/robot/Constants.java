@@ -36,6 +36,7 @@ public final class Constants {
     public static int SHOOTER_MOTOR_ID = 13;
     public static int CLIMBER_MOTOR_ID = 15;
     public static int INTAKE_MOTOR_ID = 21;
+    public static int INTAKE_DEPLOY_MOTOR_ID = 22; // TODO update ID
   }
 
   public static class RobotConstants {
