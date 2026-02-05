@@ -64,6 +64,19 @@ public class Limelight extends SubsystemBase {
 
         Constants.FieldConstants.FIELD.getObject("Red Hub").setPose(new Pose2d(Constants.FieldConstants.RED_HUB_CENTER, new Rotation2d(0)));
         Constants.FieldConstants.FIELD.getObject("Blue Hub").setPose(new Pose2d(Constants.FieldConstants.BLUE_HUB_CENTER, new Rotation2d(0)));
+        
+        if (poseEstimateMT2 != null) {
+            // pick the fiducial with lowest ambiguity
+            RawFiducial bestTag = Arrays.stream(poseEstimateMT2.rawFiducials)
+                .min(Comparator.comparingDouble(f -> f.ambiguity))
+                .orElse(null);
+            if (bestTag != null) {
+                SmartDashboard.putNumber("Distance to Tag", bestTag.distToCamera);
+                SmartDashboard.putNumber("Best Tag ID", bestTag.id);
+            }
+        }
+
+        
 
         SmartDashboard.putNumber(NT_TX, LimelightHelpers.getTX(LimelightConstants.LIMELIGHT_NAME));
         SmartDashboard.putNumber(NT_TY, LimelightHelpers.getTY(LimelightConstants.LIMELIGHT_NAME));

@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -21,6 +24,7 @@ import frc.robot.util.Util4828;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 /**
@@ -34,11 +38,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
  */
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
-  private static final boolean ENABLE_DRIVETRAIN = true;
-  private static final boolean ENABLE_SHOOTER = true;
-  private static final boolean ENABLE_INTAKE = true;
-  private static final boolean ENABLE_LIMELIGHT = true;
-  private static final boolean ENABLE_CLIMBER = true;
+  private static final boolean ENABLE_DRIVETRAIN = false;
+  private static final boolean ENABLE_SHOOTER = false;
+  private static final boolean ENABLE_INTAKE = false;
+  private static final boolean ENABLE_LIMELIGHT = false;
+  private static final boolean ENABLE_CLIMBER = false;
 
 
   /*** DRIVETRAIN SUBSYSTEM ***/
@@ -68,6 +72,9 @@ public class RobotContainer {
   /*** INPUT DEVICES ***/
   private CommandXboxController driverController;
 
+  /*** PATHPLANNER WIDGET ***/
+  private final SendableChooser<Command> autonomousChooser;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -88,6 +95,12 @@ public class RobotContainer {
       limelight = new Limelight(drivetrain);
     
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+    // Pathplanner
+    // TODO - register commands here
+    // NamedCommands.registerCommand("CommandName", command);
+    autonomousChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Autonomous Chooser", autonomousChooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -153,10 +166,13 @@ public class RobotContainer {
           .withRotationalRate(0)));
 
       // Reset the field-centric heading on left bumper press.
-      driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+      driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
       driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
       driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+
+      driverController.leftTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
+      driverController.rightTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
     }
 
     /*** SHOOTER ***/
