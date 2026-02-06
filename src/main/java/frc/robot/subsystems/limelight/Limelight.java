@@ -1,7 +1,9 @@
 package frc.robot.subsystems.limelight;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
@@ -24,6 +26,7 @@ public class Limelight {
     private static final String NT_TAG_ID = "Tag ID";
     private static final String NT_POSE_MT2 = "Pose (MT2)";
     private static final String NT_IS_ESTIMATE_GOOD = "Is Estimate Good";
+    private static final String NT_STANDARD_DEVIATION = "Standard Dev";
     private static final String NT_TIMESTAMP = "Timestamp";
 
     private final String name;
@@ -46,9 +49,18 @@ public class Limelight {
                     0, 0);
         }
 
-        // get the latest pose estimate (using MegaTag2) from the camera
-        mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+        // Get raw estimate from MegaTag2
+        PoseEstimate rawEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+
+        // Fuse all tags into a best-fit estimate
+        mostRecentPoseEstimate = fuseMultipleTags(rawEstimate);
+        // moseRecentPoseEstimate = rawPose // previous method of doing this, uncomment
+        // if necessary for testing
+
+        // Compute standard deviation based on spread of tags
         mostRecentPoseStandardDeviation = calculateStandardDeviationForEstimate(mostRecentPoseEstimate);
+
+        // Check if best-fit estimate is good
         isMostRecentPoseEstimateGood = verifyPoseEstimate(mostRecentPoseEstimate);
 
         // Display the estimate on the field, or at (0, 0) if we have no estimate
@@ -62,7 +74,7 @@ public class Limelight {
         SmartDashboard.putString(String.format("%s/%s", name, NT_POSE_MT2),
                 mostRecentPoseEstimate == null ? "NULL" : Util4828.formatPose(mostRecentPoseEstimate.pose));
         SmartDashboard.putBoolean(String.format("%s/%s", name, NT_IS_ESTIMATE_GOOD), isMostRecentPoseEstimateGood);
-        SmartDashboard.putString(String.format("%s/%s"),
+        SmartDashboard.putString(String.format("%s/%s", name, NT_STANDARD_DEVIATION),
                 mostRecentPoseEstimate == null ? "NULL" : Util4828.formatMatrix3x1(mostRecentPoseStandardDeviation));
         SmartDashboard.putNumber(String.format("%s/%s", name, NT_TIMESTAMP),
                 mostRecentPoseEstimate == null ? -1 : mostRecentPoseEstimate.timestampSeconds);
@@ -78,6 +90,56 @@ public class Limelight {
 
     public boolean isPoseEstimateGood() {
         return isMostRecentPoseEstimateGood;
+    }
+
+    private PoseEstimate fuseMultipleTags(LimelightHelpers.PoseEstimate pose) {
+        if (pose == null || pose.rawFiducials.length == 0)
+            return null;
+
+        // Lists to hold valid tags
+        List<Translation2d> positions = new ArrayList<>();
+        List<Rotation2d> rotations = new ArrayList<>();
+        List<Double> weights = new ArrayList<>();
+
+        for (RawFiducial tag : pose.rawFiducials) {
+            Pose2d tagPose = Util4828.getAprilTagPose(tag.id);
+            if (tagPose == null)
+                continue; // Skip missing tags
+
+            double weight = 1.0 / (tag.ambiguity + 0.01);
+
+            positions.add(tagPose.getTranslation());
+            rotations.add(tagPose.getRotation());
+            weights.add(weight);
+        }
+
+        if (positions.isEmpty()) {
+            // No valid tags, return null estimate
+            return null;
+        }
+
+        // Compute weighted average translation
+        double sumX = 0, sumY = 0, sumWeight = 0;
+        for (int i = 0; i < positions.size(); i++) {
+            sumX += positions.get(i).getX() * weights.get(i);
+            sumY += positions.get(i).getY() * weights.get(i);
+            sumWeight += weights.get(i);
+        }
+        Translation2d avgTranslation = new Translation2d(sumX / sumWeight, sumY / sumWeight);
+
+        // Compute weighted average rotation
+        Rotation2d avgRotation = Util4828.averageRotation(rotations.toArray(new Rotation2d[0]),
+                weights.stream().mapToDouble(Double::doubleValue).toArray());
+
+        Pose2d fusedPose = new Pose2d(avgTranslation, avgRotation);
+
+        PoseEstimate fused = new PoseEstimate();
+        fused.pose = fusedPose;
+        fused.tagCount = positions.size(); // Only count valid tags
+        fused.rawFiducials = pose.rawFiducials;
+        fused.timestampSeconds = pose.timestampSeconds;
+
+        return fused;
     }
 
     // Checks if a pose estimate (limelight reading) is of sufficient quality to be
@@ -106,50 +168,53 @@ public class Limelight {
         return true;
     }
 
-    // Tunable constants (start here, then adjust on a real field)
     private static Matrix<N3, N1> calculateStandardDeviationForEstimate(LimelightHelpers.PoseEstimate pose) {
-        // Safety fallback — if pose is somehow invalid
         if (pose == null || pose.rawFiducials.length == 0) {
-            return VecBuilder.fill(LimelightConstants.STD_MAX_XY, LimelightConstants.STD_MAX_XY, LimelightConstants.STD_MAX_THETA);
+            return VecBuilder.fill(LimelightConstants.STD_MAX_XY,
+                    LimelightConstants.STD_MAX_XY,
+                    LimelightConstants.STD_MAX_THETA);
         }
 
-        // Pick the best (lowest ambiguity) fiducial
-        RawFiducial bestTag = Arrays.stream(pose.rawFiducials)
-                .min((a, b) -> Double.compare(a.ambiguity, b.ambiguity))
-                .orElse(null);
+        Pose2d fusedPose = pose.pose;
 
-        // Error case, if we can't get a best pose somehow
-        if (bestTag == null) {
-            return VecBuilder.fill(LimelightConstants.STD_MAX_XY, LimelightConstants.STD_MAX_XY, LimelightConstants.STD_MAX_THETA);
+        double xVar = 0.0;
+        double yVar = 0.0;
+        double thetaVar = 0.0;
+        double weightSum = 0.0;
+
+        for (RawFiducial tag : pose.rawFiducials) {
+            Pose2d tagPose = Util4828.getAprilTagPose(tag.id);
+            if (tagPose == null)
+                continue; // Skip missing tags
+
+            double weight = 1.0 / (tag.ambiguity + 0.01);
+
+            double dx = tagPose.getX() - fusedPose.getX();
+            double dy = tagPose.getY() - fusedPose.getY();
+            double dtheta = tagPose.getRotation().minus(fusedPose.getRotation()).getRadians();
+
+            xVar += weight * dx * dx;
+            yVar += weight * dy * dy;
+            thetaVar += weight * dtheta * dtheta;
+            weightSum += weight;
         }
 
-        double distance = bestTag.distToCamera;
-        int tagCount = pose.tagCount;
-
-        /*
-         * Translation uncertainty
-         * - Grows roughly with distance^2
-         * - Multi-tag solves reduce uncertainty significantly
-         */
-        double xyStd = 0.1 + 0.02 * distance * distance;
-
-        /*
-         * Rotation uncertainty
-         * - Worse than translation
-         * - Grows linearly with distance
-         */
-        double thetaStd = Math.toRadians(5 + 2.0 * distance);
-
-        // Improve confidence if we see multiple tags
-        if (tagCount >= 2) {
-            xyStd *= 0.5;
-            thetaStd *= 0.5;
+        if (weightSum == 0.0) {
+            // No valid tags
+            return VecBuilder.fill(LimelightConstants.STD_MAX_XY,
+                    LimelightConstants.STD_MAX_XY,
+                    LimelightConstants.STD_MAX_THETA);
         }
 
-        // Clamp to sane bounds
-        xyStd = MathUtil.clamp(xyStd, LimelightConstants.STD_MIN_XY, LimelightConstants.STD_MAX_XY);
+        double xStd = Math.sqrt(xVar / weightSum);
+        double yStd = Math.sqrt(yVar / weightSum);
+        double thetaStd = Math.sqrt(thetaVar / weightSum);
+
+        xStd = MathUtil.clamp(xStd, LimelightConstants.STD_MIN_XY, LimelightConstants.STD_MAX_XY);
+        yStd = MathUtil.clamp(yStd, LimelightConstants.STD_MIN_XY, LimelightConstants.STD_MAX_XY);
         thetaStd = MathUtil.clamp(thetaStd, LimelightConstants.STD_MIN_THETA, LimelightConstants.STD_MAX_THETA);
 
-        return VecBuilder.fill(xyStd, xyStd, thetaStd);
+        return VecBuilder.fill(xStd, yStd, thetaStd);
     }
+
 }
