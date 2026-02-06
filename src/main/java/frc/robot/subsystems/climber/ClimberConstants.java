@@ -2,7 +2,7 @@ package frc.robot.subsystems.climber;
 
 public class ClimberConstants {
 
-    public static final double GEAR_RATIO = 20.0; // TODO Example gear ratio, replace with actual value
+    public static final double GEAR_RATIO = 20.0; 
 
     public static final String NT_CLIMB_UP_DUTY_CYCLE = "Tuning/Climber/ClimbUpDutyCycle";
     public static double DEFAULT_CLIMB_UP_DUTY_CYCLE = -0.2;
