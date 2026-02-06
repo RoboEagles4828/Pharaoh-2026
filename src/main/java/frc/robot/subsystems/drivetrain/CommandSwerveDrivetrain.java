@@ -416,8 +416,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         
         double targetY =
             side == Constants.FieldConstants.TowerSide.LEFT ? 
-            SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP1_X_LEFT) :
-            SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP1_X_RIGHT);
+            SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP1_Y_LEFT) :
+            SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP1_Y_RIGHT);
 
         double targetTheta =
             side == Constants.FieldConstants.TowerSide.LEFT ?
@@ -437,8 +437,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         
         double targetY =
             side == Constants.FieldConstants.TowerSide.LEFT ? 
-            SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP2_X_LEFT) :
-            SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP2_X_RIGHT);
+            SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP2_Y_LEFT) :
+            SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP2_Y_RIGHT);
 
         double targetTheta =
             side == Constants.FieldConstants.TowerSide.LEFT ?
