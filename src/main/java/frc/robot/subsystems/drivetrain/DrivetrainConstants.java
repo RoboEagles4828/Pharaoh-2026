@@ -33,8 +33,8 @@ public class DrivetrainConstants {
             1.0   // max angular accel
         );
 
-        public static final PathConstraints SPEEDY = new PathConstraints(
-            1.5,  // max velocity (m/s)
+        public static final PathConstraints FAST = new PathConstraints(
+            2.0,  // max velocity (m/s)
             1.5,  // max accel (m/s^2)
             2.5,  // max angular vel (rad/s)
             2.5   // max angular accel
