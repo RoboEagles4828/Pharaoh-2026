@@ -41,7 +41,7 @@ public class Climber extends SubsystemBase {
 
     /** Constructs a climber subsystem */
     public Climber() {
-        motor = new TalonFX(RioBusCANIds.CLIMBER_MOTOR_ID);
+        motor = new TalonFX(RioBusCANIds.CLIMBER_MOTOR_ID, "Default Name");
         
         // Configuring the motor
         final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
@@ -67,10 +67,12 @@ public class Climber extends SubsystemBase {
     }
     /** Command to move the climber up at the constant duty cycle */
     public Command climbUp() {
+        System.out.println("going upgoing upgoing upgoing upgoing upgoing up");
        return this.runOnce(() -> motor.set(climbUpDutyCycle.get()));
     }
     /** Command to move the climber down at the constant duty cycle */
     public Command climbDown() {
+        System.out.println("going downgoing downgoing downgoing downgoing down");
         return this.runOnce(() -> motor.set(climbDownDutyCycle.get()));
     }
     /** Command to stop the climber motor */

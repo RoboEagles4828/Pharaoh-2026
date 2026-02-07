@@ -42,7 +42,7 @@ public class RobotContainer {
   private static final boolean ENABLE_DRIVETRAIN = true;
   private static final boolean ENABLE_SHOOTER = false;
   private static final boolean ENABLE_INTAKE = false;
-  private static final boolean ENABLE_LIMELIGHT = true;
+  private static final boolean ENABLE_LIMELIGHT = false;
   private static final boolean ENABLE_CLIMBER = true;
 
 
@@ -74,7 +74,7 @@ public class RobotContainer {
   private CommandXboxController driverController;
 
   /*** PATHPLANNER WIDGET ***/
-  private final SendableChooser<Command> autonomousChooser;
+  // private final SendableChooser<Command> autonomousChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -100,8 +100,8 @@ public class RobotContainer {
     // Pathplanner
     // TODO - register commands here
     // NamedCommands.registerCommand("CommandName", command);
-    autonomousChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Autonomous Chooser", autonomousChooser);
+    // autonomousChooser = AutoBuilder.buildAutoChooser();
+    // SmartDashboard.putData("Autonomous Chooser", autonomousChooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -185,7 +185,9 @@ public class RobotContainer {
     if (climber != null) {
       // climber.setDefaultCommand(climber.stop());
       driverController.x().whileTrue(climber.climbUp());
+      driverController.x().onFalse(climber.stop());
       driverController.y().whileTrue(climber.climbDown());
+      driverController.y().onFalse(climber.stop());
       driverController.b().onTrue(climber.climbToPeak());
     }
 
