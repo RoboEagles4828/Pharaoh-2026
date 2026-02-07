@@ -43,7 +43,7 @@ public class RobotContainer {
   private static final boolean ENABLE_SHOOTER = false;
   private static final boolean ENABLE_INTAKE = false;
   private static final boolean ENABLE_VISION = true;
-  private static final boolean ENABLE_CLIMBER = false;
+  private static final boolean ENABLE_CLIMBER = true;
 
 
   /*** DRIVETRAIN SUBSYSTEM ***/
@@ -74,7 +74,7 @@ public class RobotContainer {
   private CommandXboxController driverController;
 
   /*** PATHPLANNER WIDGET ***/
-  private final SendableChooser<Command> autonomousChooser;
+  // private final SendableChooser<Command> autonomousChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -100,8 +100,8 @@ public class RobotContainer {
     // Pathplanner
     // TODO - register commands here
     // NamedCommands.registerCommand("CommandName", command);
-    autonomousChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Autonomous Chooser", autonomousChooser);
+    // autonomousChooser = AutoBuilder.buildAutoChooser();
+    // SmartDashboard.putData("Autonomous Chooser", autonomousChooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -174,6 +174,7 @@ public class RobotContainer {
 
       driverController.leftTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
       driverController.rightTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
+      driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     }
 
     /*** SHOOTER ***/
@@ -185,8 +186,10 @@ public class RobotContainer {
     /*** CLIMBER ***/
     if (climber != null) {
       climber.setDefaultCommand(climber.stop());
-      driverController.x().whileTrue(climber.climbUp());
-      driverController.y().whileTrue(climber.climbDown());
+      driverController.y().whileTrue(climber.climbUp());
+      driverController.x().whileTrue(climber.climbDown());
+      driverController.b().onTrue(climber.climbToPeak());
+      driverController.a().onTrue(climber.retractClimb());
     }
 
     /*** INTAKE ***/

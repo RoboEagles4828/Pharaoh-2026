@@ -38,8 +38,13 @@ public final class Constants {
   public static class RioBusCANIds {
     // NOTE - 1 to 12 are reserved for the swerve drivetrain.
     public static int SHOOTER_MOTOR_ID = 13;
-    public static int CLIMBER_MOTOR_ID = 15;
+    public static int CLIMBER_MOTOR_ID = 22;
     public static int INTAKE_MOTOR_ID = 21;
+  }
+
+  public static String CANIVORE_NAME = "Default Name";
+  public static class CANivoreBusCANIds {
+    public static int CLIMBER_MOTOR_ID = 22;
   }
 
   public static class RobotConstants {
