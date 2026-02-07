@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -172,6 +175,7 @@ public class RobotContainer {
 
       driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
       driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+      SignalLogger.stop(); // for now - prevent this from spamming the console with 'logs full' msgs
 
       driverController.leftTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
       driverController.rightTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
@@ -180,6 +184,45 @@ public class RobotContainer {
     /*** SHOOTER ***/
     if (shooter != null) {
       shooter.setDefaultCommand(shooter.updateFlywheelAndHood());
+
+      // When right bumper is held down, we want to start trying to score or pass
+      // Check where we are on the field and set the shooter state accordingly.
+      // On our alliance's side of the field - SHOOT
+      // In the neutral zone - PASS_FROM_NEUTRAL
+      // In the opponent's alliance side of the field - PASS_FROM_OPPONENT
+      // When the bumper is lifted, set state back to IDLE.
+      driverController.rightBumper().onTrue(Commands.runOnce(() -> {
+        if (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue) {
+          Pose2d currentPosition = drivetrain.getState().Pose;
+          if (currentPosition.getX() < Constants.FieldConstants.BLUE_HUB_CENTER.getX()) {
+            shooter.setState(Shooter.State.SCORE);
+          }
+          else if (currentPosition.getX() < Constants.FieldConstants.RED_HUB_CENTER.getX()){
+            shooter.setState(Shooter.State.PASS_FROM_NEUTRAL);
+          }
+          else // Pass from opponent
+          {
+            shooter.setState(Shooter.State.PASS_FROM_OPP);
+          }
+        }
+        else { // otherwise, our alliance is red 
+          Pose2d currentPosition = drivetrain.getState().Pose;
+          if (currentPosition.getX() > Constants.FieldConstants.RED_HUB_CENTER.getX()) {
+            shooter.setState(Shooter.State.SCORE);
+          }
+          else if (currentPosition.getX() > Constants.FieldConstants.BLUE_HUB_CENTER.getX()){
+            shooter.setState(Shooter.State.PASS_FROM_NEUTRAL);
+          }
+          else // Pass from opponent
+          {
+            shooter.setState(Shooter.State.PASS_FROM_OPP);
+          }
+        }
+      }));
+      driverController.rightBumper().onFalse(Commands.runOnce(() -> shooter.setState(Shooter.State.IDLE)));
+
+      // Driver override commands which start/stop flywheel manually.
+      // In a real match, the flywheel should start up immediately and never fully stop.
       driverController.a().onTrue(Commands.runOnce(() -> shooter.startSpinningFlywheel()));
       driverController.b().onTrue(Commands.runOnce(() -> shooter.stopSpinningFlywheel()));
     }

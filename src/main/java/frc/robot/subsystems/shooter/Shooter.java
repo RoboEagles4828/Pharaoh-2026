@@ -18,6 +18,13 @@ import frc.robot.util.Util4828;
 
 /** The shooter subsystem controls the output of fuel. */
 public class Shooter extends SubsystemBase {
+    public enum State {
+        SCORE,
+        PASS_FROM_NEUTRAL,
+        PASS_FROM_OPP,
+        IDLE
+    }
+
     private static final TunableNumber overrideTargetHood = new TunableNumber(ShooterConstants.NT_OVERRIDE_TARGET_HOOD, 0);
     private static final TunableNumber overrideTargetSpeed = new TunableNumber(ShooterConstants.NT_OVERRIDE_TARGET_SPEED, 0);
 
@@ -26,10 +33,12 @@ public class Shooter extends SubsystemBase {
     /** FLYWHEEL */
     private final TalonFX flywheelMotor;
     private final VelocityVoltage flywheelVelocityVoltageRequest = new VelocityVoltage(0);
-    private boolean isFlywheelSpinning = false;
+    private boolean shouldFlywheelSpin = false;
 
     /** HOOD */
-    // TODO
+    // TODO - add TalonFX, control request, etc
+
+    public State currentState;
 
     public Shooter(CommandSwerveDrivetrain drivetrain) {
         this.drivetrain = drivetrain;
@@ -44,46 +53,87 @@ public class Shooter extends SubsystemBase {
         motorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
         motorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
         flywheelMotor.getConfigurator().apply(motorCfg);
+
+        currentState = State.IDLE;
     }
 
-    // Requests the flywheel to start spinning
-    public void startSpinningFlywheel() {
-        isFlywheelSpinning = true;
-    }
-
-    // Requests the flywheel to stop spinning
-    public void stopSpinningFlywheel() {
-        isFlywheelSpinning = false;
+    public void setState(State state) {
+        currentState = state;
     }
 
     /** 
      * This command is the default command of this subsystem and runs at all times.
-     * It updates the flywheel speed and hood angle 
-     * according to the distance from the hub. 
+     * It updates the flywheel speed and hood angle according to the distance from the hub. 
      */
     public Command updateFlywheelAndHood() {
         return Commands.run(() -> {
-            double targetSpeedMPS;
-            double targetHood;
+            /** Update the flywheel speed */
+            double targetSpeedMPS = 0.0;
 
-            if (SmartDashboard.getBoolean(ShooterConstants.NT_USE_DASHBOARD_VALUES, false)) {
-                targetSpeedMPS = SmartDashboard.getNumber(ShooterConstants.NT_OVERRIDE_TARGET_SPEED, 0.0);
-                targetHood = SmartDashboard.getNumber(ShooterConstants.NT_OVERRIDE_TARGET_HOOD, 0.0);
-            }
+            // If the flywheel is enabled...
+            if (shouldFlywheelSpin) {
+                // Use value from Elastic if override button in elastic is toggled
+                if (SmartDashboard.getBoolean(ShooterConstants.NT_USE_DASHBOARD_VALUES, false)) {
+                    targetSpeedMPS = overrideTargetSpeed.get();
+                }   
+                // Otherwise, calculate value normally based on distance from hub
+                else {
+                    switch(currentState) {
+                        case IDLE:
+                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToHub());
+                            break;
+                        case SCORE:
+                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToHub());
+                            break;
+                        case PASS_FROM_NEUTRAL:
+                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToHub()); // TODO - real value
+                            break;
+                        case PASS_FROM_OPP:
+                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToHub()); // TODO - real value
+                            break;
+                    }
+                }
+            } 
+            // If flywheel is not enabled, speed is 0.
             else {
-                double distanceToHub = getDistanceToHub();
-                targetSpeedMPS = isFlywheelSpinning ? getTargetFlywheelSpeedMPS(distanceToHub) : 0.0;
-                targetHood = getHoodValue(distanceToHub);
+                targetSpeedMPS = 0.0;
             }
 
-            // convert the target meters per second to wheel rotations per second and set
+            // convert the target meters per second to wheel rotations per second and set to motor
             double wheelRPS = Util4828.metersPerSecondToWheelRPS(targetSpeedMPS, ShooterConstants.WHEEL_DIAMETER);
             flywheelMotor.setControl(flywheelVelocityVoltageRequest.withVelocity(wheelRPS));
-
-            // TODO - update hood, if we're attempting to shoot
-
-            SmartDashboard.putNumber(ShooterConstants.NT_TARGET_HOOD, targetHood);
             SmartDashboard.putNumber(ShooterConstants.NT_TARGET_SPEED_MPS, targetSpeedMPS);
+
+
+            /** Update the hood setting */
+            double targetHood = 0.0;
+
+            // Use value from Elastic if override button in elastic is toggled
+            if (SmartDashboard.getBoolean(ShooterConstants.NT_USE_DASHBOARD_VALUES, false)) {
+                targetHood = overrideTargetHood.get();
+            }   
+            // Otherwise, calculate value normally based on distance from hub
+            else {
+                switch(currentState) {
+                    case IDLE:
+                        targetHood = 0.0;
+                        break;
+                    case SCORE:
+                        targetSpeedMPS = getHoodValue(getDistanceToHub());
+                        break;
+                    case PASS_FROM_NEUTRAL:
+                        targetSpeedMPS = getHoodValue(getDistanceToHub()); // TODO - real value
+                        break;
+                    case PASS_FROM_OPP:
+                        targetSpeedMPS = getHoodValue(getDistanceToHub()); // TODO - real value
+                        break;
+                }
+            }
+            
+            //STEP2 - Apply to hood
+            //TODO
+            
+            SmartDashboard.putNumber(ShooterConstants.NT_TARGET_HOOD, targetHood);
         }, this);
     }
 
@@ -135,6 +185,16 @@ public class Shooter extends SubsystemBase {
         double targetHoodValue01 = y0 + m*(distance - x0);
         SmartDashboard.putNumber(ShooterConstants.NT_TARGET_HOOD, targetHoodValue01);
         return targetHoodValue01;
+    }
+
+    // Requests the flywheel to start spinning
+    public void startSpinningFlywheel() {
+        shouldFlywheelSpin = true;
+    }
+
+    // Requests the flywheel to stop spinning
+    public void stopSpinningFlywheel() {
+        shouldFlywheelSpin = false;
     }
 
     @Override
