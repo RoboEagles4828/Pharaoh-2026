@@ -30,8 +30,6 @@ public class Climber extends SubsystemBase {
     /** Tunable number for the d-value of the climber motor */
     private static TunableNumber dValue = new TunableNumber(ClimberConstants.NT_CLIMBER_D_VALUE, ClimberConstants.DEFAULT_CLIMBER_D_VALUE);
 
-    /** Tunable number for the starting position of the climber */
-    private TunableNumber climbStartingPosition = new TunableNumber(ClimberConstants.NT_CLIMB_STARTING_POSITION, ClimberConstants.DEFAULT_CLIMB_STARTING_POSITION);
     /** Tunable number for the peak (tallest) position of the climber */
     private TunableNumber climbPeakPosition = new TunableNumber(ClimberConstants.NT_CLIMB_PEAK_POSITION, ClimberConstants.DEFAULT_CLIMB_PEAK_POSITION);
     /** Tunable number for the final position of the climber where it will hang*/
@@ -52,12 +50,16 @@ public class Climber extends SubsystemBase {
         // Applying the configuration
         motor.getConfigurator().apply(motorCfg);
 
+        // assume we start in the lowered position; seed encoder to 0!
+        motor.setPosition(ClimberConstants.CLIMBER_START_POSITION);
 
         // Setting the default position control to the starting position
-        positionControl = new PositionVoltage(climbStartingPosition.get())
+        positionControl = new PositionVoltage(ClimberConstants.CLIMBER_START_POSITION)
                                 .withEnableFOC(true)
                                 .withOverrideBrakeDurNeutral(true)
                                 .withSlot(0);
+
+        SmartDashboard.putBoolean(ClimberConstants.NT_CLIMBER_ZERO_ENCODER_BTN, false);
     }
 
     /** Sets the motor speed */
@@ -74,7 +76,7 @@ public class Climber extends SubsystemBase {
     }
     /** Command to stop the climber motor */
     public Command stop() {
-        return this.runOnce(() -> motor.stopMotor());
+        return this.runOnce(() -> { motor.stopMotor(); });
     }
 
     /** Gets the current position of the climber */
@@ -83,11 +85,17 @@ public class Climber extends SubsystemBase {
     }
 
     /** Climbs to the peak position */
-    public Command climbToPeak() {
-        return this.run(
-            () -> motor.setControl(positionControl.withPosition(climbPeakPosition.get()))
-        );
-    }
+public Command climbToPeak() {
+    return this.runOnce(() -> {
+        motor.setControl(positionControl.withPosition(climbPeakPosition.get()));
+    })
+    .andThen(
+        Commands.waitUntil(() ->
+            Math.abs(getPosition() - climbPeakPosition.get()) < 0.02
+        )
+    );
+}
+
     /** Climbs to the final position where the robot will hang */
     public Command climbToFinal() {
         return this.run(
@@ -97,7 +105,7 @@ public class Climber extends SubsystemBase {
     /** Retracts the climber back to the starting position */
     public Command retractClimb() {
         return this.run(
-            () -> motor.setControl(positionControl.withPosition(climbStartingPosition.get()))
+            () -> motor.setControl(positionControl.withPosition(ClimberConstants.CLIMBER_START_POSITION))
         );
     }
 
@@ -105,16 +113,20 @@ public class Climber extends SubsystemBase {
     public Command climb(){
         return Commands.sequence(
             climbToPeak(),
-            climbToFinal()
+            //climbToFinal()
             // climbToPeak(),
-            // retractClimb()
+            retractClimb()
         );
     }
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
         SmartDashboard.putNumber("Climber Position", getPosition());
+
+        if (SmartDashboard.getBoolean(ClimberConstants.NT_CLIMBER_ZERO_ENCODER_BTN, false)) {
+            motor.setPosition(0.0);
+            SmartDashboard.putBoolean(ClimberConstants.NT_CLIMBER_ZERO_ENCODER_BTN, false);
+        }
     }
     
 }

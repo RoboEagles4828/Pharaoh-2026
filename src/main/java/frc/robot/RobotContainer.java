@@ -42,7 +42,7 @@ public class RobotContainer {
   private static final boolean ENABLE_DRIVETRAIN = true;
   private static final boolean ENABLE_SHOOTER = false;
   private static final boolean ENABLE_INTAKE = false;
-  private static final boolean ENABLE_LIMELIGHT = false;
+  private static final boolean ENABLE_LIMELIGHT = true;
   private static final boolean ENABLE_CLIMBER = true;
 
 
@@ -167,12 +167,10 @@ public class RobotContainer {
           .withRotationalRate(0)));
 
       // Reset the field-centric heading on left bumper press.
-      //driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+      driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
       driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
       driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
-
-      driverController.leftBumper().onTrue(new AutoAlignToTowerCommand(drivetrain));
     }
 
     /*** SHOOTER ***/
@@ -187,6 +185,7 @@ public class RobotContainer {
       driverController.x().whileTrue(climber.climbUp());
       driverController.y().whileTrue(climber.climbDown());
       driverController.b().onTrue(climber.climbToPeak());
+      driverController.a().onTrue(climber.retractClimb());
     }
 
     /*** INTAKE ***/
