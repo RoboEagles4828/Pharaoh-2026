@@ -9,8 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.Constants.RioBusCANIds;
+import frc.robot.Constants;
 import frc.robot.util.TunableNumber;
 
 public class Climber extends SubsystemBase {
@@ -41,7 +40,7 @@ public class Climber extends SubsystemBase {
 
     /** Constructs a climber subsystem */
     public Climber() {
-        motor = new TalonFX(RioBusCANIds.CLIMBER_MOTOR_ID, "Default Name");
+        motor = new TalonFX(Constants.CANivoreBusCANIds.CLIMBER_MOTOR_ID, Constants.CANIVORE_NAME);
         
         // Configuring the motor
         final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
@@ -67,13 +66,11 @@ public class Climber extends SubsystemBase {
     }
     /** Command to move the climber up at the constant duty cycle */
     public Command climbUp() {
-        System.out.println("going upgoing upgoing upgoing upgoing upgoing up");
-       return this.runOnce(() -> motor.set(climbUpDutyCycle.get()));
+       return this.run(() -> motor.set(climbUpDutyCycle.get()));
     }
     /** Command to move the climber down at the constant duty cycle */
     public Command climbDown() {
-        System.out.println("going downgoing downgoing downgoing downgoing down");
-        return this.runOnce(() -> motor.set(climbDownDutyCycle.get()));
+        return this.run(() -> motor.set(climbDownDutyCycle.get()));
     }
     /** Command to stop the climber motor */
     public Command stop() {

@@ -38,6 +38,11 @@ public final class Constants {
     public static int INTAKE_MOTOR_ID = 21;
   }
 
+  public static String CANIVORE_NAME = "Default Name";
+  public static class CANivoreBusCANIds {
+    public static int CLIMBER_MOTOR_ID = 22;
+  }
+
   public static class RobotConstants {
     public static double DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS = 0.3556;
     public static double ROBOT_BUMPER_SIZE_METERS = 0.0889;
