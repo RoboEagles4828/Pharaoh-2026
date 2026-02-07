@@ -86,10 +86,11 @@ public class Shooter extends SubsystemBase {
                             targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToHub());
                             break;
                         case PASS_FROM_NEUTRAL:
-                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToHub()); // TODO - real value
+                            // TODO choose whether to aim top or bottom based on y position of pose
+                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToTopPass());
                             break;
                         case PASS_FROM_OPP:
-                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToHub()); // TODO - real value
+                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToTopPass());
                             break;
                     }
                 }
@@ -122,10 +123,11 @@ public class Shooter extends SubsystemBase {
                         targetSpeedMPS = getHoodValue(getDistanceToHub());
                         break;
                     case PASS_FROM_NEUTRAL:
-                        targetSpeedMPS = getHoodValue(getDistanceToHub()); // TODO - real value
+                        // TODO choose whether to aim top or bottom based on y position of pose
+                        targetSpeedMPS = getHoodValue(getDistanceToTopPass()); // TODO - real value
                         break;
                     case PASS_FROM_OPP:
-                        targetSpeedMPS = getHoodValue(getDistanceToHub()); // TODO - real value
+                        targetSpeedMPS = getHoodValue(getDistanceToTopPass()); // TODO - real value
                         break;
                 }
             }
@@ -135,6 +137,14 @@ public class Shooter extends SubsystemBase {
             
             SmartDashboard.putNumber(ShooterConstants.NT_TARGET_HOOD, targetHood);
         }, this);
+    }
+
+    private double getDistanceToTopPass() {
+        return 0.0;
+    }
+
+    private double getDistanceToBottomPass() {
+        return 0.0;
     }
 
     private double getDistanceToHub() {
