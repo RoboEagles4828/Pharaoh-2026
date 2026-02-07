@@ -11,15 +11,15 @@ public class DrivetrainConstants {
     public static final double ROTATIONAL_DEADBAND = 0.1;
     public static final double MAX_AUTOALIGN_TOWER_DISTANCE = 3.0;
 
-    public static final double TOWER_ALIGN_STEP1_X_LEFT = 2;
-    public static final double TOWER_ALIGN_STEP1_Y_LEFT = 2.823;
-    public static final double TOWER_ALIGN_STEP1_THETA_LEFT = -180; // degrees
+    public static final double TOWER_ALIGN_STEP1_X_LEFT = 1.607;
+    public static final double TOWER_ALIGN_STEP1_Y_LEFT = 4.675;
+    public static final double TOWER_ALIGN_STEP1_THETA_LEFT = 180; // degrees
     public static final double TOWER_ALIGN_STEP2_X_LEFT = 1.1;
     public static final double TOWER_ALIGN_STEP2_Y_LEFT = 2.9;
     public static final double TOWER_ALIGN_STEP2_THETA_LEFT = -180; // degrees
 
-    public static final double TOWER_ALIGN_STEP1_X_RIGHT = 1.775;
-    public static final double TOWER_ALIGN_STEP1_Y_RIGHT = 4.675;
+    public static final double TOWER_ALIGN_STEP1_X_RIGHT = 1.607;
+    public static final double TOWER_ALIGN_STEP1_Y_RIGHT = 2.730;
     public static final double TOWER_ALIGN_STEP1_THETA_RIGHT = 0; // degrees
     public static final double TOWER_ALIGN_STEP2_X_RIGHT = 1.107;
     public static final double TOWER_ALIGN_STEP2_Y_RIGHT = 4.675;
@@ -34,10 +34,10 @@ public class DrivetrainConstants {
         );
 
         public static final PathConstraints FAST = new PathConstraints(
-            2.0,  // max velocity (m/s)
-            1.5,  // max accel (m/s^2)
-            2.5,  // max angular vel (rad/s)
-            2.5   // max angular accel
+            3.0,  // max velocity (m/s)
+            2.0,  // max accel (m/s^2)
+            4.0,  // max angular vel (rad/s)
+            3.0   // max angular accel
         );
     }
 }

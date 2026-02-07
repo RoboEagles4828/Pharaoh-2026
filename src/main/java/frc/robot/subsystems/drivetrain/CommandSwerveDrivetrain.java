@@ -504,11 +504,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Command pathfindThenFollowPathToTower(Constants.FieldConstants.TowerSide side) {
         return AutoBuilder.pathfindThenFollowPath(
                 side == Constants.FieldConstants.TowerSide.LEFT ? towerAlignPathLeft : towerAlignPathRight,
-                DrivetrainConstants.PathPlannerConstraints.SAFE);
+                DrivetrainConstants.PathPlannerConstraints.FAST);
     }
 
-    /* Returns a command which performs an alignment to the tower. */
-    public Command alignToTower(Constants.FieldConstants.TowerSide side) {
+    private double getDistanceToTower(Constants.FieldConstants.TowerSide side) {
         // get the target positions for the towers
         Pose2d step1Target = getTowerAlignPoseStep1(side);
         Pose2d step2Target = getTowerAlignPoseStep2(side);
@@ -516,12 +515,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // calculate distance from robot -> tower
         double distanceToTarget = getState().Pose.minus(step1Target).getTranslation().getNorm();
 
+        return distanceToTarget;
+    }
+
+    /* Returns a command which performs an alignment to the tower. */
+    public Command alignToTower(Constants.FieldConstants.TowerSide side) {
+        Pose2d step1Target = getTowerAlignPoseStep1(side);
+        Pose2d step2Target = getTowerAlignPoseStep2(side);
+
         if (loadedPathsSuccessfully) {
             return Commands.defer(
                     () -> Commands.either(
                             pathfindThenFollowPathToTower(side),
                             Commands.print("Too far for auto align"),
-                            () -> distanceToTarget <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE),
+                            () -> getDistanceToTower(side) <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE),
                     Set.of(this));
         } else {
             // use defer so we read SmartDashboard values at runtime instead of
@@ -531,8 +538,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                             Commands.sequence(
                                     pathfindToPose(step1Target, DrivetrainConstants.PathPlannerConstraints.SAFE),
                                     pathfindToPose(step2Target, DrivetrainConstants.PathPlannerConstraints.SAFE)),
-                            Commands.print("Too far for auto align"),
-                            () -> distanceToTarget <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE),
+                            Commands.print("Too far for auto align2"),
+                            () -> getDistanceToTower(side) <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE),
                     Set.of(this) // < the drivetrain (this) is a requirement for the command
             );
         }
