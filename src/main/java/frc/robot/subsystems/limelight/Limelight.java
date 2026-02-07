@@ -49,13 +49,8 @@ public class Limelight {
                     0, 0);
         }
 
-        // Get raw estimate from MegaTag2
-        PoseEstimate rawEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
-
-        // Fuse all tags into a best-fit estimate
-        mostRecentPoseEstimate = fuseMultipleTags(rawEstimate);
-        // moseRecentPoseEstimate = rawPose // previous method of doing this, uncomment
-        // if necessary for testing
+        // Get pose estimate from MegaTag2
+        mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
 
         // Compute standard deviation based on spread of tags
         mostRecentPoseStandardDeviation = calculateStandardDeviationForEstimate(mostRecentPoseEstimate);
@@ -90,56 +85,6 @@ public class Limelight {
 
     public boolean isPoseEstimateGood() {
         return isMostRecentPoseEstimateGood;
-    }
-
-    private PoseEstimate fuseMultipleTags(LimelightHelpers.PoseEstimate pose) {
-        if (pose == null || pose.rawFiducials.length == 0)
-            return null;
-
-        // Lists to hold valid tags
-        List<Translation2d> positions = new ArrayList<>();
-        List<Rotation2d> rotations = new ArrayList<>();
-        List<Double> weights = new ArrayList<>();
-
-        for (RawFiducial tag : pose.rawFiducials) {
-            Pose2d tagPose = Util4828.getAprilTagPose(tag.id);
-            if (tagPose == null)
-                continue; // Skip missing tags
-
-            double weight = 1.0 / (tag.ambiguity + 0.01);
-
-            positions.add(tagPose.getTranslation());
-            rotations.add(tagPose.getRotation());
-            weights.add(weight);
-        }
-
-        if (positions.isEmpty()) {
-            // No valid tags, return null estimate
-            return null;
-        }
-
-        // Compute weighted average translation
-        double sumX = 0, sumY = 0, sumWeight = 0;
-        for (int i = 0; i < positions.size(); i++) {
-            sumX += positions.get(i).getX() * weights.get(i);
-            sumY += positions.get(i).getY() * weights.get(i);
-            sumWeight += weights.get(i);
-        }
-        Translation2d avgTranslation = new Translation2d(sumX / sumWeight, sumY / sumWeight);
-
-        // Compute weighted average rotation
-        Rotation2d avgRotation = Util4828.averageRotation(rotations.toArray(new Rotation2d[0]),
-                weights.stream().mapToDouble(Double::doubleValue).toArray());
-
-        Pose2d fusedPose = new Pose2d(avgTranslation, avgRotation);
-
-        PoseEstimate fused = new PoseEstimate();
-        fused.pose = fusedPose;
-        fused.tagCount = positions.size(); // Only count valid tags
-        fused.rawFiducials = pose.rawFiducials;
-        fused.timestampSeconds = pose.timestampSeconds;
-
-        return fused;
     }
 
     // Checks if a pose estimate (limelight reading) is of sufficient quality to be
