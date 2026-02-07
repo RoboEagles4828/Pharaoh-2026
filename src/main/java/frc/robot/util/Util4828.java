@@ -14,9 +14,16 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import frc.robot.Constants;
 
 public class Util4828 {
-    public static double getDistance(double robotX, double robotY, double targetX, double targetY) {
-        double distanceFromTarget = Math.sqrt(Math.abs(Math.pow(targetX-robotX, 2) + Math.pow(targetY-robotY, 2)));
-        return distanceFromTarget;
+    public static double getDistance(Pose2d pose1, Pose2d pose2) {
+        return pose1.minus(pose2).getTranslation().getNorm();
+    }
+
+    public static double getDistance(Pose2d pose, Translation2d translation) {
+        return pose.minus(new Pose2d(translation, new Rotation2d(0))).getTranslation().getNorm();
+    }
+
+    public static double getDistance(Translation2d translation1, Translation2d translation2) {
+        return translation1.minus(translation2).getNorm();
     }
 
     /*** Game specific utility functions ***/

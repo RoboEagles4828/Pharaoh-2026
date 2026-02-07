@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix.Util;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -457,7 +458,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             Pose2d step2Target = getTowerAlignPoseStep2(side);
 
             // calculate distance from robot -> tower
-            double distanceToTarget = (getState().Pose).minus(step1Target).getTranslation().getNorm();
+            double distanceToTarget = Util4828.getDistance(getState().Pose, step1Target);
 
             // now, either run the two step drive sequence, or just print that we're too far away, depending on distance
             return Commands.either(

@@ -83,7 +83,7 @@ public class RobotContainer {
       drivetrain = TunerConstants.createDrivetrain();
 
     if (ENABLE_SHOOTER)
-      shooter = new Shooter();
+      shooter = new Shooter(drivetrain);
 
     if (ENABLE_INTAKE)
       intake = new Intake();

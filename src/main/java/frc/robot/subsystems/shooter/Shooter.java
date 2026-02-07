@@ -5,11 +5,15 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RioBusCANIds;
+import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.util.TunableNumber;
 import frc.robot.util.Util4828;
 
@@ -23,7 +27,10 @@ public class Shooter extends SubsystemBase {
     /** Request for controlling the motor in MPS */
     private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0);
 
-    public Shooter() {
+    private final CommandSwerveDrivetrain drivetrain;
+    public Shooter(CommandSwerveDrivetrain drivetrain) {
+        this.drivetrain = drivetrain;
+
         motor = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_ID);
 
         /** Used to configure motors and PID slots */
@@ -43,7 +50,7 @@ public class Shooter extends SubsystemBase {
     public Command start() {
         return Commands.run(() -> {
             // convert from target meters per second to wheel rotations per second
-            double wheelRPS = Util4828.metersPerSecondToWheelRPS(shootingSpeedMPS.get(), ShooterConstants.WHEEL_DIAMETER);
+            double wheelRPS = Util4828.metersPerSecondToWheelRPS(targetSpeedMPS, ShooterConstants.WHEEL_DIAMETER);
             motor.setControl(velocityVoltageRequest.withVelocity(wheelRPS));
         }, this);
     }
@@ -53,8 +60,28 @@ public class Shooter extends SubsystemBase {
         return Commands.runOnce(() -> motor.stopMotor(), this);
     }
 
+    private double calculateFlywheelSpeed(double distanceFromHub) {
+        
+        return 0.0;
+    }
+
+    private double targetSpeedMPS = 0.0;
+
     @Override
     public void periodic() {
+        Pose2d drivePose = drivetrain.getState().Pose;
+        Translation2d hubPose = Util4828.getHubLocation();
+
+        double distanceFromHub = Util4828.getDistance(drivePose, hubPose);
+
+
+        targetSpeedMPS = calculateFlywheelSpeed(distanceFromHub);
+        
+        // drivetrain -> pose
+        // worry about this later - what if we're in the neutral zone?
+        // 
+
+
         // output the current measured speed of the flywheel, for verification/tuning
         double actualMPS = motor.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
         SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS);
