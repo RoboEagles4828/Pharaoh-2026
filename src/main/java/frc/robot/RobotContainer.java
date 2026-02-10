@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.game.RoboState;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
@@ -112,6 +113,31 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    // hopper default command = 
+
+    // Intake
+    // set a default command for intake, whihc will be intakeup
+    driverController.leftTrigger().onTrue(Commands.runOnce(() -> RoboState.transitionStateTo(RoboState.INTAKE)));
+    driverController.leftTrigger().onFalse(Commands.runOnce(() -> RoboState.transitionStateTo(RoboState.CARRY)));
+
+    RoboState.INTAKE.getTrigger().whileTrue(intake.start());
+    RoboState.INTAKE.getTrigger().whileTrue(Commands.print("Hopper agitates here!"));
+
+    // Prep to score
+    driverController.rightTrigger().onTrue(Commands.runOnce(() -> RoboState.transitionStateTo(RoboState.PREPARE_TO_SCORE)));
+    driverController.rightTrigger().onFalse(Commands.runOnce(() -> RoboState.transitionStateTo(RoboState.CARRY)));
+
+    RoboState.PREPARE_TO_SCORE.getTrigger().or(RoboState.SCORE.getTrigger()).whileTrue(Commands.print("Drivetrain lockon"));
+    RoboState.PREPARE_TO_SCORE.getTrigger().or(RoboState.SCORE.getTrigger()).whileTrue(Commands.print("Hood goes to correct angle"));
+
+    // Score
+    // State moves from Prepare to Score -> Score in the Lock on Command (todo)
+    RoboState.SCORE.getTrigger().onTrue(Commands.print("Start shooter kicker"));
+    RoboState.SCORE.getTrigger().onFalse(Commands.print("Stop shooter kicker"));
+    RoboState.SCORE.getTrigger().onTrue(Commands.print("Start hopper belts"));
+    RoboState.SCORE.getTrigger().onTrue(Commands.print("Stop hopper belts"));
+
+
     /*** DRIVETRAIN ***/
     if (drivetrain != null) {
       // Default command for drivetrain - drive according to driver controller joystick
