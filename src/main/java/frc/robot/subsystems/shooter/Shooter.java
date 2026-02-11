@@ -19,9 +19,7 @@ import frc.robot.util.Util4828;
 /** The shooter subsystem controls the output of fuel. */
 public class Shooter extends SubsystemBase {
     public enum State {
-        SCORE,
-        PASS_FROM_NEUTRAL,
-        PASS_FROM_OPP,
+        SHOOT,
         IDLE
     }
 
@@ -76,23 +74,9 @@ public class Shooter extends SubsystemBase {
                 if (SmartDashboard.getBoolean(ShooterConstants.NT_USE_DASHBOARD_VALUES, false)) {
                     targetSpeedMPS = overrideTargetSpeed.get();
                 }   
-                // Otherwise, calculate value normally based on distance from hub
+                // Otherwise, calculate value normally based on distance to target point
                 else {
-                    switch(currentState) {
-                        case IDLE:
-                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToHub());
-                            break;
-                        case SCORE:
-                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToHub());
-                            break;
-                        case PASS_FROM_NEUTRAL:
-                            // TODO choose whether to aim top or bottom based on y position of pose
-                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToTopPass());
-                            break;
-                        case PASS_FROM_OPP:
-                            targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToTopPass());
-                            break;
-                    }
+                    targetSpeedMPS = getTargetFlywheelSpeedMPS(getDistanceToTarget());
                 }
             } 
             // If flywheel is not enabled, speed is 0.
@@ -119,16 +103,8 @@ public class Shooter extends SubsystemBase {
                     case IDLE:
                         targetHood = 0.0;
                         break;
-                    case SCORE:
-                        targetSpeedMPS = getHoodValue(getDistanceToHub());
-                        break;
-                    case PASS_FROM_NEUTRAL:
-                        // TODO choose whether to aim top or bottom based on y position of pose
-                        targetSpeedMPS = getHoodValue(getDistanceToTopPass()); // TODO - real value
-                        break;
-                    case PASS_FROM_OPP:
-                        targetSpeedMPS = getHoodValue(getDistanceToTopPass()); // TODO - real value
-                        break;
+                    case SHOOT:
+                        targetSpeedMPS = getHoodValue(getDistanceToTarget());
                 }
             }
             
@@ -139,18 +115,10 @@ public class Shooter extends SubsystemBase {
         }, this);
     }
 
-    private double getDistanceToTopPass() {
-        return 0.0;
-    }
-
-    private double getDistanceToBottomPass() {
-        return 0.0;
-    }
-
-    private double getDistanceToHub() {
+    private double getDistanceToTarget() {
         Pose2d drivePose = drivetrain.getState().Pose;
-        Translation2d hubPose = Util4828.getHubLocation();
-        return Util4828.getDistance(drivePose, hubPose);
+        Translation2d targetPoint = Util4828.getLockOnTargetPosition(drivePose);
+        return Util4828.getDistance(drivePose, targetPoint);
     }
 
     private int getLookupIndexLower(double distance) {
