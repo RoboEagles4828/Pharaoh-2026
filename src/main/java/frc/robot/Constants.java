@@ -42,7 +42,7 @@ public final class Constants {
     public static int KICKER_MOTOR_ID = 14;
   }
 
-  public static String CANIVORE_NAME = "Default Name";
+  public static String CANIVORE_NAME = "canivore";
   public static class CANivoreBusCANIds {
     public static int CLIMBER_MOTOR_ID = 22;
   }
