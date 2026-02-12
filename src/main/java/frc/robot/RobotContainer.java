@@ -4,12 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,10 +17,8 @@ import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.limelight.Limelight;
 import frc.robot.subsystems.limelight.Vision;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.util.Util4828;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -44,12 +36,12 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
  */
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
-  private static final boolean ENABLE_DRIVETRAIN = false;
-  private static final boolean ENABLE_SHOOTER = true;
+  private static final boolean ENABLE_DRIVETRAIN = true;
+  private static final boolean ENABLE_SHOOTER = false;
   private static final boolean ENABLE_INTAKE = false;
   private static final boolean ENABLE_HOPPER = false;
-  private static final boolean ENABLE_VISION = false;
-  private static final boolean ENABLE_CLIMBER = false;
+  private static final boolean ENABLE_VISION = true;
+  private static final boolean ENABLE_CLIMBER = true;
 
 
   /*** DRIVETRAIN SUBSYSTEM ***/
@@ -77,6 +69,7 @@ public class RobotContainer {
   private Climber climber = null;
 
   /*** VISION SUBSYSTEM ***/
+  @SuppressWarnings("unused")
   private Vision vision = null;
 
   /*** INPUT DEVICES ***/
@@ -186,8 +179,8 @@ public class RobotContainer {
       );
 
       // Tower alignment
-      driverController.x().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
-      driverController.b().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
+      //driverController.x().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
+      //driverController.b().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
     }
 
     /*** SHOOTER ***/

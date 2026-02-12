@@ -24,5 +24,5 @@ public class ClimberConstants {
     public static final String NT_CLIMBER_D_VALUE = "Tuning/Climber/ClimberDValue";
     public static double DEFAULT_CLIMBER_D_VALUE = 0.05;
 
-    public static final String NT_CLIMBER_ZERO_ENCODER_BTN = "Tuning/CLimber/ZeroEncoderBtn";
+    public static final String NT_CLIMBER_ZERO_ENCODER_BTN = "Tuning/Climber/ZeroEncoderBtn";
 }
