@@ -1,10 +1,15 @@
 package frc.robot.util;
 
+import java.util.Optional;
+
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -78,6 +83,19 @@ public class Util4828 {
         return metersPerSecond / wheelCircumference;
     }
 
+    public static Rotation2d averageRotation(Rotation2d[] rotations, double[] weights) {
+        double sumCos = 0;
+        double sumSin = 0;
+        double totalWeight = 0;
+
+        for (int i = 0; i < rotations.length; i++) {
+            sumCos += Math.cos(rotations[i].getRadians()) * weights[i];
+            sumSin += Math.sin(rotations[i].getRadians()) * weights[i];
+            totalWeight += weights[i];
+        }
+        return new Rotation2d(sumSin / totalWeight, sumCos / totalWeight);
+    }
+
 
     public static String formatPose(Pose2d pose) {
         return String.format(
@@ -86,6 +104,24 @@ public class Util4828 {
             pose.getY(),
             pose.getRotation().getDegrees()
         );
+    }
+
+    public static String formatMatrix3x1(Matrix<N3, N1> m) {
+        return String.format(
+            "[%.3f, %.3f, %.3f]",
+            m.get(0, 0),
+            m.get(1, 0),
+            m.get(2, 0)
+        );
+    }
+
+    public static Pose2d getAprilTagPose(int id) {
+        Optional<edu.wpi.first.math.geometry.Pose3d> pose3dOpt = Constants.FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose(id);
+        if (pose3dOpt.isPresent()) {
+            return pose3dOpt.get().toPose2d();
+        } else {
+            return null;
+        }
     }
 
     public static void publishAprilTags(Field2d field) {

@@ -23,6 +23,7 @@ import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.limelight.Limelight;
+import frc.robot.subsystems.limelight.Vision;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.util.Util4828;
 
@@ -43,9 +44,9 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
   private static final boolean ENABLE_DRIVETRAIN = false;
-  private static final boolean ENABLE_SHOOTER = false;
+  private static final boolean ENABLE_SHOOTER = true;
   private static final boolean ENABLE_INTAKE = false;
-  private static final boolean ENABLE_LIMELIGHT = false;
+  private static final boolean ENABLE_VISION = false;
   private static final boolean ENABLE_CLIMBER = false;
 
 
@@ -70,15 +71,14 @@ public class RobotContainer {
   /*** CLIMBER SUBSYSTEM ***/
   private Climber climber = null;
 
-  /*** LIMELIGHT SUBSYSTEM ***/
-  @SuppressWarnings("unused")
-  private Limelight limelight = null;
+  /*** VISION SUBSYSTEM ***/
+  private Vision vision = null;
 
   /*** INPUT DEVICES ***/
   private CommandXboxController driverController;
 
   /*** PATHPLANNER WIDGET ***/
-  private final SendableChooser<Command> autonomousChooser;
+  // private final SendableChooser<Command> autonomousChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -96,16 +96,16 @@ public class RobotContainer {
     if (ENABLE_CLIMBER)
       climber = new Climber();
 
-    if (ENABLE_LIMELIGHT)
-      limelight = new Limelight(drivetrain);
+    if (ENABLE_VISION)
+      vision = new Vision(drivetrain);
     
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
     // Pathplanner
     // TODO - register commands here
     // NamedCommands.registerCommand("CommandName", command);
-    autonomousChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Autonomous Chooser", autonomousChooser);
+    // autonomousChooser = AutoBuilder.buildAutoChooser();
+    // SmartDashboard.putData("Autonomous Chooser", autonomousChooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -198,8 +198,10 @@ public class RobotContainer {
     /*** CLIMBER ***/
     if (climber != null) {
       climber.setDefaultCommand(climber.stop());
-      driverController.x().whileTrue(climber.climbUp());
-      driverController.y().whileTrue(climber.climbDown());
+      driverController.y().whileTrue(climber.climbUp());
+      driverController.x().whileTrue(climber.climbDown());
+      driverController.b().onTrue(climber.climbToPeak());
+      driverController.a().onTrue(climber.retractClimb());
     }
 
     /*** INTAKE ***/

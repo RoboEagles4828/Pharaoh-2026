@@ -25,6 +25,7 @@ public class Shooter extends SubsystemBase {
 
     private static final TunableNumber overrideTargetHood = new TunableNumber(ShooterConstants.NT_OVERRIDE_TARGET_HOOD, 0);
     private static final TunableNumber overrideTargetSpeed = new TunableNumber(ShooterConstants.NT_OVERRIDE_TARGET_SPEED, 0);
+    private static final TunableNumber kickingSpeedMPS = new TunableNumber(ShooterConstants.NT_KICKER_TARGET_SPEED_MPS, ShooterConstants.DEFAULT_KICKER_SPEED_MPS);
 
     private final CommandSwerveDrivetrain drivetrain;
 
@@ -32,6 +33,10 @@ public class Shooter extends SubsystemBase {
     private final TalonFX flywheelMotor;
     private final VelocityVoltage flywheelVelocityVoltageRequest = new VelocityVoltage(0);
     private boolean shouldFlywheelSpin = false;
+
+    /** KICKER */
+    private final TalonFX kickerMotor;
+    private final VelocityVoltage kickerVelocityVoltageRequest = new VelocityVoltage(0);
 
     /** HOOD */
     // TODO - add TalonFX, control request, etc
@@ -42,17 +47,27 @@ public class Shooter extends SubsystemBase {
         this.drivetrain = drivetrain;
 
         flywheelMotor = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_ID);
+        final TalonFXConfiguration flywheelMotorCfg = new TalonFXConfiguration();
+        flywheelMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        flywheelMotorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.SHOOTER_GEAR_RATIO;
+        flywheelMotorCfg.Slot0.kV = ShooterConstants.PID_CONFIG.VELOCITY;
+        flywheelMotorCfg.Slot0.kP = ShooterConstants.PID_CONFIG.PROPORTIONAL;
+        flywheelMotorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
+        flywheelMotorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
+        flywheelMotor.getConfigurator().apply(flywheelMotorCfg);
 
-        final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
-        motorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        motorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.GEAR_RATIO;
-        motorCfg.Slot0.kV = ShooterConstants.PID_CONFIG.VELOCITY;
-        motorCfg.Slot0.kP = ShooterConstants.PID_CONFIG.PROPORTIONAL;
-        motorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
-        motorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
-        flywheelMotor.getConfigurator().apply(motorCfg);
+        kickerMotor = new TalonFX(RioBusCANIds.KICKER_MOTOR_ID);
+        final TalonFXConfiguration kickerMotorCfg = new TalonFXConfiguration();
+        kickerMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        kickerMotorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.KICKER_GEAR_RATIO;
+        kickerMotorCfg.Slot0.kS = ShooterConstants.PID_CONFIG.STATIC;
+        kickerMotorCfg.Slot0.kV = ShooterConstants.PID_CONFIG.VELOCITY;
+        kickerMotorCfg.Slot0.kP = ShooterConstants.PID_CONFIG.PROPORTIONAL;
+        kickerMotorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
+        kickerMotorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
 
         currentState = State.IDLE;
+
     }
 
     public void setState(State state) {
@@ -65,6 +80,17 @@ public class Shooter extends SubsystemBase {
      */
     public Command updateFlywheelAndHood() {
         return Commands.run(() -> {
+            /** Update the kicker speed, for now just set it... */
+            switch(currentState) {
+                case SHOOT:
+                    double kickerWheelRPS = ShooterConstants.KICKER_GEAR_RATIO * Util4828.metersPerSecondToWheelRPS(kickingSpeedMPS.get(), ShooterConstants.KICKER_WHEEL_DIAMETER);
+                    kickerMotor.setControl(kickerVelocityVoltageRequest.withVelocity(kickerWheelRPS));
+                    break;
+                case IDLE:
+                    kickerMotor.stopMotor();
+                    break;
+            }
+
             /** Update the flywheel speed */
             double targetSpeedMPS = 0.0;
 
@@ -178,7 +204,9 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         // output the current measured speed of the flywheel, for verification/tuning
-        double actualSpeedMPS = flywheelMotor.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
-        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualSpeedMPS);
+        double actualFlywheelMPS = flywheelMotor.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
+        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualFlywheelMPS);
+        double actualKickerMPS = kickerMotor.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.KICKER_WHEEL_DIAMETER;
+        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_KICKER_SPEED_MPS, actualKickerMPS);
     }
 }
