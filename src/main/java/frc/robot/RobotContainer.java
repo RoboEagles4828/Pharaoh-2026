@@ -21,6 +21,7 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.drivetrain.TunerConstants;
+import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.limelight.Limelight;
 import frc.robot.subsystems.limelight.Vision;
@@ -46,6 +47,7 @@ public class RobotContainer {
   private static final boolean ENABLE_DRIVETRAIN = false;
   private static final boolean ENABLE_SHOOTER = true;
   private static final boolean ENABLE_INTAKE = false;
+  private static final boolean ENABLE_HOPPER = false;
   private static final boolean ENABLE_VISION = false;
   private static final boolean ENABLE_CLIMBER = false;
 
@@ -67,6 +69,9 @@ public class RobotContainer {
 
   /*** INTAKE SUBSYSTEM ***/
   private Intake intake = null;
+
+  /*** HOPPER SUBSYSTEM ***/
+  private Hopper hopper = null;
 
   /*** CLIMBER SUBSYSTEM ***/
   private Climber climber = null;
@@ -92,6 +97,9 @@ public class RobotContainer {
 
     if (ENABLE_INTAKE)
       intake = new Intake();
+    
+    if (ENABLE_HOPPER)
+      hopper = new Hopper();
 
     if (ENABLE_CLIMBER)
       climber = new Climber();
@@ -195,6 +203,19 @@ public class RobotContainer {
       driverController.povDown().onTrue(Commands.runOnce(() -> shooter.stopSpinningFlywheel()));
     }
 
+    /*** INTAKE ***/
+    if (intake != null) {
+      intake.setDefaultCommand(intake.stop());
+      driverController.leftTrigger().whileTrue(intake.start());
+      driverController.povLeft().onTrue(Commands.runOnce(() -> intake.setModeToIntake()));
+      driverController.povRight().onTrue(Commands.runOnce(() -> intake.setModeToOuttake()));
+    }
+
+    /*** HOPPER ***/
+    if (hopper != null) {
+      // todo(ben) hopper bindings
+    }
+
     /*** CLIMBER ***/
     if (climber != null) {
       climber.setDefaultCommand(climber.stop());
@@ -202,14 +223,6 @@ public class RobotContainer {
       driverController.x().whileTrue(climber.climbDown());
       driverController.b().onTrue(climber.climbToPeak());
       driverController.a().onTrue(climber.retractClimb());
-    }
-
-    /*** INTAKE ***/
-    if (intake != null) {
-      intake.setDefaultCommand(intake.stop());
-      driverController.leftTrigger().whileTrue(intake.start());
-      driverController.povLeft().onTrue(Commands.runOnce(() -> intake.setModeToIntake()));
-      driverController.povRight().onTrue(Commands.runOnce(() -> intake.setModeToOuttake()));
     }
   }
 }

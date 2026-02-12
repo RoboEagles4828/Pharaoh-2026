@@ -39,7 +39,7 @@ public class Shooter extends SubsystemBase {
     private final VelocityVoltage kickerVelocityVoltageRequest = new VelocityVoltage(0);
 
     /** HOOD */
-    // TODO - add TalonFX, control request, etc
+    // todo(ben) - add TalonFX, control request, etc
 
     public State currentState;
 
@@ -135,7 +135,7 @@ public class Shooter extends SubsystemBase {
             }
             
             //STEP2 - Apply to hood
-            //TODO
+            //todo(ben)
             
             SmartDashboard.putNumber(ShooterConstants.NT_TARGET_HOOD, targetHood);
         }, this);

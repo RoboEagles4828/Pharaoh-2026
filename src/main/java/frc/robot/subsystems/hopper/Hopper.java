@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.hopper;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -10,20 +10,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.TunableNumber;
 
-public class Intake extends SubsystemBase {
-    enum Mode {
-        INTAKE, OUTTAKE
-    }
-    
-    private static final TunableNumber speedDutyCycle = new TunableNumber(IntakeConstants.NT_INTAKE_SPEED_KEY, IntakeConstants.DEFAULT_INTAKE_SPEED_DUTY_CYCLE);
+public class Hopper extends SubsystemBase {
+    private static final TunableNumber speedDutyCycle = new TunableNumber(HopperConstants.NT_HOPPER_SPEED_KEY, HopperConstants.DEFAULT_HOPPER_SPEED_DUTY_CYCLE);
 
     private final TalonFX motor;
-    private Mode mode = Mode.INTAKE;
 
-    public Intake() {
-        motor = new TalonFX(Constants.RioBusCANIds.INTAKE_MOTOR_ID);
+    public Hopper() {
+        motor = new TalonFX(Constants.RioBusCANIds.HOPPER_MOTOR_ID);
 
-        /** Used to configure motors and PID slots */
         final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
         motorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
@@ -32,18 +26,10 @@ public class Intake extends SubsystemBase {
     }
 
     public Command start() {
-        return Commands.run(() -> motor.set(mode == Mode.INTAKE ? speedDutyCycle.get() : -speedDutyCycle.get()), this);
+        return Commands.run(() -> motor.set(speedDutyCycle.get()), this);
     }
 
     public Command stop() {
         return Commands.runOnce(() -> motor.stopMotor(), this);
-    }
-
-    public void setModeToIntake() {
-        mode = Mode.INTAKE;
-    }
-
-    public void setModeToOuttake() {
-        mode = Mode.OUTTAKE;
     }
 }
