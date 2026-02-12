@@ -134,50 +134,52 @@ public class RobotContainer {
       driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
       driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
       driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+          driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
+      driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+      SignalLogger.stop(); // for now - prevent this from spamming the console with 'logs full' msgs
 
       // Use dpad for basic movement in the 4 cardinal directions
       // Drive straight forward slowly
       driverController.povUp().whileTrue(
         drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED)
+          .withVelocityX(0.15 * DrivetrainConstants.MAX_SPEED)
           .withVelocityY(0.0)
           .withRotationalRate(0.0)));
       // Drive straight backward slowly
       driverController.povDown().whileTrue(
         drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED)
+          .withVelocityX(-0.15 * DrivetrainConstants.MAX_SPEED)
           .withVelocityY(0.0)
           .withRotationalRate(0.0)));
       // Drive straight right slowly
       driverController.povRight().whileTrue(
         drivetrain.applyRequest(() -> driveRequestRobotCentric
           .withVelocityX(0.0)
-          .withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED)
+          .withVelocityY(-0.15 * DrivetrainConstants.MAX_SPEED)
           .withRotationalRate(0)));
       // Drive straight left slowly
       driverController.povLeft().whileTrue(
         drivetrain.applyRequest(() -> driveRequestRobotCentric
           .withVelocityX(0.0)
-          .withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED)
+          .withVelocityY(0.15 * DrivetrainConstants.MAX_SPEED)
           .withRotationalRate(0)));
 
       // Reset the field-centric heading on left bumper press.
       driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+      //i don't really understand this request
+      //driverController.select().onTrue(drivetrain.runOnce(drivetrain::zeroHeading));
 
-      driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
-      driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
-      SignalLogger.stop(); // for now - prevent this from spamming the console with 'logs full' msgs
-
-      driverController.leftTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
-      driverController.rightTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
-    
       // Lock-on to HUB while holding right trigger
-      driverController.rightBumper().whileTrue(
+      driverController.rightTrigger().whileTrue(
         new LockOnDriveCommand(
           drivetrain,
           driverController
         )
       );
+
+      // Tower alignment
+      driverController.x().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
+      driverController.b().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
     }
 
     /*** SHOOTER ***/
@@ -189,8 +191,8 @@ public class RobotContainer {
 
       // Driver override commands which start/stop flywheel manually.
       // In a real match, the flywheel should start up immediately and never fully stop.
-      driverController.a().onTrue(Commands.runOnce(() -> shooter.startSpinningFlywheel()));
-      driverController.b().onTrue(Commands.runOnce(() -> shooter.stopSpinningFlywheel()));
+      driverController.povUp().onTrue(Commands.runOnce(() -> shooter.startSpinningFlywheel()));
+      driverController.povDown().onTrue(Commands.runOnce(() -> shooter.stopSpinningFlywheel()));
     }
 
     /*** CLIMBER ***/
@@ -203,7 +205,9 @@ public class RobotContainer {
     /*** INTAKE ***/
     if (intake != null) {
       intake.setDefaultCommand(intake.stop());
-      driverController.leftBumper().whileTrue(intake.start());
+      driverController.leftTrigger().whileTrue(intake.start());
+      driverController.povLeft().onTrue(Commands.runOnce(() -> intake.setModeToIntake()));
+      driverController.povRight().onTrue(Commands.runOnce(() -> intake.setModeToOuttake()));
     }
   }
 }
