@@ -34,6 +34,7 @@ public class DrivetrainConstants {
 
     // PID Auto Align Constants
     public static class PIDAutoAlignConstants {
+        
         public static final PIDConstants X_PID_CONSTANTS = new PIDConstants(
             1.0, // kP
             0.0, // kI
@@ -50,20 +51,20 @@ public class DrivetrainConstants {
             0.0  // kD
         );
         
-        public static final double POSITION_ERROR_DERIVATIVE_TOLERANCE = 0.0; // m/s
-        public static final double ROTATION_ERROR_DERIVATIVE_TOLERANCE = 0.0; // rad/s
+        public static final double POSITION_ERROR_DERIVATIVE_TOLERANCE = 5.0; // in/s
+        public static final double ROTATION_ERROR_DERIVATIVE_TOLERANCE = Units.degreesToRadians(10.0); // rad/s
 
-        public static final double X_I_ZONE = Units.inchesToMeters(6.0); // meters
-        public static final double X_TOLERANCE = Units.inchesToMeters(1.0);
+        public static final double X_I_ZONE = 6.0; // inches
+        public static final double X_TOLERANCE = 1.0; // inches
 
-        public static final double Y_I_ZONE = Units.inchesToMeters(6.0); // meters
-        public static final double Y_TOLERANCE = Units.inchesToMeters(1.0);
+        public static final double Y_I_ZONE = 6.0; // inches
+        public static final double Y_TOLERANCE = 1.0; // inches
 
-        public static final double ROTATION_I_ZONE = Math.toRadians(10); // radians
-        public static final double ROTATION_TOLERANCE = Math.toRadians(2); // radians
+        public static final double ROTATION_I_ZONE = Units.degreesToRadians(2.0); // radians
+        public static final double ROTATION_TOLERANCE = Units.degreesToRadians(0.5); // radians
 
-        public static final double MAX_SPEED = 0.5; // max speed during auto-align (m/s)
-        public static final double MAX_ANGULAR_SPEED = 0.5; // max angular speed during auto-align (rad/s)
+        public static final double MAX_SPEED = 1.0; // max speed during auto-align (m/s)
+        public static final double MAX_ANGULAR_SPEED = 5.0; // max angular speed during auto-align (rad/s)
 
         public static final double TIMEOUT = 5.0; // seconds
     }

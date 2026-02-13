@@ -4,10 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -16,10 +19,12 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
+import frc.robot.subsystems.drivetrain.PIDSwerve;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.limelight.Limelight;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.util.TunableNumber;
 import frc.robot.util.Util4828;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -41,7 +46,7 @@ public class RobotContainer {
   private static final boolean ENABLE_DRIVETRAIN = true;
   private static final boolean ENABLE_SHOOTER = false;
   private static final boolean ENABLE_INTAKE = false;
-  private static final boolean ENABLE_LIMELIGHT = true;
+  private static final boolean ENABLE_LIMELIGHT = false;
   private static final boolean ENABLE_CLIMBER = false;
 
 
@@ -168,10 +173,15 @@ public class RobotContainer {
       // Reset the field-centric heading on left bumper press.
       //driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-      driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
-      driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+      // driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
+      // driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
 
-      driverController.leftBumper().onTrue(drivetrain.alignToTower());
+      driverController.start().onTrue(new InstantCommand(() -> drivetrain.seedFieldCentric()));
+      driverController.back().onTrue(new InstantCommand(() -> drivetrain.resetPose(new Pose2d(0.0, 0.0, new Rotation2d(0.0)))));
+
+      
+      driverController.leftBumper().onTrue(new PIDSwerve(drivetrain)); //new Pose2d(targetX.get(), targetY.get(), Rotation2d.fromDegrees(targetRotation.get()))));
+
     }
 
     /*** SHOOTER ***/

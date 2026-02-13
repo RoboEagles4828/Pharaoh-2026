@@ -379,7 +379,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
-    /* Returns a command which drives to a set pose using pathplanner, with the given constraints (velocity, accel) */
+    /** Returns a command which drives to a set pose using pathplanner, with the given constraints (velocity, accel) */
     public Command driveToPose(Pose2d targetPose, PathConstraints constraints) {
         return AutoBuilder.pathfindToPose(targetPose, constraints);
     }
