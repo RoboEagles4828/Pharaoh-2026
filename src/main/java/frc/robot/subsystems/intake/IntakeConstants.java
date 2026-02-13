@@ -3,13 +3,16 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.util.Units;
 
 public class IntakeConstants {
-    public static double DEPLOY_GEAR_RATIO = 4.0; // TODO: Update with actual gear ratio
-    public static double INTAKE_GEAR_RATIO = 5.0; // TODO: Update with actual gear ratio
+    public static double DEPLOY_GEAR_RATIO = 5.0; // TODO: Update with actual gear ratio
+    public static double INTAKE_GEAR_RATIO = 4.0; // TODO: Update with actual gear ratio
 
-    public static double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
+    public static double WHEEL_DIAMETER = Units.inchesToMeters(2.25);
 
-    public static double DEFAULT_INTAKE_SPEED_MPS = 5.0;
+    public static double DEFAULT_INTAKE_SPEED_MPS = 1.0;
     public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/SpeedMPS";
+
+
+    public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";
 
     public static final String NT_DEPLOY_P_VALUE = "Tuning/Intake/DeployMotorPValue";
     public static double DEFAULT_DEPLOY_P_VALUE = 0.1;
@@ -26,7 +29,7 @@ public class IntakeConstants {
     public static final String NT_INTAKE_S_VALUE = "Tuning/Intake/IntakeMotorSValue";
     public static double DEFAULT_INTAKE_S_VALUE = 0.2;
     public static final String NT_INTAKE_V_VALUE = "Tuning/Intake/IntakeMotorVValue";
-    public static double DEFAULT_INTAKE_V_VALUE = 0.1;
+    public static double DEFAULT_INTAKE_V_VALUE = 0.35;
     public static final String NT_INTAKE_P_VALUE = "Tuning/Intake/IntakeMotorPValue";
     public static double DEFAULT_INTAKE_P_VALUE = 0.1;
     public static final String NT_INTAKE_I_VALUE = "Tuning/Intake/IntakeMotorIValue";
