@@ -80,17 +80,6 @@ public class Shooter extends SubsystemBase {
      */
     public Command updateFlywheelAndHood() {
         return Commands.run(() -> {
-            /** Update the kicker speed, for now just set it... */
-            switch(currentState) {
-                case SHOOT:
-                    double kickerWheelRPS = ShooterConstants.KICKER_GEAR_RATIO * Util4828.metersPerSecondToWheelRPS(kickingSpeedMPS.get(), ShooterConstants.KICKER_WHEEL_DIAMETER);
-                    kickerMotor.setControl(kickerVelocityVoltageRequest.withVelocity(kickerWheelRPS));
-                    break;
-                case IDLE:
-                    kickerMotor.stopMotor();
-                    break;
-            }
-
             /** Update the flywheel speed */
             double targetSpeedMPS = 0.0;
 
@@ -111,8 +100,8 @@ public class Shooter extends SubsystemBase {
             }
 
             // convert the target meters per second to wheel rotations per second and set to motor
-            double wheelRPS = Util4828.metersPerSecondToWheelRPS(targetSpeedMPS, ShooterConstants.WHEEL_DIAMETER);
-            flywheelMotor.setControl(flywheelVelocityVoltageRequest.withVelocity(wheelRPS));
+            double mechanismRPS = Util4828.metersPerSecondToMechanismRPS(targetSpeedMPS, ShooterConstants.WHEEL_DIAMETER);
+            flywheelMotor.setControl(flywheelVelocityVoltageRequest.withVelocity(mechanismRPS));
             SmartDashboard.putNumber(ShooterConstants.NT_TARGET_SPEED_MPS, targetSpeedMPS);
 
 
@@ -136,6 +125,20 @@ public class Shooter extends SubsystemBase {
             
             //STEP2 - Apply to hood
             //todo(ben)
+
+            /** Update kicker! */
+            // If the drivetrain is locked on to target, start the kicker wheel.
+            if (drivetrain.isLockedOn()) {
+                switch (currentState) {
+                    case SHOOT:
+                        double kickerMechanismRPS = Util4828.metersPerSecondToMechanismRPS(kickingSpeedMPS.get(), ShooterConstants.KICKER_WHEEL_DIAMETER);
+                        kickerMotor.setControl(kickerVelocityVoltageRequest.withVelocity(kickerMechanismRPS));
+                        break;
+                    case IDLE:
+                        kickerMotor.stopMotor();
+                        break;
+                }
+            }
             
             SmartDashboard.putNumber(ShooterConstants.NT_TARGET_HOOD, targetHood);
         }, this);

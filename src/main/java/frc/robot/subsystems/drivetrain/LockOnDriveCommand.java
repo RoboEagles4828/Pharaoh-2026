@@ -106,12 +106,12 @@ public class LockOnDriveCommand extends Command {
 			desiredHeading.getRadians()
 		);
 
-		// Optional aim deadband (prevents jitter when lined up)
-		if (Math.abs(
-			desiredHeading.minus(currentHeading).getRadians()
-		) < Math.toRadians(AIM_TOLERANCE_DEGREES)) {
+		// Aim deadband (prevents jitter when lined up)
+		boolean withinTolerance = Math.abs(desiredHeading.minus(currentHeading).getRadians()) < Math.toRadians(AIM_TOLERANCE_DEGREES);
+		if (withinTolerance) {
 			omega = 0.0;
-		}
+		} 
+		drivetrain.setLockedOn(withinTolerance);
 
 		// === Apply CTRE request ===
 		drivetrain.setControl(
@@ -131,6 +131,8 @@ public class LockOnDriveCommand extends Command {
 				.withVelocityY(0.0)
 				.withRotationalRate(0.0)
 		);
+
+		drivetrain.setLockedOn(false);
 	}
 
 	@Override

@@ -75,7 +75,7 @@ public class Util4828 {
     }
 
     /*** Generic utility functions ***/
-    public static double metersPerSecondToWheelRPS(
+    public static double metersPerSecondToMechanismRPS(
             double metersPerSecond,
             double wheelDiameterMeters
     ) {

@@ -59,6 +59,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Swerve request for pathplanner */
     private final SwerveRequest.ApplyRobotSpeeds pathplannerApplyAutoSpeedsRequest = new SwerveRequest.ApplyRobotSpeeds();
 
+    private boolean isLockedOn = false;
+
     /* Network table entries */
     private static final String NT_SEED_X = "seedX";
     private static final String NT_SEED_Y = "seedY";
@@ -447,6 +449,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder",
                     ex.getStackTrace());
         }
+    }
+
+    public void setLockedOn(boolean isLockedOn) {
+        this.isLockedOn = isLockedOn;
+    }
+
+    public boolean isLockedOn() {
+        return isLockedOn;
     }
 
     /*
