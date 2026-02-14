@@ -45,7 +45,8 @@ public final class Constants {
     public static int SHOOTER_MOTOR_ID = 13;
     public static int INTAKE_MOTOR_ID = 23;
     public static int KICKER_MOTOR_ID = 14;
-    public static int HOPPER_MOTOR_ID = 1; // TODO(ben) - don't know this id yet
+    public static int HOPPER_INTAKE_MOTOR_ID = 1; // TODO(ben) - don't know this id yet
+    public static int HOPPER_CONVEYOR_MOTOR_ID = 2;
   }
 
   public static String CANIVORE_NAME = "canivore";

@@ -11,25 +11,40 @@ import frc.robot.Constants;
 import frc.robot.util.TunableNumber;
 
 public class Hopper extends SubsystemBase {
-    private static final TunableNumber speedDutyCycle = new TunableNumber(HopperConstants.NT_HOPPER_SPEED_KEY, HopperConstants.DEFAULT_HOPPER_SPEED_DUTY_CYCLE);
+    private static final TunableNumber intakeDutyCycle = new TunableNumber(HopperConstants.NT_HOPPER_INTAKE_DUTY_CYCLE_KEY, HopperConstants.DEFAULT_INTAKE_SPEED_DUTY_CYCLE);
+    private static final TunableNumber conveyorDutyCycle = new TunableNumber(HopperConstants.NT_HOPPER_CONVEYOR_DUTY_CYCLE_KEY, HopperConstants.DEFAULT_CONVEYOR_SPEED_DUTY_CYCLE);
 
-    private final TalonFX motor;
+    private final TalonFX intakeMotor;
+    private final TalonFX conveyorMotor;
 
     public Hopper() {
-        motor = new TalonFX(Constants.RioBusCANIds.HOPPER_MOTOR_ID);
+        intakeMotor = new TalonFX(Constants.RioBusCANIds.HOPPER_INTAKE_MOTOR_ID);
+        conveyorMotor = new TalonFX(Constants.RioBusCANIds.HOPPER_CONVEYOR_MOTOR_ID);
 
-        final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
-        motorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        final TalonFXConfiguration intakeCfg = new TalonFXConfiguration();
+        intakeCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        intakeMotor.getConfigurator().apply(intakeCfg);
 
-        // Applying the configuration
-        motor.getConfigurator().apply(motorCfg);
+        final TalonFXConfiguration conveyorCfg = new TalonFXConfiguration();
+        conveyorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        conveyorMotor.getConfigurator().apply(conveyorCfg);
     }
 
-    public Command start() {
-        return Commands.run(() -> motor.set(speedDutyCycle.get()), this);
+    public Command startIntake() {
+        return Commands.run(() -> intakeMotor.set(intakeDutyCycle.get()), this);
+    }
+
+    public Command startConveyor() {
+        return Commands.run(() -> conveyorMotor.set(conveyorDutyCycle.get()), this);
     }
 
     public Command stop() {
-        return Commands.runOnce(() -> motor.stopMotor(), this);
+        return Commands.runOnce(
+            () -> {
+                conveyorMotor.stopMotor();
+                intakeMotor.stopMotor();
+            },
+            this
+        );
     }
 }
