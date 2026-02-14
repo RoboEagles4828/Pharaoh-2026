@@ -74,10 +74,10 @@ public class Intake extends SubsystemBase {
     }
 
     public Command deployIntake() {
-        return Commands.runOnce(() -> deployMotor.setControl(deployPositionControl.withPosition(deployPosition.get())), this);
+        return Commands.runOnce(() -> deployMotor.setControl(deployPositionControl.withPosition(deployPosition.get())));
     }
     public Command retractIntake() {
-        return Commands.runOnce(() -> deployMotor.setControl(deployPositionControl.withPosition(retractPosition.get())), this);
+        return Commands.runOnce(() -> deployMotor.setControl(deployPositionControl.withPosition(retractPosition.get())));
     }
 
     public Command startIntake() {
@@ -85,21 +85,22 @@ public class Intake extends SubsystemBase {
         return Commands.run(() -> intakeMotor.setControl(intakeVelocityControl.withVelocity(wheelRPS)), this);
     }
     public Command stopIntake() {
-        return Commands.runOnce(() -> intakeMotor.stopMotor(), this);
+        return Commands.runOnce(() -> intakeMotor.stopMotor());
     }
 
     public Command stopAndRetract() {
-        return Commands.sequence(
-            stopIntake(),
-            retractIntake()
-        );
+        return Commands.defer(
+            () -> Commands.parallel(
+                stopIntake(),
+                retractIntake()
+        ), Set.of(this));
     }
 
     public Command intake() {
         return Commands.defer(
-            () -> Commands.sequence(
-                //deployIntake(),
-                startIntake()
+            () -> Commands.parallel(
+                startIntake(),
+                deployIntake()
         ), Set.of(this));
     }
 

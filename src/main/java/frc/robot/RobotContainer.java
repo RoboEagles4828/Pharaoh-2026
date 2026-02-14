@@ -174,8 +174,13 @@ public class RobotContainer {
 
     /*** INTAKE ***/
     if (intake != null) {
-      intake.setDefaultCommand(intake.stopAndRetract());
+      // driverController.leftBumper().whileTrue(intake.startIntake());
+      // driverController.leftBumper().onFalse(intake.stopIntake());
+      // driverController.leftBumper().whileTrue(intake.deployIntake());
+      // driverController.leftBumper().onFalse(intake.retractIntake());
+
       driverController.leftBumper().whileTrue(intake.intake());
+      driverController.leftBumper().whileFalse(intake.stopAndRetract());
     }
   }
 }
