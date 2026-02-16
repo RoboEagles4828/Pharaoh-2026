@@ -38,14 +38,9 @@ public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
   private static final boolean ENABLE_DRIVETRAIN = false;
   private static final boolean ENABLE_SHOOTER = false;
-<<<<<<< HEAD
-  private static final boolean ENABLE_INTAKE = false;
-  private static final boolean ENABLE_HOPPER = true;
-  private static final boolean ENABLE_VISION = false;
-=======
   private static final boolean ENABLE_INTAKE = true;
-  private static final boolean ENABLE_LIMELIGHT = false;
->>>>>>> intake-prototype
+  private static final boolean ENABLE_HOPPER = false;
+  private static final boolean ENABLE_VISION = false;
   private static final boolean ENABLE_CLIMBER = false;
 
 
@@ -203,8 +198,13 @@ public class RobotContainer {
 
     /*** INTAKE ***/
     if (intake != null) {
-      intake.setDefaultCommand(intake.stop());
-      driverController.leftTrigger().whileTrue(intake.start());
+      // driverController.leftBumper().whileTrue(intake.startIntake());
+      // driverController.leftBumper().onFalse(intake.stopIntake());
+      // driverController.leftBumper().whileTrue(intake.deployIntake());
+      // driverController.leftBumper().onFalse(intake.retractIntake());
+
+      driverController.leftBumper().whileTrue(intake.intake());
+      driverController.leftBumper().whileFalse(intake.stopAndRetract());
       driverController.povLeft().onTrue(Commands.runOnce(() -> intake.setModeToIntake()));
       driverController.povRight().onTrue(Commands.runOnce(() -> intake.setModeToOuttake()));
     }
@@ -212,7 +212,6 @@ public class RobotContainer {
     /*** HOPPER ***/
     if (hopper != null) {
       hopper.setDefaultCommand(hopper.stop());
-      driverController.leftTrigger().whileTrue(hopper.startIntake());
       driverController.rightTrigger().whileTrue(hopper.startConveyor());
     }
 
