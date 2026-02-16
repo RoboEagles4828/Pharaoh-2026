@@ -1,6 +1,39 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.util.Units;
+
 public class IntakeConstants {
-    public static double DEFAULT_INTAKE_SPEED_DUTY_CYCLE = 0.5;
-    public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/SpeedDutyCycle";
+    public static double DEPLOY_GEAR_RATIO = 1.0; // TODO: Update with actual gear ratio
+    public static double INTAKE_GEAR_RATIO = 1.0; // TODO: Update with actual gear ratio
+
+    public static double WHEEL_DIAMETER = Units.inchesToMeters(2.25);
+
+    public static double DEFAULT_INTAKE_SPEED_MPS = 1.0;
+    public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/SpeedMPS";
+
+
+    public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";
+
+    public static final String NT_DEPLOY_P_VALUE = "Tuning/Intake/DeployMotorPValue";
+    public static double DEFAULT_DEPLOY_P_VALUE = 1.0;
+    public static final String NT_DEPLOY_I_VALUE = "Tuning/Intake/DeployMotorIValue";
+    public static double DEFAULT_DEPLOY_I_VALUE = 0.0;
+    public static final String NT_DEPLOY_D_VALUE = "Tuning/Intake/DeployMotorDValue";
+    public static double DEFAULT_DEPLOY_D_VALUE = 0.0;
+
+    public static final String NT_DEPLOY_POSITION = "Tuning/Intake/DeployPosition";
+    public static double DEFAULT_DEPLOY_POSITION = 1.0;
+    public static final String NT_RETRACT_POSITION = "Tuning/Intake/RetractPosition";
+    public static double DEFAULT_RETRACT_POSITION = 0.0;
+
+    public static final String NT_INTAKE_S_VALUE = "Tuning/Intake/IntakeMotorSValue";
+    public static double DEFAULT_INTAKE_S_VALUE = 0.2;
+    public static final String NT_INTAKE_V_VALUE = "Tuning/Intake/IntakeMotorVValue";
+    public static double DEFAULT_INTAKE_V_VALUE = 0.35;
+    public static final String NT_INTAKE_P_VALUE = "Tuning/Intake/IntakeMotorPValue";
+    public static double DEFAULT_INTAKE_P_VALUE = 0.1;
+    public static final String NT_INTAKE_I_VALUE = "Tuning/Intake/IntakeMotorIValue";
+    public static double DEFAULT_INTAKE_I_VALUE = 0.0;
+    public static final String NT_INTAKE_D_VALUE = "Tuning/Intake/IntakeMotorDValue";
+    public static double DEFAULT_INTAKE_D_VALUE = 0.0;
 }
