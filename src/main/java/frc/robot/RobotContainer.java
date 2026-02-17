@@ -40,8 +40,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
   private static final boolean ENABLE_DRIVETRAIN = false;
-  private static final boolean ENABLE_SHOOTER = true;
-  private static final boolean ENABLE_INTAKE = false;
+  private static final boolean ENABLE_SHOOTER = false;
+  private static final boolean ENABLE_INTAKE = true;
   private static final boolean ENABLE_VISION = false;
   private static final boolean ENABLE_CLIMBER = false;
 
@@ -195,8 +195,17 @@ public class RobotContainer {
 
     /*** INTAKE ***/
     if (intake != null) {
-      intake.setDefaultCommand(intake.stop());
-      driverController.leftBumper().whileTrue(intake.start());
+       driverController.b().whileTrue(intake.startIntake());
+       driverController.b().whileFalse(intake.stopIntake());
+       driverController.a().whileTrue(intake.deployIntake());
+       driverController.a().whileFalse(intake.retractIntake());
+       driverController.b().whileTrue(intake.startNinjaStarMotor());
+       driverController.b().whileFalse(intake.stopNinjaStarMotor());
+
+      //driverController.leftBumper().whileTrue(intake.intake());
+      //driverController.leftBumper().whileFalse(intake.stopAndRetract());
+
+      
     }
   }
 }
