@@ -174,13 +174,17 @@ public class RobotContainer {
 
     /*** INTAKE ***/
     if (intake != null) {
-      // driverController.leftBumper().whileTrue(intake.startIntake());
-      // driverController.leftBumper().onFalse(intake.stopIntake());
-      // driverController.leftBumper().whileTrue(intake.deployIntake());
-      // driverController.leftBumper().onFalse(intake.retractIntake());
+       driverController.b().whileTrue(intake.startIntake());
+       driverController.b().whileFalse(intake.stopIntake());
+       driverController.a().whileTrue(intake.deployIntake());
+       driverController.a().whileFalse(intake.retractIntake());
+       driverController.b().whileTrue(intake.startNinjaStarMotor());
+       driverController.b().whileFalse(intake.stopNinjaStarMotor());
 
-      driverController.leftBumper().whileTrue(intake.intake());
-      driverController.leftBumper().whileFalse(intake.stopAndRetract());
+      //driverController.leftBumper().whileTrue(intake.intake());
+      //driverController.leftBumper().whileFalse(intake.stopAndRetract());
+
+      
     }
   }
 }

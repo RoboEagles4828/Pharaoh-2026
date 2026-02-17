@@ -19,26 +19,28 @@ import frc.robot.util.Util4828;
 public class Intake extends SubsystemBase {
     private final TalonFX deployMotor;
     private final TalonFX intakeMotor;
+    private final TalonFX ninjaStarMotor;
 
     private final PositionVoltage deployPositionControl;
     private final VelocityVoltage intakeVelocityControl;
+    private final VelocityVoltage ninjaStarVelocityControl;
 
     private static final TunableNumber deployPValue = new TunableNumber(IntakeConstants.NT_DEPLOY_P_VALUE, IntakeConstants.DEFAULT_DEPLOY_P_VALUE);
     private static final TunableNumber deployIValue = new TunableNumber(IntakeConstants.NT_DEPLOY_I_VALUE, IntakeConstants.DEFAULT_DEPLOY_I_VALUE);
     private static final TunableNumber deployDValue = new TunableNumber(IntakeConstants.NT_DEPLOY_D_VALUE, IntakeConstants.DEFAULT_DEPLOY_D_VALUE);
     private static final TunableNumber deployPosition = new TunableNumber(IntakeConstants.NT_DEPLOY_POSITION, IntakeConstants.DEFAULT_DEPLOY_POSITION);
     private static final TunableNumber retractPosition = new TunableNumber(IntakeConstants.NT_RETRACT_POSITION, IntakeConstants.DEFAULT_RETRACT_POSITION);
-    
     private static final TunableNumber intakeSValue = new TunableNumber(IntakeConstants.NT_INTAKE_S_VALUE, IntakeConstants.DEFAULT_INTAKE_S_VALUE);
     private static final TunableNumber intakeVValue = new TunableNumber(IntakeConstants.NT_INTAKE_V_VALUE, IntakeConstants.DEFAULT_INTAKE_V_VALUE);
     private static final TunableNumber intakePValue = new TunableNumber(IntakeConstants.NT_INTAKE_P_VALUE, IntakeConstants.DEFAULT_INTAKE_P_VALUE);
     private static final TunableNumber intakeIValue = new TunableNumber(IntakeConstants.NT_INTAKE_I_VALUE, IntakeConstants.DEFAULT_INTAKE_I_VALUE);
     private static final TunableNumber intakeDValue = new TunableNumber(IntakeConstants.NT_INTAKE_D_VALUE, IntakeConstants.DEFAULT_INTAKE_D_VALUE);
-    private static final TunableNumber intakeSpeedMPS = new TunableNumber(IntakeConstants.NT_INTAKE_SPEED_KEY, IntakeConstants.DEFAULT_INTAKE_SPEED_MPS);
+    private static final TunableNumber intakeSpeedMPS = new TunableNumber(IntakeConstants.NT_INTAKE_SPEED_KEY, IntakeConstants.DEFAULT_INTAKE_SPEED_MPS); 
 
     public Intake() {
         deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID);
         intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID);
+        ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID);
 
         SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
         setMotorPID();
@@ -48,6 +50,9 @@ public class Intake extends SubsystemBase {
                                         .withOverrideBrakeDurNeutral(true)
                                         .withSlot(0);
         intakeVelocityControl = new VelocityVoltage(0.0)
+                                        .withEnableFOC(true)
+                                        .withSlot(0);
+        ninjaStarVelocityControl = new VelocityVoltage(0.0)
                                         .withEnableFOC(true)
                                         .withSlot(0);
     }
@@ -71,6 +76,15 @@ public class Intake extends SubsystemBase {
         intakeMotorCfg.Slot0.kI = intakeIValue.get();
         intakeMotorCfg.Slot0.kD = intakeDValue.get();
         intakeMotor.getConfigurator().apply(intakeMotorCfg);
+        // Configuring ninja star (hopper) motor
+        final TalonFXConfiguration ninjaStarCfg = new TalonFXConfiguration();
+        ninjaStarCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        ninjaStarCfg.Feedback.SensorToMechanismRatio = IntakeConstants.INTAKE_GEAR_RATIO;
+        ninjaStarCfg.Slot0.kS = intakeSValue.get();
+        ninjaStarCfg.Slot0.kV = intakeVValue.get();
+        ninjaStarCfg.Slot0.kP = intakePValue.get();
+        ninjaStarCfg.Slot0.kI = intakeIValue.get();
+        ninjaStarCfg.Slot0.kD = intakeDValue.get();
     }
 
     public Command deployIntake() {
@@ -82,17 +96,30 @@ public class Intake extends SubsystemBase {
 
     public Command startIntake() {
         double wheelRPS = Util4828.metersPerSecondToWheelRPS(intakeSpeedMPS.get(), IntakeConstants.WHEEL_DIAMETER);
-        return Commands.run(() -> intakeMotor.setControl(intakeVelocityControl.withVelocity(wheelRPS)), this);
+        return Commands.run(() -> intakeMotor.setControl(intakeVelocityControl.withVelocity(wheelRPS)));
     }
+
     public Command stopIntake() {
         return Commands.runOnce(() -> intakeMotor.stopMotor());
     }
+    
+    //NinjaStartMotor
+    public Command startNinjaStarMotor() {
+        double wheelRPS = Util4828.metersPerSecondToWheelRPS(intakeSpeedMPS.get(), IntakeConstants.WHEEL_DIAMETER);
+        return Commands.run(() -> ninjaStarMotor.setControl(ninjaStarVelocityControl.withVelocity(wheelRPS))
+        );
+    }
+    public Command stopNinjaStarMotor() {
+        return Commands.runOnce(() -> ninjaStarMotor.stopMotor());
+    }
+
 
     public Command stopAndRetract() {
         return Commands.defer(
             () -> Commands.parallel(
                 stopIntake(),
-                retractIntake()
+                retractIntake(),
+                stopNinjaStarMotor()
         ), Set.of(this));
     }
 
@@ -100,7 +127,8 @@ public class Intake extends SubsystemBase {
         return Commands.defer(
             () -> Commands.parallel(
                 startIntake(),
-                deployIntake()
+                deployIntake(),
+                startNinjaStarMotor()
         ), Set.of(this));
     }
 

@@ -35,8 +35,9 @@ public final class Constants {
     // NOTE - 1 to 12 are reserved for the swerve drivetrain.
     public static int SHOOTER_MOTOR_ID = 13;
     public static int CLIMBER_MOTOR_ID = 15;
-    public static int INTAKE_MOTOR_ID = 1;
+    public static int INTAKE_MOTOR_ID = 1; //TODO update ID
     public static int INTAKE_DEPLOY_MOTOR_ID = 0; // TODO update ID
+    public static int NINJA_STAR_MOTOR_ID = 2; //TODO update ID
   }
 
   public static class RobotConstants {
