@@ -51,6 +51,12 @@ public class Shooter extends SubsystemBase {
         kickerMotor = new TalonFX(RioBusCANIds.KICKER_MOTOR_ID);
         hoodMotor = new TalonFX(RioBusCANIds.HOOD_MOTOR_ID);
 
+        updatePIDConfigs();
+
+        SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false);
+    }
+
+    private void updatePIDConfigs() {
         /** Used to configure motors and PID slots */
         final TalonFXConfiguration shooterMotorCfg = new TalonFXConfiguration();
         shooterMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -73,7 +79,7 @@ public class Shooter extends SubsystemBase {
         final TalonFXConfiguration hoodMotorCfg = new TalonFXConfiguration();
         hoodMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         hoodMotorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO;
-        hoodMotorCfg.Slot0.kP = ShooterConstants.HOOD_PID_CONFIG.PROPORTIONAL;
+        hoodMotorCfg.Slot0.kP = hoodPValue.get();
         hoodMotorCfg.Slot0.kD = ShooterConstants.HOOD_PID_CONFIG.DERIVATIVE;
 
         // Applying the configuration
@@ -82,8 +88,6 @@ public class Shooter extends SubsystemBase {
         shooterMotorThree.getConfigurator().apply(shooterMotorCfg);
         kickerMotor.getConfigurator().apply(kickerMotorCfg);
         hoodMotor.getConfigurator().apply(hoodMotorCfg);
-
-        SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false);
     }
 
     /** Command to shoot the fuel. */
@@ -133,8 +137,7 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         // apply new PID configs 
         if (SmartDashboard.getBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false)) {
-            // TODO applyPIDConfigs();
-
+            updatePIDConfigs();
             SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false); // reset btn
         }
 
