@@ -182,6 +182,8 @@ public class RobotContainer {
       driverController.a().whileTrue(shooter.start());
       driverController.a().onFalse(shooter.stop());
       
+      driverController.b().whileTrue(shooter.raiseHood());
+      driverController.b().whileFalse(shooter.lowerHood());
     }
 
     /*** CLIMBER ***/
