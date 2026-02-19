@@ -8,8 +8,14 @@ public class IntakeConstants {
 
     public static double WHEEL_DIAMETER = Units.inchesToMeters(2.25);
 
-    public static double DEFAULT_INTAKE_SPEED_MPS = 1.0;
-    public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/SpeedMPS";
+    // public static double DEFAULT_INTAKE_SPEED_MPS = 1.0;
+    // public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/SpeedMPS";
+
+    public static double DEFAULT_INTAKE_SPEED = 0.5;
+    public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/IntakeSpeed";
+
+    public static double DEFAULT_NINJA_STAR_SPEED = 0.5;
+    public static final String NT_NINJA_STAR_SPEED_KEY = "Tuning/Intake/NinjaStarSpeed";
 
 
     public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";
