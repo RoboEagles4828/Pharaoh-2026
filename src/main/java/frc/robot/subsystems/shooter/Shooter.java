@@ -20,7 +20,12 @@ public class Shooter extends SubsystemBase {
     
     
     /** Motor controlling the launching wheels */
-    private final TalonFX shooterMotor;
+    //one
+    private final TalonFX shooterMotorOne;
+    //two
+    private final TalonFX shooterMotorTwo;
+    //three
+    private final TalonFX shooterMotorThree;
     /** Motor controlling the kicker */
     private final TalonFX kickerMotor;
 
@@ -29,7 +34,9 @@ public class Shooter extends SubsystemBase {
     private final VelocityVoltage kickerVelocityVoltageRequest = new VelocityVoltage(0);
 
     public Shooter() {
-        shooterMotor = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_ID);
+        shooterMotorOne = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_ONE_ID);
+        shooterMotorTwo = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_TWO_ID);
+        shooterMotorThree = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_THREE_ID);
         kickerMotor = new TalonFX(RioBusCANIds.KICKER_MOTOR_ID);
 
         /** Used to configure motors and PID slots */
@@ -52,7 +59,9 @@ public class Shooter extends SubsystemBase {
         kickerMotorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
         
         // Applying the configuration
-        shooterMotor.getConfigurator().apply(shooterMotorCfg);
+        shooterMotorOne.getConfigurator().apply(shooterMotorCfg);
+        shooterMotorTwo.getConfigurator().apply(shooterMotorCfg);
+        shooterMotorThree.getConfigurator().apply(shooterMotorCfg);
         kickerMotor.getConfigurator().apply(kickerMotorCfg);
     }
 
@@ -62,7 +71,9 @@ public class Shooter extends SubsystemBase {
             // convert from target meters per second to wheel rotations per second
             double shootingwheelRPS = ShooterConstants.SHOOTER_GEAR_RATIO * Util4828.metersPerSecondToWheelRPS(shootingSpeedMPS.get(), ShooterConstants.WHEEL_DIAMETER);
             SmartDashboard.putNumber("Tuning/Shooter/Shooter RPS", shootingwheelRPS);
-            shooterMotor.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
+            shooterMotorOne.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
+            shooterMotorTwo.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
+            shooterMotorThree.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
             // convert from target meters per second to wheel rotations per second
             double kickerWheelRPS = ShooterConstants.KICKER_GEAR_RATIO * Util4828.metersPerSecondToWheelRPS(kickingSpeedMPS.get(), ShooterConstants.KICKER_WHEEL_DIAMETER);
             SmartDashboard.putNumber("Tuning/Shooter/Kicker RPS", kickerWheelRPS);
@@ -73,7 +84,9 @@ public class Shooter extends SubsystemBase {
     /** Command to stop shooting fuel. */
     public Command stop() {
         return Commands.runOnce(() -> {
-            shooterMotor.stopMotor();
+            shooterMotorOne.stopMotor();
+            shooterMotorTwo.stopMotor();
+            shooterMotorThree.stopMotor();
             kickerMotor.stopMotor();
         }, this);
     }
@@ -81,8 +94,12 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         // output the current measured speed of the flywheel, for verification/tuning
-        double actualMPS = shooterMotor.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
-        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS);
+        double actualMPS_ONE = shooterMotorOne.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
+        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS_ONE);
+        double actualMPS_TWO = shooterMotorTwo.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
+        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS_TWO);
+        double actualMPS_THREE = shooterMotorThree.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
+        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS_THREE);
         double actualKickerMPS = kickerMotor.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.KICKER_WHEEL_DIAMETER;
         SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_KICKER_SPEED_MPS, actualKickerMPS);
     }
