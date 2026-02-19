@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -68,7 +69,6 @@ public class Shooter extends SubsystemBase {
         shooterMotorCfg.Slot0.kP = shooterPValue.get();
         shooterMotorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
         shooterMotorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
-        
 
         final TalonFXConfiguration kickerMotorCfg = new TalonFXConfiguration();
         kickerMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -99,7 +99,7 @@ public class Shooter extends SubsystemBase {
             // convert from target meters per second to wheel rotations per second
             double shootingwheelRPS = Util4828.metersPerSecondToWheelRPS(shootingSpeedMPS.get(), ShooterConstants.WHEEL_DIAMETER);
             SmartDashboard.putNumber("Tuning/Shooter/Shooter RPS", shootingwheelRPS);
-            shooterMotorOne.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
+            shooterMotorOne.setControl(shooterVelocityVoltageRequest.withVelocity(-shootingwheelRPS));
             shooterMotorTwo.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
             shooterMotorThree.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
             // convert from target meters per second to wheel rotations per second
@@ -124,7 +124,8 @@ public class Shooter extends SubsystemBase {
             () -> {
                 return Commands.run(
                     () -> {
-                        hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(hoodPosition.get()));
+                        hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
+                            MathUtil.clamp(hoodPosition.get(), ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION)));
                     }
                 );
             },
@@ -133,7 +134,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command lowerHood() {
-        return Commands.run(() -> hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(ShooterConstants.HOOD_STARTING_POSITION)));
+        return Commands.run(() -> hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
+            MathUtil.clamp(ShooterConstants.HOOD_STARTING_POSITION, ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION))));
     }
 
     @Override

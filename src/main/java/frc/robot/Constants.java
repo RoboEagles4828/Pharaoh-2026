@@ -37,10 +37,10 @@ public final class Constants {
 
   public static class RioBusCANIds {
     public static int SHOOTER_MOTOR_ONE_ID = 13;
-    public static int SHOOTER_MOTOR_TWO_ID = 14;
-    public static int SHOOTER_MOTOR_THREE_ID = 15;
-    public static int KICKER_MOTOR_ID = 3; // TODO update ID
-    public static int HOOD_MOTOR_ID = -1; // TODO update ID
+    public static int SHOOTER_MOTOR_TWO_ID = 32;
+    public static int SHOOTER_MOTOR_THREE_ID = 14;
+    public static int KICKER_MOTOR_ID = 16; // TODO update ID
+    public static int HOOD_MOTOR_ID = 15; // TODO update ID
     public static int INTAKE_MOTOR_ID = 1; //TODO update ID
     public static int INTAKE_DEPLOY_MOTOR_ID = 0; // TODO update ID
     public static int NINJA_STAR_MOTOR_ID = 2; //TODO update ID
