@@ -19,6 +19,8 @@ import frc.robot.util.Util4828;
 /** The shooter subsystem controls the output of fuel. */
 public class Shooter extends SubsystemBase {
     private static final TunableNumber shootingSpeedMPS = new TunableNumber(ShooterConstants.NT_TARGET_SPEED_MPS, ShooterConstants.DEFAULT_SPEED_MPS);
+    private static final TunableNumber shooterPValue = new TunableNumber(ShooterConstants.NT_SHOOTER_P_VALUE, ShooterConstants.PID_CONFIG.PROPORTIONAL);
+    private static final TunableNumber shooterVValue = new TunableNumber(ShooterConstants.NT_SHOOTER_V_VALUE, ShooterConstants.PID_CONFIG.VELOCITY);
     private static final TunableNumber kickingSpeedMPS = new TunableNumber(ShooterConstants.NT_KICKER_TARGET_SPEED_MPS, ShooterConstants.DEFAULT_KICKER_SPEED_MPS);
     private static final TunableNumber hoodPosition = new TunableNumber(ShooterConstants.NT_TARGET_HOOD_POSITION, ShooterConstants.HOOD_STARTING_POSITION);
     private static final TunableNumber hoodPValue = new TunableNumber(ShooterConstants.NT_HOOD_P_VALUE, ShooterConstants.HOOD_PID_CONFIG.PROPORTIONAL);
@@ -62,10 +64,11 @@ public class Shooter extends SubsystemBase {
         shooterMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         shooterMotorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.SHOOTER_GEAR_RATIO;
         shooterMotorCfg.Slot0.kS = ShooterConstants.PID_CONFIG.STATIC;
-        shooterMotorCfg.Slot0.kV = ShooterConstants.PID_CONFIG.VELOCITY;
-        shooterMotorCfg.Slot0.kP = ShooterConstants.PID_CONFIG.PROPORTIONAL;
+        shooterMotorCfg.Slot0.kV = shooterVValue.get();
+        shooterMotorCfg.Slot0.kP = shooterPValue.get();
         shooterMotorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
         shooterMotorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
+        
 
         final TalonFXConfiguration kickerMotorCfg = new TalonFXConfiguration();
         kickerMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;

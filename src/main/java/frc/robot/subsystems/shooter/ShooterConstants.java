@@ -29,6 +29,9 @@ public class ShooterConstants {
         static final double DERIVATIVE = 0.0;
     }
 
+    public static final String NT_SHOOTER_P_VALUE = "Tuning/Shooter/ShooterPValue";
+    public static final String NT_SHOOTER_V_VALUE = "Tuning/Shooter/ShooterVValue";
+
     static class PID_CONFIG {
         static final double GRAVITY = 0.0;
         static final double STATIC = 0.0;
