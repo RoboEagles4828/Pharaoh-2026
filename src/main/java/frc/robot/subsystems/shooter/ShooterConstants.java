@@ -23,9 +23,9 @@ public class ShooterConstants {
     public static int DEFAULT_KICKER_SPEED_MPS = 5;
 
     public static double HOOD_GEAR_RATIO = 20.0;
-    public static double HOOD_STARTING_POSITION = 0.917;
-    public static double HOOD_MAX_POSITION = -8.73; // rotations
-    public static double HOOD_MIN_POSITION = 0.917; // rotations
+    public static double HOOD_STARTING_POSITION = 0.671142578125;
+    public static double HOOD_MAX_POSITION = -0.70654296875; // rotations -1.65625
+    public static double HOOD_MIN_POSITION = 0.671142578125; // rotations -0.0244140625
     static class HOOD_PID_CONFIG {
         static final double PROPORTIONAL = 1.0;
         static final double DERIVATIVE = 0.0;
