@@ -23,8 +23,11 @@ public class Shooter extends SubsystemBase {
     private static final TunableNumber shooterPValue = new TunableNumber(ShooterConstants.NT_SHOOTER_P_VALUE, ShooterConstants.PID_CONFIG.PROPORTIONAL);
     private static final TunableNumber shooterVValue = new TunableNumber(ShooterConstants.NT_SHOOTER_V_VALUE, ShooterConstants.PID_CONFIG.VELOCITY);
     private static final TunableNumber kickingSpeedMPS = new TunableNumber(ShooterConstants.NT_KICKER_TARGET_SPEED_MPS, ShooterConstants.DEFAULT_KICKER_SPEED_MPS);
-    private static final TunableNumber hoodPosition = new TunableNumber(ShooterConstants.NT_TARGET_HOOD_POSITION, ShooterConstants.HOOD_STARTING_POSITION);
+    private static final TunableNumber kickerPValue = new TunableNumber(ShooterConstants.NT_KICKER_P_VALUE, ShooterConstants.KICKER_PID_CONFIG.PROPORTIONAL);
+    private static final TunableNumber kickerVValue = new TunableNumber(ShooterConstants.NT_KICKER_V_VALUE, ShooterConstants.KICKER_PID_CONFIG.VELOCITY);
+    private static final TunableNumber hoodPosition = new TunableNumber(ShooterConstants.NT_TARGET_HOOD_POSITION, -1.5);
     private static final TunableNumber hoodPValue = new TunableNumber(ShooterConstants.NT_HOOD_P_VALUE, ShooterConstants.HOOD_PID_CONFIG.PROPORTIONAL);
+    private static final TunableNumber hoodDValue = new TunableNumber(ShooterConstants.NT_HOOD_D_VALUE, ShooterConstants.HOOD_PID_CONFIG.DERIVATIVE);
 
     /** Motor controlling the launching wheels */
     //one
@@ -56,6 +59,10 @@ public class Shooter extends SubsystemBase {
 
         updatePIDConfigs();
 
+        // Set the hood's initial encoder position to 0
+        // The hood should always start in the lowest possible possition
+        hoodMotor.setPosition(0);
+
         SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false);
     }
 
@@ -73,17 +80,14 @@ public class Shooter extends SubsystemBase {
         final TalonFXConfiguration kickerMotorCfg = new TalonFXConfiguration();
         kickerMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         kickerMotorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.KICKER_GEAR_RATIO;
-        kickerMotorCfg.Slot0.kS = ShooterConstants.PID_CONFIG.STATIC;
-        kickerMotorCfg.Slot0.kV = ShooterConstants.PID_CONFIG.VELOCITY;
-        kickerMotorCfg.Slot0.kP = ShooterConstants.PID_CONFIG.PROPORTIONAL;
-        kickerMotorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
-        kickerMotorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
+        kickerMotorCfg.Slot0.kV = kickerVValue.get();
+        kickerMotorCfg.Slot0.kP = kickerPValue.get();
         
         final TalonFXConfiguration hoodMotorCfg = new TalonFXConfiguration();
         hoodMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         hoodMotorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO;
         hoodMotorCfg.Slot0.kP = hoodPValue.get();
-        hoodMotorCfg.Slot0.kD = ShooterConstants.HOOD_PID_CONFIG.DERIVATIVE;
+        hoodMotorCfg.Slot0.kD = hoodDValue.get();
 
         // Applying the configuration
         shooterMotorOne.getConfigurator().apply(shooterMotorCfg);
@@ -105,7 +109,7 @@ public class Shooter extends SubsystemBase {
             // convert from target meters per second to wheel rotations per second
             double kickerWheelRPS = Util4828.metersPerSecondToWheelRPS(kickingSpeedMPS.get(), ShooterConstants.KICKER_WHEEL_DIAMETER);
             SmartDashboard.putNumber("Tuning/Shooter/Kicker RPS", kickerWheelRPS);
-            kickerMotor.setControl(kickerVelocityVoltageRequest.withVelocity(kickerWheelRPS));
+            kickerMotor.setControl(kickerVelocityVoltageRequest.withVelocity(-kickerWheelRPS));
         }, this);
     }
     
@@ -135,7 +139,7 @@ public class Shooter extends SubsystemBase {
 
     public Command lowerHood() {
         return Commands.run(() -> hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
-            MathUtil.clamp(ShooterConstants.HOOD_STARTING_POSITION, ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION))));
+            MathUtil.clamp(0.0, ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION))));
     }
 
     @Override
@@ -148,11 +152,11 @@ public class Shooter extends SubsystemBase {
 
         // output the current measured speed of the flywheel, for verification/tuning
         double actualMPS_ONE = shooterMotorOne.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
-        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS_ONE);
+        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS_ONE, actualMPS_ONE);
         double actualMPS_TWO = shooterMotorTwo.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
-        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS_TWO);
+        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS_TWO, actualMPS_TWO);
         double actualMPS_THREE = shooterMotorThree.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
-        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS, actualMPS_THREE);
+        SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_SPEED_MPS_THREE, actualMPS_THREE);
         double actualKickerMPS = kickerMotor.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.KICKER_WHEEL_DIAMETER;
         SmartDashboard.putNumber(ShooterConstants.NT_ACTUAL_KICKER_SPEED_MPS, actualKickerMPS);
 
