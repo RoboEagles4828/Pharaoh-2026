@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RioBusCANIds;
 import frc.robot.util.TunableNumber;
-import frc.robot.util.Util4828;
 
 public class Intake extends SubsystemBase {
     private final TalonFX deployMotor;
@@ -31,7 +30,6 @@ public class Intake extends SubsystemBase {
     private static final TunableNumber deployIValue = new TunableNumber(IntakeConstants.NT_DEPLOY_I_VALUE, IntakeConstants.DEFAULT_DEPLOY_I_VALUE);
     private static final TunableNumber deployDValue = new TunableNumber(IntakeConstants.NT_DEPLOY_D_VALUE, IntakeConstants.DEFAULT_DEPLOY_D_VALUE);
     private static final TunableNumber deployPosition = new TunableNumber(IntakeConstants.NT_DEPLOY_POSITION, IntakeConstants.DEFAULT_DEPLOY_POSITION);
-    private static final TunableNumber retractPosition = new TunableNumber(IntakeConstants.NT_RETRACT_POSITION, IntakeConstants.DEFAULT_RETRACT_POSITION);
     // private static final TunableNumber intakeSValue = new TunableNumber(IntakeConstants.NT_INTAKE_S_VALUE, IntakeConstants.DEFAULT_INTAKE_S_VALUE);
     // private static final TunableNumber intakeVValue = new TunableNumber(IntakeConstants.NT_INTAKE_V_VALUE, IntakeConstants.DEFAULT_INTAKE_V_VALUE);
     // private static final TunableNumber intakePValue = new TunableNumber(IntakeConstants.NT_INTAKE_P_VALUE, IntakeConstants.DEFAULT_INTAKE_P_VALUE);
@@ -47,10 +45,15 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
         setMotorPID();
 
-        deployPositionControl = new PositionVoltage(retractPosition.get())
+        // We start in the up position. Set the encoder so that 0.0 is the retracted position.
+        deployMotor.setPosition(0.0);
+
+        deployPositionControl = new PositionVoltage(0.0)
                                         .withEnableFOC(true)
                                         .withOverrideBrakeDurNeutral(true)
                                         .withSlot(0);
+
+        
         // intakeVelocityControl = new VelocityVoltage(0.0)
         //                                 .withEnableFOC(true)
         //                                 .withSlot(0);
@@ -68,32 +71,38 @@ public class Intake extends SubsystemBase {
         deployMotorCfg.Slot0.kI = deployIValue.get();
         deployMotorCfg.Slot0.kD = deployDValue.get();
         deployMotor.getConfigurator().apply(deployMotorCfg);
+
         // Configuring intake motor
         final TalonFXConfiguration intakeMotorCfg = new TalonFXConfiguration();
         intakeMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        // intakeMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.INTAKE_GEAR_RATIO;
-        // intakeMotorCfg.Slot0.kS = intakeSValue.get();
-        // intakeMotorCfg.Slot0.kV = intakeVValue.get();
-        // intakeMotorCfg.Slot0.kP = intakePValue.get();
-        // intakeMotorCfg.Slot0.kI = intakeIValue.get();
-        // intakeMotorCfg.Slot0.kD = intakeDValue.get();
-        // intakeMotor.getConfigurator().apply(intakeMotorCfg);
+        intakeMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.INTAKE_GEAR_RATIO;
+
         // Configuring ninja star (hopper) motor
         final TalonFXConfiguration ninjaStarCfg = new TalonFXConfiguration();
         ninjaStarCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        // ninjaStarCfg.Feedback.SensorToMechanismRatio = IntakeConstants.INTAKE_GEAR_RATIO;
-        // ninjaStarCfg.Slot0.kS = intakeSValue.get();
-        // ninjaStarCfg.Slot0.kV = intakeVValue.get();
-        // ninjaStarCfg.Slot0.kP = intakePValue.get();
-        // ninjaStarCfg.Slot0.kI = intakeIValue.get();
-        // ninjaStarCfg.Slot0.kD = intakeDValue.get();
+        ninjaStarCfg.Feedback.SensorToMechanismRatio = IntakeConstants.INTAKE_NINJA_STAR_GEAR_RATIO;
     }
 
     public Command deployIntake() {
-        return Commands.runOnce(() -> deployMotor.setControl(deployPositionControl.withPosition(deployPosition.get())));
+        return Commands.defer(
+            () -> {
+                return Commands.runOnce(() -> 
+                    deployMotor.setControl(deployPositionControl.withPosition(deployPosition.get()))
+                );
+            },
+            Collections.emptySet()
+        );
     }
+
     public Command retractIntake() {
-        return Commands.runOnce(() -> deployMotor.setControl(deployPositionControl.withPosition(retractPosition.get())));
+        return Commands.defer(
+            () -> {
+                return Commands.runOnce(() -> 
+                    deployMotor.setControl(deployPositionControl.withPosition(0.0))
+                );
+            },
+            Collections.emptySet()
+        );
     }
 
     //Start intake motor
@@ -119,6 +128,7 @@ public class Intake extends SubsystemBase {
             }),
             Collections.emptySet());
     }
+
     public Command stopNinjaStarMotor() {
         return Commands.runOnce(() -> ninjaStarMotor.stopMotor());
     }
@@ -149,13 +159,7 @@ public class Intake extends SubsystemBase {
             SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
         }
 
-        // double wheelRPS = Util4828.metersPerSecondToWheelRPS(intakeSpeedMPS.get(), IntakeConstants.WHEEL_DIAMETER);
-        // SmartDashboard.putNumber("Target Speed", wheelRPS);
-
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());
-        
-        double actualMPS = intakeMotor.getVelocity().getValueAsDouble() * Math.PI * IntakeConstants.WHEEL_DIAMETER;
-        SmartDashboard.putNumber("Actual Intake Speed MPS", actualMPS);
     }
 }

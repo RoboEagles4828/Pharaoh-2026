@@ -17,6 +17,7 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.drivetrain.TunerConstants;
+import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.limelight.Limelight;
 import frc.robot.subsystems.limelight.Vision;
@@ -40,8 +41,9 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
   private static final boolean ENABLE_DRIVETRAIN = true;
-  private static final boolean ENABLE_SHOOTER = false;
-  private static final boolean ENABLE_INTAKE = false;
+  private static final boolean ENABLE_SHOOTER = true;
+  private static final boolean ENABLE_INTAKE = true;
+  private static final boolean ENABLE_HOPPER = true;
   private static final boolean ENABLE_VISION = false;
   private static final boolean ENABLE_CLIMBER = false;
 
@@ -63,6 +65,9 @@ public class RobotContainer {
 
   /*** INTAKE SUBSYSTEM ***/
   private Intake intake = null;
+
+  /*** HOPPER SUBSYSTEM */
+  private Hopper hopper = null;
 
   /*** CLIMBER SUBSYSTEM ***/
   private Climber climber = null;
@@ -88,6 +93,9 @@ public class RobotContainer {
 
     if (ENABLE_INTAKE)
       intake = new Intake();
+    
+    if (ENABLE_HOPPER)
+      hopper = new Hopper();
 
     if (ENABLE_CLIMBER)
       climber = new Climber();
@@ -172,9 +180,9 @@ public class RobotContainer {
       driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
       driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
 
-      driverController.leftTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
-      driverController.rightTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
-      driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+      //driverController.leftTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
+      //driverController.rightTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
+      //driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     }
 
     /*** SHOOTER ***/
@@ -182,8 +190,8 @@ public class RobotContainer {
       driverController.a().whileTrue(shooter.start());
       driverController.a().onFalse(shooter.stop());
       
-      driverController.b().whileTrue(shooter.raiseHood());
-      driverController.b().whileFalse(shooter.lowerHood());
+      driverController.a().whileTrue(shooter.raiseHood());
+      driverController.a().whileFalse(shooter.lowerHood());
     }
 
     /*** CLIMBER ***/
@@ -197,17 +205,22 @@ public class RobotContainer {
 
     /*** INTAKE ***/
     if (intake != null) {
-       driverController.b().whileTrue(intake.startIntake());
-       driverController.b().whileFalse(intake.stopIntake());
-       driverController.a().whileTrue(intake.deployIntake());
-       driverController.a().whileFalse(intake.retractIntake());
-       driverController.b().whileTrue(intake.startNinjaStarMotor());
-       driverController.b().whileFalse(intake.stopNinjaStarMotor());
+      driverController.b().whileTrue(intake.startIntake());
+      driverController.b().whileFalse(intake.stopIntake());
+      driverController.b().whileTrue(intake.startNinjaStarMotor());
+      driverController.b().whileFalse(intake.stopNinjaStarMotor());
 
-      //driverController.leftBumper().whileTrue(intake.intake());
-      //driverController.leftBumper().whileFalse(intake.stopAndRetract());
+      driverController.leftBumper().whileTrue(intake.deployIntake());
+      driverController.leftBumper().whileFalse(intake.retractIntake());
 
-      
+      // driverController.leftBumper().whileTrue(intake.intake());
+      // driverController.leftBumper().whileFalse(intake.stopAndRetract());
+    }
+
+    /*** HOPPER ***/
+    if (hopper != null) {
+      driverController.x().whileTrue(hopper.startConveyor());
+      driverController.x().whileTrue(hopper.stopConveyor());
     }
   }
 }

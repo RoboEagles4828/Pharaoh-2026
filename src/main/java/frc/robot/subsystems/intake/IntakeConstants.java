@@ -3,13 +3,11 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.util.Units;
 
 public class IntakeConstants {
-    public static double DEPLOY_GEAR_RATIO = 1.0; // TODO: Update with actual gear ratio
-    public static double INTAKE_GEAR_RATIO = 1.0; // TODO: Update with actual gear ratio
+    public static double DEPLOY_GEAR_RATIO = 20.0; 
+    public static double INTAKE_GEAR_RATIO = 4.0; 
+    public static double INTAKE_NINJA_STAR_GEAR_RATIO = 5.0;
 
     public static double WHEEL_DIAMETER = Units.inchesToMeters(2.25);
-
-    // public static double DEFAULT_INTAKE_SPEED_MPS = 1.0;
-    // public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/SpeedMPS";
 
     public static double DEFAULT_INTAKE_SPEED = 0.5;
     public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/IntakeDutyCycle";
@@ -29,8 +27,6 @@ public class IntakeConstants {
 
     public static final String NT_DEPLOY_POSITION = "Tuning/Intake/DeployPosition";
     public static double DEFAULT_DEPLOY_POSITION = 1.0;
-    public static final String NT_RETRACT_POSITION = "Tuning/Intake/RetractPosition";
-    public static double DEFAULT_RETRACT_POSITION = 0.0;
 
     public static final String NT_INTAKE_S_VALUE = "Tuning/Intake/IntakeMotorSValue";
     public static double DEFAULT_INTAKE_S_VALUE = 0.2;
