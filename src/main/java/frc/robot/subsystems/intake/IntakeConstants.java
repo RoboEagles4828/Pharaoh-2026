@@ -12,10 +12,10 @@ public class IntakeConstants {
     // public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/SpeedMPS";
 
     public static double DEFAULT_INTAKE_SPEED = 0.5;
-    public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/IntakeSpeed";
+    public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/IntakeDutyCycle";
 
     public static double DEFAULT_NINJA_STAR_SPEED = 0.5;
-    public static final String NT_NINJA_STAR_SPEED_KEY = "Tuning/Intake/NinjaStarSpeed";
+    public static final String NT_NINJA_STAR_SPEED_KEY = "Tuning/Intake/NinjaStarDutyCycle";
 
 
     public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";
