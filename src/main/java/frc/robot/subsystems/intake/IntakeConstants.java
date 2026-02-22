@@ -26,7 +26,7 @@ public class IntakeConstants {
     public static double DEFAULT_DEPLOY_D_VALUE = 0.0;
 
     public static final String NT_DEPLOY_POSITION = "Tuning/Intake/DeployPosition";
-    public static double DEFAULT_DEPLOY_POSITION = 1.0;
+    public static double DEFAULT_DEPLOY_POSITION = 0.5;
 
     public static final String NT_INTAKE_S_VALUE = "Tuning/Intake/IntakeMotorSValue";
     public static double DEFAULT_INTAKE_S_VALUE = 0.2;
