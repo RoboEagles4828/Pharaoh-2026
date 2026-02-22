@@ -50,7 +50,8 @@ public class ShooterConstants {
     public static final String NT_HOOD_D_VALUE = "Tuning/Shooter/HoodDValue";
     public static double HOOD_GEAR_RATIO = 20.0;
     public static double HOOD_STARTING_POSITION = 0.0;
-    public static double HOOD_MAX_POSITION = -0.75;
+    public static double HOOD_TARGET_POSITION = -0.75;
+    public static double HOOD_MAX_POSITION = -1.5;
     public static double HOOD_MIN_POSITION = 0.0;
     static class HOOD_PID_CONFIG {
         static final double PROPORTIONAL = 110.0;

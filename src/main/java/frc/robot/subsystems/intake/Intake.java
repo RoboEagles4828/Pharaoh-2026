@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DigitalIDS;
 import frc.robot.Constants.RioBusCANIds;
 import frc.robot.util.TunableNumber;
@@ -32,7 +33,8 @@ public class Intake extends SubsystemBase {
     private static final TunableNumber deployPValue = new TunableNumber(IntakeConstants.NT_DEPLOY_P_VALUE, IntakeConstants.DEFAULT_DEPLOY_P_VALUE);
     private static final TunableNumber deployIValue = new TunableNumber(IntakeConstants.NT_DEPLOY_I_VALUE, IntakeConstants.DEFAULT_DEPLOY_I_VALUE);
     private static final TunableNumber deployDValue = new TunableNumber(IntakeConstants.NT_DEPLOY_D_VALUE, IntakeConstants.DEFAULT_DEPLOY_D_VALUE);
-    private static final TunableNumber deployPosition = new TunableNumber(IntakeConstants.NT_DEPLOY_POSITION, IntakeConstants.DEFAULT_DEPLOY_POSITION);
+    private static final TunableNumber deployedPosition = new TunableNumber(IntakeConstants.NT_DEPLOYED_POSITION, IntakeConstants.DEFAULT_DEPLOYED_POSITION);
+    private static final TunableNumber raisedPosition = new TunableNumber(IntakeConstants.NT_RAISED_POSITION, IntakeConstants.DEFAULT_RAISED_POSITION); 
     // private static final TunableNumber intakeSValue = new TunableNumber(IntakeConstants.NT_INTAKE_S_VALUE, IntakeConstants.DEFAULT_INTAKE_S_VALUE);
     // private static final TunableNumber intakeVValue = new TunableNumber(IntakeConstants.NT_INTAKE_V_VALUE, IntakeConstants.DEFAULT_INTAKE_V_VALUE);
     // private static final TunableNumber intakePValue = new TunableNumber(IntakeConstants.NT_INTAKE_P_VALUE, IntakeConstants.DEFAULT_INTAKE_P_VALUE);
@@ -41,12 +43,14 @@ public class Intake extends SubsystemBase {
     // private static final TunableNumber intakeSpeedMPS = new TunableNumber(IntakeConstants.NT_INTAKE_SPEED_KEY, IntakeConstants.DEFAULT_INTAKE_SPEED_MPS); 
 
     public Intake() {
-        deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID);
-        intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID);
-        ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID);
+        deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID, Constants.RIO_BUS_NAME);
+        intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID, Constants.RIO_BUS_NAME);
+        ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID, Constants.RIO_BUS_NAME);
         intakeLimitSwitch = new DigitalInput(DigitalIDS.INTAKE_LIMIT_SWITCH);
 
         SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
+        SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
+
         setMotorPID();
 
         // We start in the up position. Set the encoder so that 0.0 is the retracted position.
@@ -91,7 +95,7 @@ public class Intake extends SubsystemBase {
         return Commands.defer(
             () -> {
                 return Commands.runOnce(() -> 
-                    deployMotor.setControl(deployPositionControl.withPosition(deployPosition.get()))
+                    deployMotor.setControl(deployPositionControl.withPosition(deployedPosition.get()))
                 );
             },
             Collections.emptySet()
@@ -102,7 +106,7 @@ public class Intake extends SubsystemBase {
         return Commands.defer(
             () -> {
                 return Commands.runOnce(() -> 
-                    deployMotor.setControl(deployPositionControl.withPosition(0.0))
+                    deployMotor.setControl(deployPositionControl.withPosition(raisedPosition.get()))
                 );
             },
             Collections.emptySet()
@@ -128,7 +132,7 @@ public class Intake extends SubsystemBase {
     public Command startNinjaStarMotor() {
         return Commands.defer(
             () -> Commands.run(() -> {
-            intakeMotor.set(ninjaStarSpeed.get());
+            ninjaStarMotor.set(ninjaStarSpeed.get());
             }),
             Collections.emptySet());
     }
@@ -165,12 +169,17 @@ public class Intake extends SubsystemBase {
             SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
         }
 
-        if (!resetEncoderRecently && intakeLimitSwitch.get() == true){
-            deployMotor.setPosition(0);
-            resetEncoderRecently = true;
-        } else {
-            resetEncoderRecently = false;
+        if (SmartDashboard.getBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false)) {
+            deployMotor.setPosition(0); // also reset encoder to 0 for testing
+            SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
         }
+
+        // if (!resetEncoderRecently && intakeLimitSwitch.get() == true){
+        //     deployMotor.setPosition(0);
+        //     resetEncoderRecently = true;
+        // } else {
+        //     resetEncoderRecently = false;
+        // }
 
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());

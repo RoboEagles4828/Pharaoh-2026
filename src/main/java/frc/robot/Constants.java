@@ -36,10 +36,11 @@ public final class Constants {
   }
 
   public static class DigitalIDS {
-    public static int HOOD_LIMIT_SWITCH = -1;
-    public static int INTAKE_LIMIT_SWITCH = -2;
+    public static int HOOD_LIMIT_SWITCH = 0;
+    public static int INTAKE_LIMIT_SWITCH = 1;
   }
 
+  public static String RIO_BUS_NAME = "rio";
   public static class RioBusCANIds {
     public static int SHOOTER_MOTOR_ONE_ID = 41;
     public static int SHOOTER_MOTOR_TWO_ID = 42;

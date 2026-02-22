@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DigitalIDS;
 import frc.robot.Constants.RioBusCANIds;
 import frc.robot.util.TunableNumber;
@@ -27,7 +28,7 @@ public class Shooter extends SubsystemBase {
     private static final TunableNumber kickingSpeedMPS = new TunableNumber(ShooterConstants.NT_KICKER_TARGET_SPEED_MPS, ShooterConstants.DEFAULT_KICKER_SPEED_MPS);
     private static final TunableNumber kickerPValue = new TunableNumber(ShooterConstants.NT_KICKER_P_VALUE, ShooterConstants.KICKER_PID_CONFIG.PROPORTIONAL);
     private static final TunableNumber kickerVValue = new TunableNumber(ShooterConstants.NT_KICKER_V_VALUE, ShooterConstants.KICKER_PID_CONFIG.VELOCITY);
-    private static final TunableNumber hoodPosition = new TunableNumber(ShooterConstants.NT_TARGET_HOOD_POSITION, -1.5);
+    private static final TunableNumber hoodPosition = new TunableNumber(ShooterConstants.NT_TARGET_HOOD_POSITION, ShooterConstants.HOOD_TARGET_POSITION);
     private static final TunableNumber hoodPValue = new TunableNumber(ShooterConstants.NT_HOOD_P_VALUE, ShooterConstants.HOOD_PID_CONFIG.PROPORTIONAL);
     private static final TunableNumber hoodDValue = new TunableNumber(ShooterConstants.NT_HOOD_D_VALUE, ShooterConstants.HOOD_PID_CONFIG.DERIVATIVE);
 
@@ -55,11 +56,11 @@ public class Shooter extends SubsystemBase {
                                         .withSlot(0);
 
     public Shooter() {
-        shooterMotorOne = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_ONE_ID);
-        shooterMotorTwo = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_TWO_ID);
-        shooterMotorThree = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_THREE_ID);
-        kickerMotor = new TalonFX(RioBusCANIds.KICKER_MOTOR_ID);
-        hoodMotor = new TalonFX(RioBusCANIds.HOOD_MOTOR_ID);
+        shooterMotorOne = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_ONE_ID, Constants.RIO_BUS_NAME);
+        shooterMotorTwo = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_TWO_ID, Constants.RIO_BUS_NAME);
+        shooterMotorThree = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_THREE_ID, Constants.RIO_BUS_NAME);
+        kickerMotor = new TalonFX(RioBusCANIds.KICKER_MOTOR_ID, Constants.RIO_BUS_NAME);
+        hoodMotor = new TalonFX(RioBusCANIds.HOOD_MOTOR_ID, Constants.RIO_BUS_NAME);
         hoodLimitSwitch = new DigitalInput(DigitalIDS.HOOD_LIMIT_SWITCH);
 
         updatePIDConfigs();
@@ -157,12 +158,12 @@ public class Shooter extends SubsystemBase {
             SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false); // reset btn
         }
 
-        if (!resetEncoderRecently && hoodLimitSwitch.get() == true){
-            hoodMotor.setPosition(0);
-            resetEncoderRecently = true;
-        } else {
-            resetEncoderRecently = false;
-        }
+        // if (!resetEncoderRecently && hoodLimitSwitch.get() == true){
+        //     hoodMotor.setPosition(0);
+        //     resetEncoderRecently = true;
+        // } else {
+        //     resetEncoderRecently = false;
+        // }
 
         // output the current measured speed of the flywheel, for verification/tuning
         double actualMPS_ONE = shooterMotorOne.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;

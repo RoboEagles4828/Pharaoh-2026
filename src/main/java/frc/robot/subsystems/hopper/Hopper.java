@@ -17,7 +17,7 @@ public class Hopper extends SubsystemBase {
     private final TalonFX conveyorMotor;
 
     public Hopper() {
-        conveyorMotor = new TalonFX(Constants.RioBusCANIds.HOPPER_CONVEYOR_MOTOR_ID);
+        conveyorMotor = new TalonFX(Constants.RioBusCANIds.HOPPER_CONVEYOR_MOTOR_ID, Constants.RIO_BUS_NAME);
     }
 
     public Command startConveyor() {

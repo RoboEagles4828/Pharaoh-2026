@@ -40,7 +40,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
  */
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
-  private static final boolean ENABLE_DRIVETRAIN = true;
+  private static final boolean ENABLE_DRIVETRAIN = false;
   private static final boolean ENABLE_SHOOTER = true;
   private static final boolean ENABLE_INTAKE = true;
   private static final boolean ENABLE_HOPPER = true;
@@ -190,8 +190,8 @@ public class RobotContainer {
       driverController.a().whileTrue(shooter.start());
       driverController.a().onFalse(shooter.stop());
       
-      driverController.a().whileTrue(shooter.raiseHood());
-      driverController.a().whileFalse(shooter.lowerHood());
+      driverController.y().whileTrue(shooter.raiseHood());
+      driverController.y().whileFalse(shooter.lowerHood());
     }
 
     /*** CLIMBER ***/
@@ -220,7 +220,7 @@ public class RobotContainer {
     /*** HOPPER ***/
     if (hopper != null) {
       driverController.x().whileTrue(hopper.startConveyor());
-      driverController.x().whileTrue(hopper.stopConveyor());
+      driverController.x().whileFalse(hopper.stopConveyor());
     }
   }
 }

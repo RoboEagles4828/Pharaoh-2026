@@ -12,11 +12,12 @@ public class IntakeConstants {
     public static double DEFAULT_INTAKE_SPEED = 0.5;
     public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/IntakeDutyCycle";
 
-    public static double DEFAULT_NINJA_STAR_SPEED = 0.5;
+    public static double DEFAULT_NINJA_STAR_SPEED = -0.5;
     public static final String NT_NINJA_STAR_SPEED_KEY = "Tuning/Intake/NinjaStarDutyCycle";
 
 
     public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";
+    public static final String NT_RESET_INTAKE_ENCODER_BUTTON = "Tuning/Intake/ResetDeployEncoder";
 
     public static final String NT_DEPLOY_P_VALUE = "Tuning/Intake/DeployMotorPValue";
     public static double DEFAULT_DEPLOY_P_VALUE = 1.0;
@@ -25,8 +26,10 @@ public class IntakeConstants {
     public static final String NT_DEPLOY_D_VALUE = "Tuning/Intake/DeployMotorDValue";
     public static double DEFAULT_DEPLOY_D_VALUE = 0.0;
 
-    public static final String NT_DEPLOY_POSITION = "Tuning/Intake/DeployPosition";
-    public static double DEFAULT_DEPLOY_POSITION = 0.5;
+    public static final String NT_DEPLOYED_POSITION = "Tuning/Intake/DeployPosition";
+    public static double DEFAULT_DEPLOYED_POSITION = 0.5;
+    public static final String NT_RAISED_POSITION = "Tuning/Intake/RaisedPosition";
+    public static double DEFAULT_RAISED_POSITION = 0.0;
 
     public static final String NT_INTAKE_S_VALUE = "Tuning/Intake/IntakeMotorSValue";
     public static double DEFAULT_INTAKE_S_VALUE = 0.2;
