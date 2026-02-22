@@ -10,10 +10,12 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DigitalIDS;
 import frc.robot.Constants.RioBusCANIds;
 import frc.robot.util.TunableNumber;
 
@@ -21,6 +23,7 @@ public class Intake extends SubsystemBase {
     private final TalonFX deployMotor;
     private final TalonFX intakeMotor;
     private final TalonFX ninjaStarMotor;
+    private final DigitalInput intakeLimitSwitch;
 
     private final PositionVoltage deployPositionControl;
     //private final VelocityVoltage intakeVelocityControl;
@@ -41,6 +44,7 @@ public class Intake extends SubsystemBase {
         deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID);
         intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID);
         ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID);
+        intakeLimitSwitch = new DigitalInput(DigitalIDS.INTAKE_LIMIT_SWITCH);
 
         SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
         setMotorPID();
@@ -152,11 +156,20 @@ public class Intake extends SubsystemBase {
         ), Set.of(this));
     }
 
+    private boolean resetEncoderRecently = false;
+
     @Override
     public void periodic() {
         if (SmartDashboard.getBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false)) {
             setMotorPID();
             SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
+        }
+
+        if (!resetEncoderRecently && intakeLimitSwitch.get() == true){
+            deployMotor.setPosition(0);
+            resetEncoderRecently = true;
+        } else {
+            resetEncoderRecently = false;
         }
 
         // This method will be called once per scheduler run

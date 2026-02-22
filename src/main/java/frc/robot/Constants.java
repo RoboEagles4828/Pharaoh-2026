@@ -35,6 +35,11 @@ public final class Constants {
     public static final int kOperatorControllerPort = 1;
   }
 
+  public static class DigitalIDS {
+    public static int HOOD_LIMIT_SWITCH = -1;
+    public static int INTAKE_LIMIT_SWITCH = -2;
+  }
+
   public static class RioBusCANIds {
     public static int SHOOTER_MOTOR_ONE_ID = 13;
     public static int SHOOTER_MOTOR_TWO_ID = 32;

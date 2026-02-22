@@ -9,10 +9,12 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DigitalIDS;
 import frc.robot.Constants.RioBusCANIds;
 import frc.robot.util.TunableNumber;
 import frc.robot.util.Util4828;
@@ -42,6 +44,8 @@ public class Shooter extends SubsystemBase {
     /** Motor controlling the hood */
     private final TalonFX hoodMotor;
 
+    private final DigitalInput hoodLimitSwitch;
+
     /** Request for controlling the motor in MPS */
     private final VelocityVoltage shooterVelocityVoltageRequest = new VelocityVoltage(0);
     private final VelocityVoltage kickerVelocityVoltageRequest = new VelocityVoltage(0);
@@ -56,6 +60,7 @@ public class Shooter extends SubsystemBase {
         shooterMotorThree = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_THREE_ID);
         kickerMotor = new TalonFX(RioBusCANIds.KICKER_MOTOR_ID);
         hoodMotor = new TalonFX(RioBusCANIds.HOOD_MOTOR_ID);
+        hoodLimitSwitch = new DigitalInput(DigitalIDS.HOOD_LIMIT_SWITCH);
 
         updatePIDConfigs();
 
@@ -142,12 +147,21 @@ public class Shooter extends SubsystemBase {
             MathUtil.clamp(0.0, ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION))));
     }
 
+    private boolean resetEncoderRecently = false;
+
     @Override
     public void periodic() {
         // apply new PID configs 
         if (SmartDashboard.getBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false)) {
             updatePIDConfigs();
             SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false); // reset btn
+        }
+
+        if (!resetEncoderRecently && hoodLimitSwitch.get() == true){
+            hoodMotor.setPosition(0);
+            resetEncoderRecently = true;
+        } else {
+            resetEncoderRecently = false;
         }
 
         // output the current measured speed of the flywheel, for verification/tuning
