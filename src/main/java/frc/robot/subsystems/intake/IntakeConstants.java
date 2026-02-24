@@ -19,17 +19,21 @@ public class IntakeConstants {
     public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";
     public static final String NT_RESET_INTAKE_ENCODER_BUTTON = "Tuning/Intake/ResetDeployEncoder";
 
-    public static final String NT_DEPLOY_P_VALUE = "Tuning/Intake/DeployMotorPValue";
-    public static double DEFAULT_DEPLOY_P_VALUE = 1.0;
-    public static final String NT_DEPLOY_I_VALUE = "Tuning/Intake/DeployMotorIValue";
-    public static double DEFAULT_DEPLOY_I_VALUE = 0.0;
-    public static final String NT_DEPLOY_D_VALUE = "Tuning/Intake/DeployMotorDValue";
-    public static double DEFAULT_DEPLOY_D_VALUE = 0.0;
+    public static final String NT_DEPLOY_DOWN_P_VALUE = "Tuning/Intake/DeployDownPValue";
+    public static double DEFAULT_DEPLOY_DOWN_P_VALUE = 8.0;
+    public static final String NT_DEPLOY_DOWN_D_VALUE = "Tuning/Intake/DeployDownDValue";
+    public static double DEFAULT_DEPLOY_DOWN_D_VALUE = 0.1;
+    public static final String NT_DEPLOY_UP_P_VALUE = "Tuning/Intake/DeployUpPValue";
+    public static double DEFAULT_DEPLOY_UP_P_VALUE = 15.0;
+    public static final String NT_DEPLOY_UP_D_VALUE = "Tuning/Intake/DeployUpDValue";
+    public static double DEFAULT_DEPLOY_UP_D_VALUE = 0.2;
+    public static final String NT_DEPLOY_UP_G_VALUE = "Tuning/Intake/DeployUpGValue";
+    public static double DEFAULT_DEPLOY_UP_G_VALUE = 1.6;
 
     public static final String NT_DEPLOYED_POSITION = "Tuning/Intake/DeployPosition";
-    public static double DEFAULT_DEPLOYED_POSITION = 0.5;
+    public static double DEFAULT_DEPLOYED_POSITION = 0.0;
     public static final String NT_RAISED_POSITION = "Tuning/Intake/RaisedPosition";
-    public static double DEFAULT_RAISED_POSITION = 0.0;
+    public static double DEFAULT_RAISED_POSITION = 0.2;
 
     public static final String NT_INTAKE_S_VALUE = "Tuning/Intake/IntakeMotorSValue";
     public static double DEFAULT_INTAKE_S_VALUE = 0.2;

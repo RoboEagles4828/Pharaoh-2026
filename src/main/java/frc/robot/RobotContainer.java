@@ -40,7 +40,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
  */
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
-  private static final boolean ENABLE_DRIVETRAIN = false;
+  private static final boolean ENABLE_DRIVETRAIN = true;
   private static final boolean ENABLE_SHOOTER = true;
   private static final boolean ENABLE_INTAKE = true;
   private static final boolean ENABLE_HOPPER = true;

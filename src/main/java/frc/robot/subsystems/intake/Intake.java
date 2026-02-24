@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -30,9 +31,11 @@ public class Intake extends SubsystemBase {
     //private final VelocityVoltage intakeVelocityControl;
     //private final VelocityVoltage ninjaStarVelocityControl;
 
-    private static final TunableNumber deployPValue = new TunableNumber(IntakeConstants.NT_DEPLOY_P_VALUE, IntakeConstants.DEFAULT_DEPLOY_P_VALUE);
-    private static final TunableNumber deployIValue = new TunableNumber(IntakeConstants.NT_DEPLOY_I_VALUE, IntakeConstants.DEFAULT_DEPLOY_I_VALUE);
-    private static final TunableNumber deployDValue = new TunableNumber(IntakeConstants.NT_DEPLOY_D_VALUE, IntakeConstants.DEFAULT_DEPLOY_D_VALUE);
+    private static final TunableNumber deployDownPValue = new TunableNumber(IntakeConstants.NT_DEPLOY_DOWN_P_VALUE, IntakeConstants.DEFAULT_DEPLOY_DOWN_P_VALUE);
+    private static final TunableNumber deployDownDValue = new TunableNumber(IntakeConstants.NT_DEPLOY_DOWN_D_VALUE, IntakeConstants.DEFAULT_DEPLOY_DOWN_D_VALUE);
+    private static final TunableNumber deployUpPValue = new TunableNumber(IntakeConstants.NT_DEPLOY_UP_P_VALUE, IntakeConstants.DEFAULT_DEPLOY_UP_P_VALUE);
+    private static final TunableNumber deployUpGValue = new TunableNumber(IntakeConstants.NT_DEPLOY_UP_G_VALUE, IntakeConstants.DEFAULT_DEPLOY_UP_G_VALUE);
+    private static final TunableNumber deployUpDValue = new TunableNumber(IntakeConstants.NT_DEPLOY_UP_D_VALUE, IntakeConstants.DEFAULT_DEPLOY_UP_D_VALUE);
     private static final TunableNumber deployedPosition = new TunableNumber(IntakeConstants.NT_DEPLOYED_POSITION, IntakeConstants.DEFAULT_DEPLOYED_POSITION);
     private static final TunableNumber raisedPosition = new TunableNumber(IntakeConstants.NT_RAISED_POSITION, IntakeConstants.DEFAULT_RAISED_POSITION); 
     // private static final TunableNumber intakeSValue = new TunableNumber(IntakeConstants.NT_INTAKE_S_VALUE, IntakeConstants.DEFAULT_INTAKE_S_VALUE);
@@ -54,7 +57,7 @@ public class Intake extends SubsystemBase {
         setMotorPID();
 
         // We start in the up position. Set the encoder so that 0.0 is the retracted position.
-        deployMotor.setPosition(0.0);
+        deployMotor.setPosition(IntakeConstants.DEFAULT_RAISED_POSITION);
 
         deployPositionControl = new PositionVoltage(0.0)
                                         .withEnableFOC(true)
@@ -75,9 +78,12 @@ public class Intake extends SubsystemBase {
         final TalonFXConfiguration deployMotorCfg = new TalonFXConfiguration();
         deployMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         deployMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.DEPLOY_GEAR_RATIO;
-        deployMotorCfg.Slot0.kP = deployPValue.get();
-        deployMotorCfg.Slot0.kI = deployIValue.get();
-        deployMotorCfg.Slot0.kD = deployDValue.get();
+        deployMotorCfg.Slot0.kP = deployDownPValue.get();
+        deployMotorCfg.Slot0.kD = deployDownDValue.get();
+        deployMotorCfg.Slot1.kG = deployUpGValue.get();
+        deployMotorCfg.Slot1.kP = deployUpPValue.get();
+        deployMotorCfg.Slot1.kD = deployUpDValue.get();
+        deployMotorCfg.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
         deployMotor.getConfigurator().apply(deployMotorCfg);
 
         // Configuring intake motor
@@ -94,8 +100,8 @@ public class Intake extends SubsystemBase {
     public Command deployIntake() {
         return Commands.defer(
             () -> {
-                return Commands.runOnce(() -> 
-                    deployMotor.setControl(deployPositionControl.withPosition(deployedPosition.get()))
+                return Commands.run(() -> 
+                    deployMotor.setControl(deployPositionControl.withSlot(0).withPosition(deployedPosition.get()))
                 );
             },
             Collections.emptySet()
@@ -105,8 +111,8 @@ public class Intake extends SubsystemBase {
     public Command retractIntake() {
         return Commands.defer(
             () -> {
-                return Commands.runOnce(() -> 
-                    deployMotor.setControl(deployPositionControl.withPosition(raisedPosition.get()))
+                return Commands.run(() -> 
+                    deployMotor.setControl(deployPositionControl.withSlot(1).withPosition(raisedPosition.get()))
                 );
             },
             Collections.emptySet()
@@ -170,7 +176,7 @@ public class Intake extends SubsystemBase {
         }
 
         if (SmartDashboard.getBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false)) {
-            deployMotor.setPosition(0); // also reset encoder to 0 for testing
+            deployMotor.setPosition(raisedPosition.get()); // also reset encoder to 0.1 for testing
             SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
         }
 
@@ -182,6 +188,6 @@ public class Intake extends SubsystemBase {
         // }
 
         // This method will be called once per scheduler run
-        SmartDashboard.putNumber("Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Tuning/Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());
     }
 }
