@@ -210,8 +210,8 @@ public class RobotContainer {
       driverController.b().whileTrue(intake.startNinjaStarMotor());
       driverController.b().whileFalse(intake.stopNinjaStarMotor());
 
-      driverController.leftBumper().whileTrue(intake.deployIntake());
-      driverController.leftBumper().whileFalse(intake.retractIntake());
+      driverController.leftBumper().whileTrue(intake.intake());
+      driverController.leftBumper().whileFalse(intake.stopAndRetract());
 
       // driverController.leftBumper().whileTrue(intake.intake());
       // driverController.leftBumper().whileFalse(intake.stopAndRetract());

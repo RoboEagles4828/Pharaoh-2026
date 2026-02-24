@@ -159,10 +159,17 @@ public class Intake extends SubsystemBase {
 
     public Command intake() {
         return Commands.defer(
-            () -> Commands.parallel(
-                startIntake(),
+            () -> Commands.parallel(        
                 deployIntake(),
-                startNinjaStarMotor()
+
+                Commands.sequence(
+                    Commands.waitSeconds(0.5),
+                    Commands.parallel(
+                        startIntake(),
+                        startNinjaStarMotor()
+                    )
+                )
+
         ), Set.of(this));
     }
 
