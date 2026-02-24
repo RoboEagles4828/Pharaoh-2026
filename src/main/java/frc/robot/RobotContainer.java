@@ -190,8 +190,8 @@ public class RobotContainer {
       driverController.a().whileTrue(shooter.start());
       driverController.a().onFalse(shooter.stop());
       
-      driverController.y().whileTrue(shooter.raiseHood());
-      driverController.y().whileFalse(shooter.lowerHood());
+      driverController.a().whileTrue(shooter.raiseHood());
+      driverController.a().whileFalse(shooter.lowerHood());
     }
 
     /*** CLIMBER ***/
@@ -205,16 +205,8 @@ public class RobotContainer {
 
     /*** INTAKE ***/
     if (intake != null) {
-      driverController.b().whileTrue(intake.startIntake());
-      driverController.b().whileFalse(intake.stopIntake());
-      driverController.b().whileTrue(intake.startNinjaStarMotor());
-      driverController.b().whileFalse(intake.stopNinjaStarMotor());
-
-      driverController.leftBumper().whileTrue(intake.intake());
-      driverController.leftBumper().whileFalse(intake.stopAndRetract());
-
-      // driverController.leftBumper().whileTrue(intake.intake());
-      // driverController.leftBumper().whileFalse(intake.stopAndRetract());
+      driverController.leftTrigger().whileTrue(intake.intake());
+      driverController.leftTrigger().whileFalse(intake.stopAndRetract());
     }
 
     /*** HOPPER ***/

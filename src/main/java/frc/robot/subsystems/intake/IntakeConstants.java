@@ -9,10 +9,10 @@ public class IntakeConstants {
 
     public static double WHEEL_DIAMETER = Units.inchesToMeters(2.25);
 
-    public static double DEFAULT_INTAKE_SPEED = 0.5;
+    public static double DEFAULT_INTAKE_SPEED = 0.9;
     public static final String NT_INTAKE_SPEED_KEY = "Tuning/Intake/IntakeDutyCycle";
 
-    public static double DEFAULT_NINJA_STAR_SPEED = -0.5;
+    public static double DEFAULT_NINJA_STAR_SPEED = -0.9;
     public static final String NT_NINJA_STAR_SPEED_KEY = "Tuning/Intake/NinjaStarDutyCycle";
 
 
@@ -28,7 +28,7 @@ public class IntakeConstants {
     public static final String NT_DEPLOY_UP_D_VALUE = "Tuning/Intake/DeployUpDValue";
     public static double DEFAULT_DEPLOY_UP_D_VALUE = 0.2;
     public static final String NT_DEPLOY_UP_G_VALUE = "Tuning/Intake/DeployUpGValue";
-    public static double DEFAULT_DEPLOY_UP_G_VALUE = 1.6;
+    public static double DEFAULT_DEPLOY_UP_G_VALUE = 1.85;
 
     public static final String NT_DEPLOYED_POSITION = "Tuning/Intake/DeployPosition";
     public static double DEFAULT_DEPLOYED_POSITION = 0.0;

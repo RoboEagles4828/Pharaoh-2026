@@ -161,7 +161,6 @@ public class Intake extends SubsystemBase {
         return Commands.defer(
             () -> Commands.parallel(        
                 deployIntake(),
-
                 Commands.sequence(
                     Commands.waitSeconds(0.5),
                     Commands.parallel(
