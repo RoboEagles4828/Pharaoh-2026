@@ -9,7 +9,6 @@ public class ShooterConstants {
     public static final String NT_ACTUAL_SPEED_MPS_ONE = "Tuning/Shooter/ActualShooterSpeedMPSOne";
     public static final String NT_ACTUAL_SPEED_MPS_TWO = "Tuning/Shooter/ActualShooterSpeedMPSTwo"; 
     public static final String NT_ACTUAL_SPEED_MPS_THREE = "Tuning/Shooter/ActualShooterSpeedMPSThree";
-    public static final String NT_ACTUAL_KICKER_SPEED_MPS = "Tuning/Shooter/ActualKickerSpeedMPS";
     public static final String NT_ACTUAL_HOOD_POSITION = "Tuning/Shooter/ActualHoodPosition";
 
     public static final String NT_SHOOTER_P_VALUE = "Tuning/Shooter/ShooterPValue";
@@ -29,21 +28,7 @@ public class ShooterConstants {
         static final double DERIVATIVE = 0.0;
     }
 
-    /** KICKER CONSTANTS */
-    public static final String NT_KICKER_TARGET_SPEED_MPS = "Tuning/Shooter/TargetKickerSpeedMPS";
-    public static final String NT_KICKER_P_VALUE = "Tuning/Shooter/KickerPValue";
-    public static final String NT_KICKER_V_VALUE = "Tuning/Shooter/KickerVValue";
-    public static double KICKER_GEAR_RATIO = 4.0;
-    public static double KICKER_WHEEL_DIAMETER = Units.inchesToMeters(2.25);
-    public static int DEFAULT_KICKER_SPEED_MPS = 5;
-    
-    static class KICKER_PID_CONFIG {
-        static final double VELOCITY = 0.39;
-        static final double PROPORTIONAL = 0.1;
-    }
-
     /** HOOD CONSTANTS */
-    
     public static final String NT_TARGET_SPEED_MPS = "Tuning/Shooter/TargetShooterSpeedMPS";
     public static final String NT_TARGET_HOOD_POSITION = "Tuning/Shooter/TargetHoodPosition";
     public static final String NT_HOOD_P_VALUE = "Tuning/Shooter/HoodPValue";

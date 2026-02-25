@@ -1,9 +1,11 @@
 package frc.robot.subsystems.hopper;
 
 import java.util.Collections;
+import java.util.Set;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,7 +29,7 @@ public class Hopper extends SubsystemBase {
                         conveyorMotor.set(hopperDutyCycle.get());
                     });
                 },
-                Collections.emptySet());
+                Set.of(this));
     }
 
     public Command stopConveyor() {
@@ -37,6 +39,6 @@ public class Hopper extends SubsystemBase {
                         conveyorMotor.stopMotor();
                     });
                 },
-                Collections.emptySet());
+                Set.of(this));
     }
 }

@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -19,7 +18,7 @@ import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.limelight.Limelight;
+import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.limelight.Vision;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.util.Util4828;
@@ -42,6 +41,7 @@ public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
   private static final boolean ENABLE_DRIVETRAIN = true;
   private static final boolean ENABLE_SHOOTER = true;
+  private static final boolean ENABLE_KICKER = true;
   private static final boolean ENABLE_INTAKE = true;
   private static final boolean ENABLE_HOPPER = true;
   private static final boolean ENABLE_VISION = false;
@@ -62,6 +62,9 @@ public class RobotContainer {
 
   /*** SHOOTER SUBSYSTEM ***/
   private Shooter shooter = null;
+
+  /*** KICKER SUBSYSTEM ***/
+  private Kicker kicker = null;
 
   /*** INTAKE SUBSYSTEM ***/
   private Intake intake = null;
@@ -90,6 +93,9 @@ public class RobotContainer {
 
     if (ENABLE_SHOOTER)
       shooter = new Shooter();
+    
+    if (ENABLE_KICKER)
+      kicker = new Kicker();
 
     if (ENABLE_INTAKE)
       intake = new Intake();
@@ -131,6 +137,8 @@ public class RobotContainer {
       RobotModeTriggers.disabled().whileTrue(
           drivetrain.applyRequest(() -> idle).ignoringDisable(true)
       );
+      
+      driverController.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
       // Lock-on to HUB while holding right trigger
       driverController.rightBumper().whileTrue(
@@ -187,11 +195,20 @@ public class RobotContainer {
 
     /*** SHOOTER ***/
     if (shooter != null) {
+      shooter.setDefaultCommand(shooter.stop());
       driverController.a().whileTrue(shooter.start());
-      driverController.a().onFalse(shooter.stop());
-      
+
       driverController.a().whileTrue(shooter.raiseHood());
       driverController.a().whileFalse(shooter.lowerHood());
+
+      if (kicker != null) {
+        driverController.a().whileTrue(kicker.start());
+      }
+    }
+
+    /*** KICKER ***/
+    if (kicker != null) {
+      kicker.setDefaultCommand(kicker.stop());
     }
 
     /*** CLIMBER ***/
@@ -205,14 +222,30 @@ public class RobotContainer {
 
     /*** INTAKE ***/
     if (intake != null) {
+      intake.setDefaultCommand(intake.stopAndRetract());
       driverController.leftTrigger().whileTrue(intake.intake());
-      driverController.leftTrigger().whileFalse(intake.stopAndRetract());
+
+      // Also run the conveyor while intaking
+      if (hopper != null) {
+        driverController.leftTrigger().whileTrue(hopper.startConveyor());
+      }
+      if (shooter != null) {
+        driverController.leftTrigger().whileTrue(shooter.startIntake());
+      }
+      if (kicker != null) {
+        driverController.leftTrigger().whileTrue(kicker.startIntake());
+      }
     }
 
     /*** HOPPER ***/
     if (hopper != null) {
+      hopper.setDefaultCommand(hopper.stopConveyor());
       driverController.x().whileTrue(hopper.startConveyor());
-      driverController.x().whileFalse(hopper.stopConveyor());
+
+      // We're trying to shoot, start kicker
+      if (kicker != null) {
+        driverController.x().whileTrue(kicker.start());
+      }
     }
   }
 }
