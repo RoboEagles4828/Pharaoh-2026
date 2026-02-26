@@ -42,4 +42,47 @@ public class ShooterConstants {
         static final double PROPORTIONAL = 110.0;
         static final double DERIVATIVE = 1.0;
     }
+
+    /** SHOOT FROM ANYWHERE DATA */
+    public static final ShooterParameters[] SHOOT_LOOKUP_TABLE = new ShooterParameters[20]; 
+    public static final int SHOOT_TABLE_INTERVAL = 1; // 1 ft between each entry
+
+    static {
+        SHOOT_LOOKUP_TABLE[0] = new ShooterParameters(0, 6, 0.05);
+        SHOOT_LOOKUP_TABLE[1] = new ShooterParameters(1, 6, 0.05);
+        SHOOT_LOOKUP_TABLE[2] = new ShooterParameters(2, 6, 0.1);
+        SHOOT_LOOKUP_TABLE[3] = new ShooterParameters(3, 6, 0.15);
+        SHOOT_LOOKUP_TABLE[4] = new ShooterParameters(4, 6, 0.2);
+        SHOOT_LOOKUP_TABLE[5] = new ShooterParameters(5, 6, 0.25);
+        SHOOT_LOOKUP_TABLE[6] = new ShooterParameters(6, 6, 0.3);
+        SHOOT_LOOKUP_TABLE[7] = new ShooterParameters(7, 6, 0.35);
+        SHOOT_LOOKUP_TABLE[8] = new ShooterParameters(8, 6, 0.4);
+        SHOOT_LOOKUP_TABLE[9] = new ShooterParameters(9, 6, 0.45);
+        SHOOT_LOOKUP_TABLE[10] = new ShooterParameters(10, 6, 0.5);
+        SHOOT_LOOKUP_TABLE[11] = new ShooterParameters(11, 6, 0.5);
+        SHOOT_LOOKUP_TABLE[12] = new ShooterParameters(12, 6, 0.5);
+        SHOOT_LOOKUP_TABLE[13] = new ShooterParameters(13, 6, 0.5);
+        SHOOT_LOOKUP_TABLE[14] = new ShooterParameters(14, 6, 0.5);
+        SHOOT_LOOKUP_TABLE[15] = new ShooterParameters(15, 6, 0.5);
+        SHOOT_LOOKUP_TABLE[16] = new ShooterParameters(16, 6, 0.5);
+        SHOOT_LOOKUP_TABLE[17] = new ShooterParameters(17, 6, 0.5);
+        SHOOT_LOOKUP_TABLE[18] = new ShooterParameters(18, 6, 0.5);
+        SHOOT_LOOKUP_TABLE[19] = new ShooterParameters(19, 6, 0.5);
+    }
+
+    public static final ShooterParameters[] PASS_LOOKUP_TABLE = new ShooterParameters[11];
+    public static final int PASS_TABLE_INTERVAL = 5; // 5ft per entry
+    static {
+        PASS_LOOKUP_TABLE[0] = new ShooterParameters(0, 6, 0.05);
+        PASS_LOOKUP_TABLE[1] = new ShooterParameters(5, 6, 0.05);
+        PASS_LOOKUP_TABLE[2] = new ShooterParameters(10, 6, 0.05);
+        PASS_LOOKUP_TABLE[3] = new ShooterParameters(15, 6, 0.05);
+        PASS_LOOKUP_TABLE[4] = new ShooterParameters(20, 6, 0.05);
+        PASS_LOOKUP_TABLE[5] = new ShooterParameters(25, 6, 0.05);
+        PASS_LOOKUP_TABLE[6] = new ShooterParameters(30, 6, 0.05);
+        PASS_LOOKUP_TABLE[7] = new ShooterParameters(35, 6, 0.05);
+        PASS_LOOKUP_TABLE[8] = new ShooterParameters(40, 6, 0.05);
+        PASS_LOOKUP_TABLE[9] = new ShooterParameters(45, 6, 0.05);
+        PASS_LOOKUP_TABLE[9] = new ShooterParameters(50, 6, 0.05);
+    }
 }
