@@ -1,6 +1,12 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import frc.robot.util.Util4828;
 
 public class ShooterConstants {
     public static final String NT_APPLY_PID_BUTTON = "Tuning/Shooter/ApplyPIDButton";
@@ -44,45 +50,82 @@ public class ShooterConstants {
     }
 
     /** SHOOT FROM ANYWHERE DATA */
-    public static final ShooterParameters[] SHOOT_LOOKUP_TABLE = new ShooterParameters[20]; 
-    public static final int SHOOT_TABLE_INTERVAL = 1; // 1 ft between each entry
+    public static final InterpolatingDoubleTreeMap SHOOT_VELOCITY_MAP = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap SHOOT_HOOD_POSITION_MAP = new InterpolatingDoubleTreeMap();
 
     static {
-        SHOOT_LOOKUP_TABLE[0] = new ShooterParameters(0, 6, 0.05);
-        SHOOT_LOOKUP_TABLE[1] = new ShooterParameters(1, 6, 0.05);
-        SHOOT_LOOKUP_TABLE[2] = new ShooterParameters(2, 6, 0.1);
-        SHOOT_LOOKUP_TABLE[3] = new ShooterParameters(3, 6, 0.15);
-        SHOOT_LOOKUP_TABLE[4] = new ShooterParameters(4, 6, 0.2);
-        SHOOT_LOOKUP_TABLE[5] = new ShooterParameters(5, 6, 0.25);
-        SHOOT_LOOKUP_TABLE[6] = new ShooterParameters(6, 6, 0.3);
-        SHOOT_LOOKUP_TABLE[7] = new ShooterParameters(7, 6, 0.35);
-        SHOOT_LOOKUP_TABLE[8] = new ShooterParameters(8, 6, 0.4);
-        SHOOT_LOOKUP_TABLE[9] = new ShooterParameters(9, 6, 0.45);
-        SHOOT_LOOKUP_TABLE[10] = new ShooterParameters(10, 6, 0.5);
-        SHOOT_LOOKUP_TABLE[11] = new ShooterParameters(11, 6, 0.5);
-        SHOOT_LOOKUP_TABLE[12] = new ShooterParameters(12, 6, 0.5);
-        SHOOT_LOOKUP_TABLE[13] = new ShooterParameters(13, 6, 0.5);
-        SHOOT_LOOKUP_TABLE[14] = new ShooterParameters(14, 6, 0.5);
-        SHOOT_LOOKUP_TABLE[15] = new ShooterParameters(15, 6, 0.5);
-        SHOOT_LOOKUP_TABLE[16] = new ShooterParameters(16, 6, 0.5);
-        SHOOT_LOOKUP_TABLE[17] = new ShooterParameters(17, 6, 0.5);
-        SHOOT_LOOKUP_TABLE[18] = new ShooterParameters(18, 6, 0.5);
-        SHOOT_LOOKUP_TABLE[19] = new ShooterParameters(19, 6, 0.5);
+
+        // distance from the front bumper of the robot to the hub in feet, velocity in m/s
+        SHOOT_VELOCITY_MAP.put(0.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(1.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(2.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(3.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(4.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(5.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(6.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(7.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(8.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(9.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(10.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(11.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(12.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(13.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(14.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(15.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(16.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(17.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(18.0, 0.0);
+        SHOOT_VELOCITY_MAP.put(19.0, 0.0);
+
+        // distance to the hub in feet, position in mechanism rotations
+        SHOOT_HOOD_POSITION_MAP.put(0.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(1.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(2.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(3.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(4.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(5.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(6.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(7.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(8.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(9.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(10.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(11.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(12.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(13.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(14.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(15.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(16.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(17.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(18.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(19.0, 0.0);
     }
 
-    public static final ShooterParameters[] PASS_LOOKUP_TABLE = new ShooterParameters[11];
-    public static final int PASS_TABLE_INTERVAL = 5; // 5ft per entry
+    public static final InterpolatingDoubleTreeMap PASS_VELOCITY_MAP = new InterpolatingDoubleTreeMap();
+
     static {
-        PASS_LOOKUP_TABLE[0] = new ShooterParameters(0, 6, 0.05);
-        PASS_LOOKUP_TABLE[1] = new ShooterParameters(5, 6, 0.05);
-        PASS_LOOKUP_TABLE[2] = new ShooterParameters(10, 6, 0.05);
-        PASS_LOOKUP_TABLE[3] = new ShooterParameters(15, 6, 0.05);
-        PASS_LOOKUP_TABLE[4] = new ShooterParameters(20, 6, 0.05);
-        PASS_LOOKUP_TABLE[5] = new ShooterParameters(25, 6, 0.05);
-        PASS_LOOKUP_TABLE[6] = new ShooterParameters(30, 6, 0.05);
-        PASS_LOOKUP_TABLE[7] = new ShooterParameters(35, 6, 0.05);
-        PASS_LOOKUP_TABLE[8] = new ShooterParameters(40, 6, 0.05);
-        PASS_LOOKUP_TABLE[9] = new ShooterParameters(45, 6, 0.05);
-        PASS_LOOKUP_TABLE[9] = new ShooterParameters(50, 6, 0.05);
+        PASS_VELOCITY_MAP.put(0.0, 0.0);
+        PASS_VELOCITY_MAP.put(5.0, 0.0);
+        PASS_VELOCITY_MAP.put(10.0, 0.0);
+        PASS_VELOCITY_MAP.put(15.0, 0.0);
+        PASS_VELOCITY_MAP.put(20.0, 0.0);
+        PASS_VELOCITY_MAP.put(25.0, 0.0);
+        PASS_VELOCITY_MAP.put(30.0, 0.0);
+        PASS_VELOCITY_MAP.put(35.0, 0.0);
+        PASS_VELOCITY_MAP.put(40.0, 0.0);
+        PASS_VELOCITY_MAP.put(45.0, 0.0);
+        PASS_VELOCITY_MAP.put(50.0, 0.0);
     }
+
+    public static final double SECONDS_OF_DATA_TO_AVERAGE = 0.1; // how many seconds of data to use for the moving average filter in the launch calculator
+    
+
+    public static final Translation2d CENTER_HUB = 
+        new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(317.69 / 2));
+    
+    public static final Translation2d TOP_PASS_POINT =
+        new Translation2d(Units.inchesToMeters(156.61 / 2), Units.inchesToMeters(317.69 * 0.75));
+
+     public static final Translation2d BOTTOM_PASS_POINT = 
+        new Translation2d(Units.inchesToMeters(156.61 / 2), Units.inchesToMeters(317.69 / 4));
+
 }

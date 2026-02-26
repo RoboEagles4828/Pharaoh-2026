@@ -31,11 +31,11 @@ public class Shooter extends SubsystemBase {
     private static final TunableNumber hoodDValue = new TunableNumber(ShooterConstants.NT_HOOD_D_VALUE, ShooterConstants.HOOD_PID_CONFIG.DERIVATIVE);
 
     /** Motor controlling the launching wheels */
-    //one
+    // one
     private final TalonFX shooterMotorOne;
-    //two
+    // two
     private final TalonFX shooterMotorTwo;
-    //three
+    // three
     private final TalonFX shooterMotorThree;
 
     /** Motor controlling the hood */
