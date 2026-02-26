@@ -28,12 +28,12 @@ public class IntakeConstants {
     public static final String NT_DEPLOY_UP_D_VALUE = "Tuning/Intake/DeployUpDValue";
     public static double DEFAULT_DEPLOY_UP_D_VALUE = 0.2;
     public static final String NT_DEPLOY_UP_G_VALUE = "Tuning/Intake/DeployUpGValue";
-    public static double DEFAULT_DEPLOY_UP_G_VALUE = 1.85;
+    public static double DEFAULT_DEPLOY_UP_G_VALUE = 2.0;
 
     public static final String NT_DEPLOYED_POSITION = "Tuning/Intake/DeployPosition";
     public static double DEFAULT_DEPLOYED_POSITION = 0.0;
     public static final String NT_RAISED_POSITION = "Tuning/Intake/RaisedPosition";
-    public static double DEFAULT_RAISED_POSITION = 0.2;
+    public static double DEFAULT_RAISED_POSITION = 0.21;
 
     public static final String NT_INTAKE_S_VALUE = "Tuning/Intake/IntakeMotorSValue";
     public static double DEFAULT_INTAKE_S_VALUE = 0.2;

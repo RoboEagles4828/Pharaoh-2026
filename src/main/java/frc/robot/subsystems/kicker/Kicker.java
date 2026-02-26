@@ -16,7 +16,7 @@ import frc.robot.util.Util4828;
 
 public class Kicker extends SubsystemBase {
     private static final TunableNumber kickingSpeedMPS = new TunableNumber(KickerConstants.NT_KICKER_TARGET_SPEED_MPS, KickerConstants.DEFAULT_KICKER_SPEED_MPS);
-    private static final TunableNumber intakeSpeedMPS = new TunableNumber("Tuning/Kicker/TargetIntakeSpeed", 2.0);
+    private static final TunableNumber intakeSpeedMPS = new TunableNumber("Tuning/Kicker/TargetIntakeSpeed", 0.0);
     private static final TunableNumber kickerPValue = new TunableNumber(KickerConstants.NT_KICKER_P_VALUE, KickerConstants.KICKER_PID_CONFIG.PROPORTIONAL);
     private static final TunableNumber kickerVValue = new TunableNumber(KickerConstants.NT_KICKER_V_VALUE, KickerConstants.KICKER_PID_CONFIG.VELOCITY);
 

@@ -182,7 +182,7 @@ public class RobotContainer {
           .withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED)
           .withRotationalRate(0)));
 
-      // Reset the field-centric heading on left bumper press.
+      // Reset the field-centric heading on start
       driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
       driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
@@ -200,10 +200,6 @@ public class RobotContainer {
 
       driverController.a().whileTrue(shooter.raiseHood());
       driverController.a().whileFalse(shooter.lowerHood());
-
-      if (kicker != null) {
-        driverController.a().whileTrue(kicker.start());
-      }
     }
 
     /*** KICKER ***/
