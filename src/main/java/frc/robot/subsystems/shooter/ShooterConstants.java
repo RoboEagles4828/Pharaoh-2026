@@ -82,10 +82,8 @@ public class ShooterConstants {
     public static final InterpolatingDoubleTreeMap PASS_VELOCITY_MAP = new InterpolatingDoubleTreeMap();
 
     static {
-        PASS_VELOCITY_MAP.put(112.0, 12.0);
-        PASS_VELOCITY_MAP.put(184.0, 15.96);
         PASS_VELOCITY_MAP.put(348.0, 25.0);
+        PASS_VELOCITY_MAP.put(184.0, 15.96);
+        PASS_VELOCITY_MAP.put(112.0, 12.0);
     }
-
-    public static final double SECONDS_OF_DATA_TO_AVERAGE = 0.1; // how many seconds of data to use for the moving average filter in the launch calculator
 }
