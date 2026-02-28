@@ -107,7 +107,7 @@ public class LockOnDriveCommand extends Command {
 		Rotation2d desiredHeading = toTarget.getAngle();
 		Rotation2d currentHeading = robotPose.getRotation();
 
-		return Math.abs(desiredHeading.minus(currentHeading).getRadians()) < Math.toRadians(AIM_TOLERANCE_DEGREES)
+		return Math.abs(desiredHeading.minus(currentHeading).getRadians()) < Math.toRadians(AIM_TOLERANCE_DEGREES);
 	}
 
 	@Override

@@ -212,8 +212,8 @@ public class RobotContainer {
       climber.setDefaultCommand(climber.stop());
       driverController.y().whileTrue(climber.climbUp());
       driverController.x().whileTrue(climber.climbDown());
-      driverController.b().onTrue(climber.climbToPeak());
-      driverController.a().onTrue(climber.retractClimb());
+      //driverController.y().onTrue(climber.climbToPeak());
+      //driverController.x().onTrue(climber.retractClimb());
     }
 
     /*** INTAKE ***/

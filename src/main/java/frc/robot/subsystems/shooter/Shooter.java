@@ -43,8 +43,8 @@ public class Shooter extends SubsystemBase {
 
     private final DigitalInput hoodLimitSwitch;
 
-    private double targetHoodPosition;
-    private double targetLaunchVelocity;
+    private double targetHoodPosition = 0.5;
+    private double targetLaunchVelocity = 0.0;
 
     /** Request for controlling the motor in MPS */
     private final VelocityVoltage shooterVelocityVoltageRequest = new VelocityVoltage(0);
