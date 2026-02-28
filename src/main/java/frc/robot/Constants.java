@@ -19,11 +19,21 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
  */
 public final class Constants {
   public static class FieldConstants {
+    public enum TowerSide {
+        LEFT, RIGHT
+    }
+
     public static final AprilTagFields APRIL_TAG_FIELD_TYPE = AprilTagFields.k2026RebuiltAndymark;
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(APRIL_TAG_FIELD_TYPE);
     public static final Field2d FIELD = new Field2d();
     public static final Translation2d BLUE_HUB_CENTER = new Translation2d(4.6116, 4.0213); // AndyMark measurements - which NC uses
     public static final Translation2d RED_HUB_CENTER = new Translation2d(11.9014, 4.0213); // AndyMark measurements - which NC uses
+
+    public static final Translation2d BLUE_PASS_TOP = new Translation2d(2, 5.801);
+    public static final Translation2d BLUE_PASS_BOTTOM = new Translation2d(2, 1.687);
+    public static final Translation2d RED_PASS_TOP = new Translation2d(14.493, 5.801);
+    public static final Translation2d RED_PASS_BOTTOM = new Translation2d(14.493, 1.687);
+    public static final double FIELD_MIDPOINT_Y = 4.0;
   }
 
   public static class OperatorConstants {
@@ -31,11 +41,28 @@ public final class Constants {
     public static final int kOperatorControllerPort = 1;
   }
 
+  public static class DigitalIDS {
+    public static int HOOD_LIMIT_SWITCH = 0;
+    public static int INTAKE_LIMIT_SWITCH = 1;
+  }
+
+  public static String RIO_BUS_NAME = "rio";
   public static class RioBusCANIds {
+    public static int SHOOTER_MOTOR_ONE_ID = 41;
+    public static int SHOOTER_MOTOR_TWO_ID = 42;
+    public static int SHOOTER_MOTOR_THREE_ID = 43;
+    public static int KICKER_MOTOR_ID = 45; 
+    public static int HOOD_MOTOR_ID = 44; 
+    public static int INTAKE_MOTOR_ID = 36; 
+    public static int INTAKE_DEPLOY_MOTOR_ID = 35; 
+    public static int NINJA_STAR_MOTOR_ID = 34; 
+    public static int HOPPER_CONVEYOR_MOTOR_ID = 33; 
+  }
+
+  public static String CANIVORE_NAME = "canivore";
+  public static class CANivoreBusCANIds {
     // NOTE - 1 to 12 are reserved for the swerve drivetrain.
-    public static int SHOOTER_MOTOR_ID = 13;
-    public static int CLIMBER_MOTOR_ID = 15;
-    public static int INTAKE_MOTOR_ID = 21;
+    public static int CLIMBER_MOTOR_ID = 22;
   }
 
   public static class RobotConstants {

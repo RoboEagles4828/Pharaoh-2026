@@ -3,6 +3,7 @@ package frc.robot.subsystems.drivetrain;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -14,6 +15,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,14 +27,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.util.TunableNumber;
+import frc.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.util.Util4828;
 
 /**
@@ -42,10 +43,6 @@ import frc.robot.util.Util4828;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final double kSimLoopPeriod = 0.004; // 4 ms
-    private Notifier m_simNotifier = null;
-    private double m_lastSimTime;
-
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -61,65 +58,90 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Swerve request for pathplanner */
     private final SwerveRequest.ApplyRobotSpeeds pathplannerApplyAutoSpeedsRequest = new SwerveRequest.ApplyRobotSpeeds();
 
+    /* Network table entries */
+    private static final String NT_SEED_X = "seedX";
+    private static final String NT_SEED_Y = "seedY";
+    private static final String NT_SEED_THETA = "seedThetaDegrees";
+    private static final String NT_SEED_TRIGGER = "seedTrigger";
+    /*
+     * Network tables fields for more easily seeding pose given tag and distance
+     * from tag.
+     */
+    private static final String NT_AUTOSEED_TAG_ID = "AutoSeedTagID";
+    private static final String NT_AUTOSEED_DISTANCE_FT = "AutoSeedDistanceFt";
+    private static final String NT_AUTOSEED_FACE_TAG = "AutoSeedFaceTag";
+    private static final String NT_AUTOSEED_TRIGGER = "AutoSeedPoseTrigger";
 
-    /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
+    public static final String NT_TOWERALIGN_STEP1_X_LEFT = "TowerAlign/Step1XLeft";
+    public static final String NT_TOWERALIGN_STEP1_Y_LEFT = "TowerAlign/Step1YLeft";
+    public static final String NT_TOWERALIGN_STEP1_THETA_LEFT = "TowerAlign/Step1Theta";
+    public static final String NT_TOWERALIGN_STEP2_X_LEFT = "TowerAlign/Left/Step2X";
+    public static final String NT_TOWERALIGN_STEP2_Y_LEFT = "TowerAlign/Left/Step2Y";
+    public static final String NT_TOWERALIGN_STEP2_THETA_LEFT = "TowerAlign/Left/Step2Theta";
+    public static final String NT_TOWERALIGN_STEP1_X_RIGHT = "TowerAlign/Right/Step1X";
+    public static final String NT_TOWERALIGN_STEP1_Y_RIGHT = "TowerAlign/Right/Step1Y";
+    public static final String NT_TOWERALIGN_STEP1_THETA_RIGHT = "TowerAlign/Right/Step1Theta";
+    public static final String NT_TOWERALIGN_STEP2_X_RIGHT = "TowerAlign/Right/Step2X";
+    public static final String NT_TOWERALIGN_STEP2_Y_RIGHT = "TowerAlign/Right/Step2Y";
+    public static final String NT_TOWERALIGN_STEP2_THETA_RIGHT = "TowerAlign/Right/Step2Theta";
+
+    /*
+     * SysId routine for characterizing translation. This is used to find PID gains
+     * for the drive motors.
+     */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,        // Use default ramp rate (1 V/s)
-            Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
-            null,        // Use default timeout (10 s)
-            // Log state with SignalLogger class
-            state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())
-        ),
-        new SysIdRoutine.Mechanism(
-            output -> setControl(m_translationCharacterization.withVolts(output)),
-            null,
-            this
-        )
-    );
+            new SysIdRoutine.Config(
+                    null, // Use default ramp rate (1 V/s)
+                    Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
+                    null, // Use default timeout (10 s)
+                    // Log state with SignalLogger class
+                    state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    output -> setControl(m_translationCharacterization.withVolts(output)),
+                    null,
+                    this));
 
-    /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
+    /*
+     * SysId routine for characterizing steer. This is used to find PID gains for
+     * the steer motors.
+     */
     private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,        // Use default ramp rate (1 V/s)
-            Volts.of(7), // Use dynamic voltage of 7 V
-            null,        // Use default timeout (10 s)
-            // Log state with SignalLogger class
-            state -> SignalLogger.writeString("SysIdSteer_State", state.toString())
-        ),
-        new SysIdRoutine.Mechanism(
-            volts -> setControl(m_steerCharacterization.withVolts(volts)),
-            null,
-            this
-        )
-    );
+            new SysIdRoutine.Config(
+                    null, // Use default ramp rate (1 V/s)
+                    Volts.of(7), // Use dynamic voltage of 7 V
+                    null, // Use default timeout (10 s)
+                    // Log state with SignalLogger class
+                    state -> SignalLogger.writeString("SysIdSteer_State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    volts -> setControl(m_steerCharacterization.withVolts(volts)),
+                    null,
+                    this));
 
     /*
      * SysId routine for characterizing rotation.
-     * This is used to find PID gains for the FieldCentricFacingAngle HeadingController.
-     * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
+     * This is used to find PID gains for the FieldCentricFacingAngle
+     * HeadingController.
+     * See the documentation of SwerveRequest.SysIdSwerveRotation for info on
+     * importing the log to SysId.
      */
     private final SysIdRoutine m_sysIdRoutineRotation = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            /* This is in radians per second², but SysId only supports "volts per second" */
-            Volts.of(Math.PI / 6).per(Second),
-            /* This is in radians per second, but SysId only supports "volts" */
-            Volts.of(Math.PI),
-            null, // Use default timeout (10 s)
-            // Log state with SignalLogger class
-            state -> SignalLogger.writeString("SysIdRotation_State", state.toString())
-        ),
-        new SysIdRoutine.Mechanism(
-            output -> {
-                /* output is actually radians per second, but SysId only supports "volts" */
-                setControl(m_rotationCharacterization.withRotationalRate(output.in(Volts)));
-                /* also log the requested output for SysId */
-                SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
-            },
-            null,
-            this
-        )
-    );
+            new SysIdRoutine.Config(
+                    /* This is in radians per second², but SysId only supports "volts per second" */
+                    Volts.of(Math.PI / 6).per(Second),
+                    /* This is in radians per second, but SysId only supports "volts" */
+                    Volts.of(Math.PI),
+                    null, // Use default timeout (10 s)
+                    // Log state with SignalLogger class
+                    state -> SignalLogger.writeString("SysIdRotation_State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    output -> {
+                        /* output is actually radians per second, but SysId only supports "volts" */
+                        setControl(m_rotationCharacterization.withRotationalRate(output.in(Volts)));
+                        /* also log the requested output for SysId */
+                        SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
+                    },
+                    null,
+                    this));
 
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
@@ -127,84 +149,59 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
      * <p>
-     * This constructs the underlying hardware devices, so users should not construct
-     * the devices themselves. If they need the devices, they can access them through
+     * This constructs the underlying hardware devices, so users should not
+     * construct
+     * the devices themselves. If they need the devices, they can access them
+     * through
      * getters in the classes.
      *
-     * @param drivetrainConstants   Drivetrain-wide constants for the swerve drive
-     * @param modules               Constants for each specific module
-     */
-    public CommandSwerveDrivetrain(
-        SwerveDrivetrainConstants drivetrainConstants,
-        SwerveModuleConstants<?, ?, ?>... modules
-    ) {
-        super(drivetrainConstants, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        init();
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not construct
-     * the devices themselves. If they need the devices, they can access them through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants     Drivetrain-wide constants for the swerve drive
-     * @param odometryUpdateFrequency The frequency to run the odometry loop. If
-     *                                unspecified or set to 0 Hz, this is 250 Hz on
-     *                                CAN FD, and 100 Hz on CAN 2.0.
-     * @param modules                 Constants for each specific module
-     */
-    public CommandSwerveDrivetrain(
-        SwerveDrivetrainConstants drivetrainConstants,
-        double odometryUpdateFrequency,
-        SwerveModuleConstants<?, ?, ?>... modules
-    ) {
-        super(drivetrainConstants, odometryUpdateFrequency, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        init();
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not construct
-     * the devices themselves. If they need the devices, they can access them through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants       Drivetrain-wide constants for the swerve drive
+     * @param drivetrainConstants       Drivetrain-wide constants for the swerve
+     *                                  drive
      * @param odometryUpdateFrequency   The frequency to run the odometry loop. If
-     *                                  unspecified or set to 0 Hz, this is 250 Hz on
+     *                                  unspecified or set to 0 Hz, this is 250 Hz
+     *                                  on
      *                                  CAN FD, and 100 Hz on CAN 2.0.
-     * @param odometryStandardDeviation The standard deviation for odometry calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in meters
+     * @param odometryStandardDeviation The standard deviation for odometry
+     *                                  calculation
+     *                                  in the form [x, y, theta]ᵀ, with units in
+     *                                  meters
      *                                  and radians
-     * @param visionStandardDeviation   The standard deviation for vision calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in meters
+     * @param visionStandardDeviation   The standard deviation for vision
+     *                                  calculation
+     *                                  in the form [x, y, theta]ᵀ, with units in
+     *                                  meters
      *                                  and radians
      * @param modules                   Constants for each specific module
      */
     public CommandSwerveDrivetrain(
-        SwerveDrivetrainConstants drivetrainConstants,
-        double odometryUpdateFrequency,
-        Matrix<N3, N1> odometryStandardDeviation,
-        Matrix<N3, N1> visionStandardDeviation,
-        SwerveModuleConstants<?, ?, ?>... modules
-    ) {
-        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
+            SwerveDrivetrainConstants drivetrainConstants,
+            double odometryUpdateFrequency,
+            Matrix<N3, N1> odometryStandardDeviation,
+            Matrix<N3, N1> visionStandardDeviation,
+            SwerveModuleConstants<?, ?, ?>... modules) {
+        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation,
+                modules);
+        init();
+    }
+
+    public CommandSwerveDrivetrain(
+            SwerveDrivetrainConstants drivetrainConstants,
+            double odometryUpdateFrequency,
+            SwerveModuleConstants<?, ?, ?>... modules) {
+        super(drivetrainConstants, odometryUpdateFrequency, modules);
+        init();
+    }
+
+    public CommandSwerveDrivetrain(
+            SwerveDrivetrainConstants drivetrainConstants,
+            SwerveModuleConstants<?, ?, ?>... modules) {
+        super(drivetrainConstants, modules);
         init();
     }
 
     /**
-     * Returns a command that applies the specified control request to this swerve drivetrain.
+     * Returns a command that applies the specified control request to this swerve
+     * drivetrain.
      *
      * @param request Function returning the request to apply
      * @return Command to run
@@ -235,57 +232,70 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    private static final String NT_SEED_X = "seedX";
-    private static final String NT_SEED_Y = "seedY";
-    private static final String NT_SEED_THETA = "seedThetaDegrees";
-    private static final String NT_SEED_TRIGGER = "seedTrigger";
-    /* Network tables fields for more easily seeding pose given tag and distance from tag. */
-    private static final String NT_AUTOSEED_TAG_ID = "AutoSeedTagID";
-    private static final String NT_AUTOSEED_DISTANCE_FT = "AutoSeedDistanceFt";
-    private static final String NT_AUTOSEED_FACE_TAG = "AutoSeedFaceTag";
-    private static final String NT_AUTOSEED_TRIGGER = "AutoSeedPoseTrigger";
-    public static final String NT_TOWERALIGN_X = "TowerAlign/X";
-    public static final String NT_TOWERALIGN_Y = "TowerAlign/Y";
-    public static final String NT_TOWERALIGN_THETA = "TowerAlign/Theta";
+    private PathPlannerPath towerAlignPathLeft;
+    private PathPlannerPath towerAlignPathRight;
+    private boolean loadedPathsSuccessfully;
 
-    private void init(){
+    private void init() {
+        configureAutoBuilder();
+
+        try {
+            towerAlignPathLeft = PathPlannerPath.fromPathFile("TowerAlign_Left");
+            towerAlignPathRight = PathPlannerPath.fromPathFile("TowerAlign_Right");
+            loadedPathsSuccessfully = true;
+        } catch (Exception e) {
+            System.out.println("Failed to load PathPlanner paths!\nFalling back to pathfindToPose.");
+            loadedPathsSuccessfully = false;
+        }
+
         SmartDashboard.putNumber(NT_SEED_X, 0);
         SmartDashboard.putNumber(NT_SEED_Y, 0);
         SmartDashboard.putNumber(NT_SEED_THETA, 0);
         SmartDashboard.putBoolean(NT_SEED_TRIGGER, false);
 
-        configureAutoBuilder();
-        SmartDashboard.putNumber(NT_AUTOSEED_TAG_ID, 4);
-        SmartDashboard.putNumber(NT_AUTOSEED_DISTANCE_FT, 8);
+        SmartDashboard.putNumber(NT_AUTOSEED_TAG_ID, 31);
+        SmartDashboard.putNumber(NT_AUTOSEED_DISTANCE_FT, 9);
         SmartDashboard.putBoolean(NT_AUTOSEED_FACE_TAG, true);
         SmartDashboard.putBoolean(NT_AUTOSEED_TRIGGER, false);
 
-        SmartDashboard.putNumber(NT_TOWERALIGN_X, DrivetrainConstants.TOWER_ALIGN_X);
-        SmartDashboard.putNumber(NT_TOWERALIGN_Y, DrivetrainConstants.TOWER_ALIGN_Y);
-        SmartDashboard.putNumber(NT_TOWERALIGN_THETA, DrivetrainConstants.TOWER_ALIGN_THETA);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_X_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP1_X_LEFT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_Y_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP1_Y_LEFT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_THETA_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP1_THETA_LEFT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_X_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP2_X_LEFT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_Y_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP2_Y_LEFT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_THETA_LEFT, DrivetrainConstants.TOWER_ALIGN_STEP2_THETA_LEFT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_X_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP1_X_RIGHT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_Y_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP1_Y_RIGHT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_THETA_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP1_THETA_RIGHT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_X_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP2_X_RIGHT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_Y_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP2_Y_RIGHT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_THETA_RIGHT, DrivetrainConstants.TOWER_ALIGN_STEP2_THETA_RIGHT);
     }
 
     @Override
     public void periodic() {
         /*
          * Periodically try to apply the operator perspective.
-         * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
-         * This allows us to correct the perspective in case the robot code restarts mid-match.
-         * Otherwise, only check and apply the operator perspective if the DS is disabled.
-         * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
+         * If we haven't applied the operator perspective before, then we should apply
+         * it regardless of DS state.
+         * This allows us to correct the perspective in case the robot code restarts
+         * mid-match.
+         * Otherwise, only check and apply the operator perspective if the DS is
+         * disabled.
+         * This ensures driving behavior doesn't change until an explicit disable event
+         * occurs during testing.
          */
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
-                    allianceColor == Alliance.Red
-                        ? kRedAlliancePerspectiveRotation
-                        : kBlueAlliancePerspectiveRotation
-                );
+                        allianceColor == Alliance.Red
+                                ? kRedAlliancePerspectiveRotation
+                                : kBlueAlliancePerspectiveRotation);
                 m_hasAppliedOperatorPerspective = true;
             });
         }
 
-        if (SmartDashboard.getBoolean(NT_SEED_TRIGGER, false)){
+        if (SmartDashboard.getBoolean(NT_SEED_TRIGGER, false)) {
             double seedX = SmartDashboard.getNumber(NT_SEED_X, 0);
             double seedY = SmartDashboard.getNumber(NT_SEED_Y, 0);
             double seedThetaDegrees = SmartDashboard.getNumber(NT_SEED_THETA, 0);
@@ -297,10 +307,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             SmartDashboard.putBoolean(NT_SEED_TRIGGER, false);
         }
 
-        // Automatically calculate and seed the current field position when button is clicked in dashboard
+        // Automatically calculate and seed the current field position when button is
+        // clicked in dashboard
         if (SmartDashboard.getBoolean(NT_AUTOSEED_TRIGGER, false)) {
             int tagId = (int) SmartDashboard.getNumber(NT_AUTOSEED_TAG_ID, 1);
-            double distanceFt = SmartDashboard.getNumber(NT_AUTOSEED_DISTANCE_FT, 8);
+            double distanceFt = SmartDashboard.getNumber(NT_AUTOSEED_DISTANCE_FT, 9);
             boolean faceTag = SmartDashboard.getBoolean(NT_AUTOSEED_FACE_TAG, true);
 
             // Convert distance from ft to meters
@@ -311,85 +322,100 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     tagId,
                     distanceMeters,
                     0.0,
-                    Constants.RobotConstants.DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS,   // robot front-to-center in meters
-                    faceTag
-            );
+                    Constants.RobotConstants.DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS, // robot front-to-center
+                                                                                              // in meters
+                    faceTag);
 
             // set new pose
             if (newPose != null) {
                 resetPose(newPose);
             }
-            
+
             // unset the button
             SmartDashboard.putBoolean(NT_AUTOSEED_TRIGGER, false);
+
+            double distanceToCenterHub = getState().Pose.getTranslation().getDistance(Constants.FieldConstants.BLUE_HUB_CENTER);
+            SmartDashboard.putNumber("Distance to Center Hub (ft)", Units.metersToFeet(distanceToCenterHub));
         }
 
         Constants.FieldConstants.FIELD.setRobotPose(getState().Pose);
 
-        // Draw the target climb position on Elastic
-        double targetX = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_X, DrivetrainConstants.TOWER_ALIGN_X);
-        double targetY = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_Y, DrivetrainConstants.TOWER_ALIGN_Y);
-        double targetTheta = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_THETA, DrivetrainConstants.TOWER_ALIGN_THETA);
-        Pose2d climbPose = new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
-        Constants.FieldConstants.FIELD.getObject("Tower").setPose(climbPose);
+        // Draw the target climb positions on Elastic
+        double targetX1Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_LEFT,
+                DrivetrainConstants.TOWER_ALIGN_STEP1_X_LEFT);
+        double targetY1Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_LEFT,
+                DrivetrainConstants.TOWER_ALIGN_STEP1_Y_LEFT);
+        double targetTheta1Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA_LEFT,
+                DrivetrainConstants.TOWER_ALIGN_STEP1_THETA_LEFT);
+        Pose2d climbPose1Left = new Pose2d(targetX1Left, targetY1Left, Rotation2d.fromDegrees(targetTheta1Left));
+        Constants.FieldConstants.FIELD.getObject("Tower Step1 Left").setPose(climbPose1Left);
+        double targetX2Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_LEFT,
+                DrivetrainConstants.TOWER_ALIGN_STEP2_X_LEFT);
+        double targetY2Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_LEFT,
+                DrivetrainConstants.TOWER_ALIGN_STEP2_Y_LEFT);
+        double targetTheta2Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_THETA_LEFT,
+                DrivetrainConstants.TOWER_ALIGN_STEP2_THETA_LEFT);
+        Pose2d climbPose2Left = new Pose2d(targetX2Left, targetY2Left, Rotation2d.fromDegrees(targetTheta2Left));
+        Constants.FieldConstants.FIELD.getObject("Tower Step2 Left").setPose(climbPose2Left);
+
+        double targetX1Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_RIGHT,
+                DrivetrainConstants.TOWER_ALIGN_STEP1_X_RIGHT);
+        double targetY1Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_RIGHT,
+                DrivetrainConstants.TOWER_ALIGN_STEP1_Y_RIGHT);
+        double targetTheta1Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA_RIGHT,
+                DrivetrainConstants.TOWER_ALIGN_STEP1_THETA_RIGHT);
+        Pose2d climbPose1Right = new Pose2d(targetX1Right, targetY1Right, Rotation2d.fromDegrees(targetTheta1Right));
+        Constants.FieldConstants.FIELD.getObject("Tower Step1 Right").setPose(climbPose1Right);
+        double targetX2Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_RIGHT,
+                DrivetrainConstants.TOWER_ALIGN_STEP2_X_RIGHT);
+        double targetY2Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_RIGHT,
+                DrivetrainConstants.TOWER_ALIGN_STEP2_Y_RIGHT);
+        double targetTheta2Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_THETA_RIGHT,
+                DrivetrainConstants.TOWER_ALIGN_STEP2_THETA_RIGHT);
+        Pose2d climbPose2Right = new Pose2d(targetX2Right, targetY2Right, Rotation2d.fromDegrees(targetTheta2Right));
+        Constants.FieldConstants.FIELD.getObject("Tower Step2 Right").setPose(climbPose2Right);
 
         SmartDashboard.putString("Robot Pose", Util4828.formatPose(getState().Pose));
     }
 
-    private void startSimThread() {
-        m_lastSimTime = Utils.getCurrentTimeSeconds();
-
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - m_lastSimTime;
-            m_lastSimTime = currentTime;
-
-            /* use the measured time delta, get battery voltage from WPILib */
-            updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(kSimLoopPeriod);
-    }
-
     /**
-     * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
-     * while still accounting for measurement noise.
-     *
-     * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
-     * @param timestampSeconds The timestamp of the vision measurement in seconds.
-     */
-    @Override
-    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
-    }
-
-    /**
-     * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+     * Adds a vision measurement to the Kalman Filter. This will correct the
+     * odometry pose estimate
      * while still accounting for measurement noise.
      * <p>
      * Note that the vision measurement standard deviations passed into this method
      * will continue to apply to future measurements until a subsequent call to
      * {@link #setVisionMeasurementStdDevs(Matrix)} or this method.
      *
-     * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
-     * @param timestampSeconds The timestamp of the vision measurement in seconds.
-     * @param visionMeasurementStdDevs Standard deviations of the vision pose measurement
-     *     in the form [x, y, theta]ᵀ, with units in meters and radians.
+     * @param visionRobotPoseMeters    The pose of the robot as measured by the
+     *                                 vision camera.
+     * @param timestampSeconds         The timestamp of the vision measurement in
+     *                                 seconds.
+     * @param visionMeasurementStdDevs Standard deviations of the vision pose
+     *                                 measurement
+     *                                 in the form [x, y, theta]ᵀ, with units in
+     *                                 meters and radians.
      */
     @Override
     public void addVisionMeasurement(
-        Pose2d visionRobotPoseMeters,
-        double timestampSeconds,
-        Matrix<N3, N1> visionMeasurementStdDevs
-    ) {
-        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+            Pose2d visionRobotPoseMeters,
+            double timestampSeconds,
+            Matrix<N3, N1> visionMeasurementStdDevs) {
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds),
+                visionMeasurementStdDevs);
+    }
+
+    @Override
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
     }
 
     /**
      * Return the pose at a given timestamp, if the buffer is not empty.
      *
      * @param timestampSeconds The timestamp of the pose in seconds.
-     * @return The pose at the given timestamp (or Optional.empty() if the buffer is empty).
+     * @return The pose at the given timestamp (or Optional.empty() if the buffer is
+     *         empty).
      */
     @Override
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
@@ -400,28 +426,125 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-                () -> getState().Pose,   // Supplier of current robot pose
-                this::resetPose,         // Consumer for seeding pose against auto
-                () -> getState().Speeds, // Supplier of current robot speeds
-                // Consumer of ChassisSpeeds and feedforwards to drive the robot
-                (speeds, feedforwards) -> setControl(
-                    pathplannerApplyAutoSpeedsRequest.withSpeeds(speeds)
-                        .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                        .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
-                ),
-                new PPHolonomicDriveController(
-                    // PID constants for translation
-                    new PIDConstants(5, 0, 0),
-                    // PID constants for rotation
-                    new PIDConstants(5, 0, 0)
-                ),
-                config,
-                // Assume the path needs to be flipped for Red vs Blue, this is normally the case
-                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-                this // Subsystem for requirements
+                    () -> getState().Pose, // Supplier of current robot pose
+                    this::resetPose, // Consumer for seeding pose against auto
+                    () -> getState().Speeds, // Supplier of current robot speeds
+                    // Consumer of ChassisSpeeds and feedforwards to drive the robot
+                    (speeds, feedforwards) -> setControl(
+                            pathplannerApplyAutoSpeedsRequest.withSpeeds(speeds)
+                                    .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                                    .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
+                    new PPHolonomicDriveController(
+                            // PID constants for translation
+                            new PIDConstants(4, 0, 0),
+                            // PID constants for rotation
+                            new PIDConstants(2.5, 0, 0)),
+                    config,
+                    // Assume the path needs to be flipped for Red vs Blue, this is normally the
+                    // case
+                    () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                    this // Subsystem for requirements
             );
         } catch (Exception ex) {
-            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder",
+                    ex.getStackTrace());
+        }
+    }
+
+    /*
+     * Returns a command which drives to a set pose using pathplanner, with the
+     * given constraints (velocity, accel)
+     */
+    public Command pathfindToPose(Pose2d targetPose, PathConstraints constraints) {
+        return AutoBuilder.pathfindToPose(targetPose, constraints);
+    }
+
+    private Pose2d getTowerAlignPoseStep1(Constants.FieldConstants.TowerSide side) {
+        // todo(ben) - test for both towers
+        double targetX = side == Constants.FieldConstants.TowerSide.LEFT
+                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_LEFT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP1_X_LEFT)
+                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_RIGHT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP1_X_RIGHT);
+
+        double targetY = side == Constants.FieldConstants.TowerSide.LEFT
+                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_LEFT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP1_Y_LEFT)
+                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_RIGHT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP1_Y_RIGHT);
+
+        double targetTheta = side == Constants.FieldConstants.TowerSide.LEFT
+                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA_LEFT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP1_THETA_LEFT)
+                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA_RIGHT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP1_THETA_RIGHT);
+
+        return new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
+    }
+
+    private Pose2d getTowerAlignPoseStep2(Constants.FieldConstants.TowerSide side) {
+        double targetX = side == Constants.FieldConstants.TowerSide.LEFT
+                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_LEFT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP2_X_LEFT)
+                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_RIGHT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP2_X_RIGHT);
+
+        double targetY = side == Constants.FieldConstants.TowerSide.LEFT
+                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_LEFT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP2_Y_LEFT)
+                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_RIGHT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP2_Y_RIGHT);
+
+        double targetTheta = side == Constants.FieldConstants.TowerSide.LEFT
+                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_THETA_LEFT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP2_THETA_LEFT)
+                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_THETA_RIGHT,
+                        DrivetrainConstants.TOWER_ALIGN_STEP2_THETA_RIGHT);
+
+        return new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
+    }
+
+    private Command pathfindThenFollowPathToTower(Constants.FieldConstants.TowerSide side) {
+        return AutoBuilder.pathfindThenFollowPath(
+                side == Constants.FieldConstants.TowerSide.LEFT ? towerAlignPathLeft : towerAlignPathRight,
+                DrivetrainConstants.PathPlannerConstraints.FAST);
+    }
+
+    private double getDistanceToTower(Constants.FieldConstants.TowerSide side) {
+        // get the target positions for the towers
+        Pose2d step1Target = getTowerAlignPoseStep1(side);
+        Pose2d step2Target = getTowerAlignPoseStep2(side);
+
+        // calculate distance from robot -> tower
+        double distanceToTarget = getState().Pose.minus(step1Target).getTranslation().getNorm();
+
+        return distanceToTarget;
+    }
+
+    /* Returns a command which performs an alignment to the tower. */
+    public Command alignToTower(Constants.FieldConstants.TowerSide side) {
+        Pose2d step1Target = getTowerAlignPoseStep1(side);
+        Pose2d step2Target = getTowerAlignPoseStep2(side);
+
+        if (loadedPathsSuccessfully) {
+            return Commands.defer(
+                    () -> Commands.either(
+                            pathfindThenFollowPathToTower(side),
+                            Commands.print("Too far for auto align"),
+                            () -> getDistanceToTower(side) <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE),
+                    Set.of(this));
+        } else {
+            // use defer so we read SmartDashboard values at runtime instead of
+            // initialization
+            return Commands.defer(
+                    () -> Commands.either(
+                            Commands.sequence(
+                                    pathfindToPose(step1Target, DrivetrainConstants.PathPlannerConstraints.SAFE),
+                                    pathfindToPose(step2Target, DrivetrainConstants.PathPlannerConstraints.SAFE)),
+                            Commands.print("Too far for auto align2"),
+                            () -> getDistanceToTower(side) <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE),
+                    Set.of(this) // < the drivetrain (this) is a requirement for the command
+            );
         }
     }
 }

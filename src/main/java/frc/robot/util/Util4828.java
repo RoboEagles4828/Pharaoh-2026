@@ -1,10 +1,15 @@
 package frc.robot.util;
 
+import java.util.Optional;
+
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,16 +32,63 @@ public class Util4828 {
             : Constants.FieldConstants.BLUE_HUB_CENTER;
     }
 
+    public static Translation2d getPassLocation(Pose2d robotPose) {
+        boolean aim_top = robotPose.getY() > Constants.FieldConstants.FIELD_MIDPOINT_Y;
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+        if (alliance == Alliance.Red)
+            return aim_top ? Constants.FieldConstants.RED_PASS_TOP : Constants.FieldConstants.RED_PASS_BOTTOM;
+        else 
+            return aim_top ? Constants.FieldConstants.BLUE_PASS_TOP : Constants.FieldConstants.BLUE_PASS_BOTTOM; 
+    }
+
+    public static boolean isInAllianceZone(Pose2d robotPose) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        if (alliance == Alliance.Red) {
+            return robotPose.getX() > Constants.FieldConstants.RED_HUB_CENTER.getX();
+        }
+        else {
+            return robotPose.getX() < Constants.FieldConstants.BLUE_HUB_CENTER.getX();
+        }
+    }
+
+    public static boolean isInTopHalfOfField(Pose2d robotPose) {
+        return robotPose.getY() > Constants.FieldConstants.FIELD_MIDPOINT_Y;
+    }
+
+    public static Translation2d getLockOnTargetPosition(Pose2d robotPose) {
+        // If we're on our half of the field, lock to hub
+        if (isInAllianceZone(robotPose)) {
+            return getHubLocation();
+        }
+        
+        // Otherwise, we're passing, lock to passing position
+        return getPassLocation(robotPose);
+
+    }
+
     /*** Generic utility functions ***/
-    public static double metersPerSecondToMotorRPS(
+    public static double metersPerSecondToWheelRPS(
             double metersPerSecond,
-            double wheelDiameterMeters,
-            double gearRatio
+            double wheelDiameterMeters
     ) {
         double wheelCircumference = Math.PI * wheelDiameterMeters;
-        double wheelRPS = metersPerSecond / wheelCircumference;
-        return wheelRPS * gearRatio;
+        return metersPerSecond / wheelCircumference;
     }
+
+    public static Rotation2d averageRotation(Rotation2d[] rotations, double[] weights) {
+        double sumCos = 0;
+        double sumSin = 0;
+        double totalWeight = 0;
+
+        for (int i = 0; i < rotations.length; i++) {
+            sumCos += Math.cos(rotations[i].getRadians()) * weights[i];
+            sumSin += Math.sin(rotations[i].getRadians()) * weights[i];
+            totalWeight += weights[i];
+        }
+        return new Rotation2d(sumSin / totalWeight, sumCos / totalWeight);
+    }
+
 
     public static String formatPose(Pose2d pose) {
         return String.format(
@@ -45,6 +97,24 @@ public class Util4828 {
             pose.getY(),
             pose.getRotation().getDegrees()
         );
+    }
+
+    public static String formatMatrix3x1(Matrix<N3, N1> m) {
+        return String.format(
+            "[%.3f, %.3f, %.3f]",
+            m.get(0, 0),
+            m.get(1, 0),
+            m.get(2, 0)
+        );
+    }
+
+    public static Pose2d getAprilTagPose(int id) {
+        Optional<edu.wpi.first.math.geometry.Pose3d> pose3dOpt = Constants.FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose(id);
+        if (pose3dOpt.isPresent()) {
+            return pose3dOpt.get().toPose2d();
+        } else {
+            return null;
+        }
     }
 
     public static void publishAprilTags(Field2d field) {
