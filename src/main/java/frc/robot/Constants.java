@@ -28,6 +28,12 @@ public final class Constants {
     public static final Field2d FIELD = new Field2d();
     public static final Translation2d BLUE_HUB_CENTER = new Translation2d(4.6116, 4.0213); // AndyMark measurements - which NC uses
     public static final Translation2d RED_HUB_CENTER = new Translation2d(11.9014, 4.0213); // AndyMark measurements - which NC uses
+
+    public static final Translation2d BLUE_PASS_TOP = new Translation2d(2, 5.801);
+    public static final Translation2d BLUE_PASS_BOTTOM = new Translation2d(2, 1.687);
+    public static final Translation2d RED_PASS_TOP = new Translation2d(14.493, 5.801);
+    public static final Translation2d RED_PASS_BOTTOM = new Translation2d(14.493, 1.687);
+    public static final double FIELD_MIDPOINT_Y = 4.0;
   }
 
   public static class OperatorConstants {

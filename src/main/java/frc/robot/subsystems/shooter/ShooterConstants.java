@@ -88,15 +88,4 @@ public class ShooterConstants {
     }
 
     public static final double SECONDS_OF_DATA_TO_AVERAGE = 0.1; // how many seconds of data to use for the moving average filter in the launch calculator
-    
-
-    public static final Translation2d CENTER_HUB = 
-        new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(317.69 / 2));
-    
-    public static final Translation2d TOP_PASS_POINT =
-        new Translation2d(Units.inchesToMeters(156.61 / 2), Units.inchesToMeters(317.69 * 0.75));
-
-     public static final Translation2d BOTTOM_PASS_POINT = 
-        new Translation2d(Units.inchesToMeters(156.61 / 2), Units.inchesToMeters(317.69 / 4));
-
 }
