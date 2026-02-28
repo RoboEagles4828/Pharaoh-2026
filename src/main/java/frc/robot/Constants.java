@@ -57,12 +57,12 @@ public final class Constants {
     public static int INTAKE_DEPLOY_MOTOR_ID = 35; 
     public static int NINJA_STAR_MOTOR_ID = 34; 
     public static int HOPPER_CONVEYOR_MOTOR_ID = 33; 
+    public static int CLIMBER_MOTOR_ID = 22;
   }
 
   public static String CANIVORE_NAME = "canivore";
   public static class CANivoreBusCANIds {
     // NOTE - 1 to 12 are reserved for the swerve drivetrain.
-    public static int CLIMBER_MOTOR_ID = 22;
   }
 
   public static class RobotConstants {
