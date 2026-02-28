@@ -50,70 +50,41 @@ public class ShooterConstants {
     }
 
     /** SHOOT FROM ANYWHERE DATA */
-    public static final InterpolatingDoubleTreeMap SHOOT_VELOCITY_MAP = new InterpolatingDoubleTreeMap();
-    public static final InterpolatingDoubleTreeMap SHOOT_HOOD_POSITION_MAP = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap SHOOT_VELOCITY_MAP = new InterpolatingDoubleTreeMap(); // map of distance (in) -> velocity (m/s)
+    public static final InterpolatingDoubleTreeMap SHOOT_HOOD_POSITION_MAP = new InterpolatingDoubleTreeMap(); // map of distance (in) -> hood rotations (0.0 - -1.5)
 
     static {
-
-        // distance from the front bumper of the robot to the hub in feet, velocity in m/s
-        SHOOT_VELOCITY_MAP.put(0.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(1.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(2.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(3.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(4.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(5.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(6.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(7.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(8.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(9.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(10.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(11.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(12.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(13.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(14.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(15.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(16.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(17.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(18.0, 0.0);
-        SHOOT_VELOCITY_MAP.put(19.0, 0.0);
-
+        // distance from the front bumper of the robot to the hub in inches, velocity in m/s
+        SHOOT_VELOCITY_MAP.put(208.0, 21.0);
+        SHOOT_VELOCITY_MAP.put(42.0, 15.0);
+        SHOOT_VELOCITY_MAP.put(196.0, 20.57);
+        SHOOT_VELOCITY_MAP.put(184.0, 20.13);
+        SHOOT_VELOCITY_MAP.put(172.0, 19.7);
+        SHOOT_VELOCITY_MAP.put(160.0, 19.27);
+        SHOOT_VELOCITY_MAP.put(148.0, 18.83);
+        SHOOT_VELOCITY_MAP.put(136.0, 18.4);
+        SHOOT_VELOCITY_MAP.put(112.0, 17.43);
+        SHOOT_VELOCITY_MAP.put(88.0, 16.64);
+        
         // distance to the hub in feet, position in mechanism rotations
-        SHOOT_HOOD_POSITION_MAP.put(0.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(1.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(2.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(3.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(4.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(5.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(6.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(7.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(8.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(9.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(10.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(11.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(12.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(13.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(14.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(15.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(16.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(17.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(18.0, 0.0);
-        SHOOT_HOOD_POSITION_MAP.put(19.0, 0.0);
+        SHOOT_HOOD_POSITION_MAP.put(208.0, -1.25);
+        SHOOT_HOOD_POSITION_MAP.put(42.0, -0.3);
+        SHOOT_HOOD_POSITION_MAP.put(196.0, -1.181);
+        SHOOT_HOOD_POSITION_MAP.put(184.0, -1.112);
+        SHOOT_HOOD_POSITION_MAP.put(172.0, -1.104);
+        SHOOT_HOOD_POSITION_MAP.put(160.0, -0.99);
+        SHOOT_HOOD_POSITION_MAP.put(148.0, -0.92);
+        SHOOT_HOOD_POSITION_MAP.put(136.0, -0.85);
+        SHOOT_HOOD_POSITION_MAP.put(112.0, -0.711);
+        SHOOT_HOOD_POSITION_MAP.put(88.0, -0.53);
     }
 
     public static final InterpolatingDoubleTreeMap PASS_VELOCITY_MAP = new InterpolatingDoubleTreeMap();
 
     static {
-        PASS_VELOCITY_MAP.put(0.0, 0.0);
-        PASS_VELOCITY_MAP.put(5.0, 0.0);
-        PASS_VELOCITY_MAP.put(10.0, 0.0);
-        PASS_VELOCITY_MAP.put(15.0, 0.0);
-        PASS_VELOCITY_MAP.put(20.0, 0.0);
-        PASS_VELOCITY_MAP.put(25.0, 0.0);
-        PASS_VELOCITY_MAP.put(30.0, 0.0);
-        PASS_VELOCITY_MAP.put(35.0, 0.0);
-        PASS_VELOCITY_MAP.put(40.0, 0.0);
-        PASS_VELOCITY_MAP.put(45.0, 0.0);
-        PASS_VELOCITY_MAP.put(50.0, 0.0);
+        PASS_VELOCITY_MAP.put(112.0, 12.0);
+        PASS_VELOCITY_MAP.put(184.0, 15.96);
+        PASS_VELOCITY_MAP.put(348.0, 25.0);
     }
 
     public static final double SECONDS_OF_DATA_TO_AVERAGE = 0.1; // how many seconds of data to use for the moving average filter in the launch calculator
