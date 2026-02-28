@@ -11,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.util.Util4828;
 
 public class LockOnDriveCommand extends Command {
 	private static final String NT_LOCK_ON_PID_P = "Tuning/LockOn/PID_P";
@@ -26,7 +27,7 @@ public class LockOnDriveCommand extends Command {
 	private final CommandXboxController controller;
 
 	// Target location
-	private final Translation2d hubPosition;
+	private final Translation2d targetPosition;
 
 	// Rotation controller
 	private ProfiledPIDController headingPID;
@@ -48,12 +49,13 @@ public class LockOnDriveCommand extends Command {
 
 	public LockOnDriveCommand(
 		CommandSwerveDrivetrain drivetrain,
-		CommandXboxController controller,
-		Translation2d hubPosition
+		CommandXboxController controller
 	) {
 		this.drivetrain = drivetrain;
 		this.controller = controller;
-		this.hubPosition = hubPosition;
+
+		Pose2d robotPose = drivetrain.getState().Pose;
+		this.targetPosition = Util4828.getLockOnTargetPosition(robotPose).minus(robotPose.getTranslation());
 
 		SmartDashboard.putNumber(NT_LOCK_ON_PID_P, kP);
 		SmartDashboard.putNumber(NT_LOCK_ON_PID_I, kI);
@@ -91,10 +93,10 @@ public class LockOnDriveCommand extends Command {
 		Pose2d robotPose = drivetrain.getState().Pose;
 
 		// === Vector from robot to hub ===
-		Translation2d toHub = hubPosition.minus(robotPose.getTranslation());
+		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
 
 		// === Desired heading ===
-		Rotation2d desiredHeading = toHub.getAngle();
+		Rotation2d desiredHeading = toTarget.getAngle();
 		Rotation2d currentHeading = robotPose.getRotation();
 
 		// === Rotation PID ===

@@ -140,12 +140,11 @@ public class RobotContainer {
       
       driverController.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-      // Lock-on to HUB while holding right trigger
-      driverController.rightBumper().whileTrue(
+      // Lock-on while holding right trigger
+      driverController.rightTrigger().whileTrue(
         new LockOnDriveCommand(
           drivetrain,
-          driverController,
-          Util4828.getHubLocation()
+          driverController
         )
       );
 
@@ -196,10 +195,10 @@ public class RobotContainer {
     /*** SHOOTER ***/
     if (shooter != null) {
       shooter.setDefaultCommand(shooter.stop());
-      driverController.a().whileTrue(shooter.start());
+      driverController.rightTrigger().whileTrue(shooter.start());
 
-      driverController.a().whileTrue(shooter.raiseHood());
-      driverController.a().whileFalse(shooter.lowerHood());
+      driverController.rightTrigger().whileTrue(shooter.raiseHood());
+      driverController.rightTrigger().whileFalse(shooter.lowerHood());
     }
 
     /*** KICKER ***/

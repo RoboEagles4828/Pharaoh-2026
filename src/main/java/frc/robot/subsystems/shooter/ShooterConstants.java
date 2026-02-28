@@ -56,7 +56,6 @@ public class ShooterConstants {
     static {
         // distance from the front bumper of the robot to the hub in inches, velocity in m/s
         SHOOT_VELOCITY_MAP.put(208.0, 21.0);
-        SHOOT_VELOCITY_MAP.put(42.0, 15.0);
         SHOOT_VELOCITY_MAP.put(196.0, 20.57);
         SHOOT_VELOCITY_MAP.put(184.0, 20.13);
         SHOOT_VELOCITY_MAP.put(172.0, 19.7);
@@ -65,10 +64,10 @@ public class ShooterConstants {
         SHOOT_VELOCITY_MAP.put(136.0, 18.4);
         SHOOT_VELOCITY_MAP.put(112.0, 17.43);
         SHOOT_VELOCITY_MAP.put(88.0, 16.64);
+        SHOOT_VELOCITY_MAP.put(42.0, 15.0);
         
         // distance to the hub in feet, position in mechanism rotations
         SHOOT_HOOD_POSITION_MAP.put(208.0, -1.25);
-        SHOOT_HOOD_POSITION_MAP.put(42.0, -0.3);
         SHOOT_HOOD_POSITION_MAP.put(196.0, -1.181);
         SHOOT_HOOD_POSITION_MAP.put(184.0, -1.112);
         SHOOT_HOOD_POSITION_MAP.put(172.0, -1.104);
@@ -77,6 +76,7 @@ public class ShooterConstants {
         SHOOT_HOOD_POSITION_MAP.put(136.0, -0.85);
         SHOOT_HOOD_POSITION_MAP.put(112.0, -0.711);
         SHOOT_HOOD_POSITION_MAP.put(88.0, -0.53);
+        SHOOT_HOOD_POSITION_MAP.put(42.0, -0.3);
     }
 
     public static final InterpolatingDoubleTreeMap PASS_VELOCITY_MAP = new InterpolatingDoubleTreeMap();
