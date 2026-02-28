@@ -32,6 +32,12 @@ public class LockOnDriveCommand extends Command {
 	// Rotation controller
 	private ProfiledPIDController headingPID;
 
+	// If the command should end (isFinished -> true) when we are within the aim tolerance.
+	// This is used for autonomous. During teleop, we want the command to run continously
+	// so that the driver can hold and drive while locked on.
+	// But in auto, we just want to lock on and then move to the next part of the auto sequence.
+	private final boolean shouldAutomaticallyEnd; 
+
 	// CTRE drive request
 	private final SwerveRequest.FieldCentric driveRequest =
 		new SwerveRequest.FieldCentric()
@@ -49,7 +55,8 @@ public class LockOnDriveCommand extends Command {
 
 	public LockOnDriveCommand(
 		CommandSwerveDrivetrain drivetrain,
-		CommandXboxController controller
+		CommandXboxController controller,
+		boolean shouldAutomaticallyEnd
 	) {
 		this.drivetrain = drivetrain;
 		this.controller = controller;
@@ -63,6 +70,8 @@ public class LockOnDriveCommand extends Command {
 		SmartDashboard.putNumber(NT_LOCK_ON_MAX_VELOCITY, MAX_ROTATIONAL_VELOCITY);
 		SmartDashboard.putNumber(NT_LOCK_ON_MAX_ACCELERATION, MAX_ROTATIONAL_ACCELERATION);
 		SmartDashboard.putNumber(NT_LOCK_ON_TOLERANCE, AIM_TOLERANCE_DEGREES);
+
+		this.shouldAutomaticallyEnd = shouldAutomaticallyEnd;
 
 		addRequirements(drivetrain);
 	}
@@ -86,6 +95,20 @@ public class LockOnDriveCommand extends Command {
         headingPID.reset(robotPose.getRotation().getRadians());
     }
 
+	// Returns if the robot's
+	private boolean isWithinTolerance() {
+		// === Current robot pose ===
+		Pose2d robotPose = drivetrain.getState().Pose;
+
+		// === Vector from robot to hub ===
+		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
+
+		// === Desired heading ===
+		Rotation2d desiredHeading = toTarget.getAngle();
+		Rotation2d currentHeading = robotPose.getRotation();
+
+		return Math.abs(desiredHeading.minus(currentHeading).getRadians()) < Math.toRadians(AIM_TOLERANCE_DEGREES)
+	}
 
 	@Override
 	public void execute() {
@@ -106,9 +129,7 @@ public class LockOnDriveCommand extends Command {
 		);
 
 		// Optional aim deadband (prevents jitter when lined up)
-		if (Math.abs(
-			desiredHeading.minus(currentHeading).getRadians()
-		) < Math.toRadians(AIM_TOLERANCE_DEGREES)) {
+		if (isWithinTolerance()) {
 			omega = 0.0;
 		}
 
@@ -134,6 +155,11 @@ public class LockOnDriveCommand extends Command {
 
 	@Override
 	public boolean isFinished() {
+		// automatically terminating lockon whn we're in auton
+		if (shouldAutomaticallyEnd && isWithinTolerance()) {
+			return true;
+		}
+
 		// Runs while button is held
 		return false;
 	}

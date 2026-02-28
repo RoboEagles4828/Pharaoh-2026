@@ -144,7 +144,8 @@ public class RobotContainer {
       driverController.rightTrigger().whileTrue(
         new LockOnDriveCommand(
           drivetrain,
-          driverController
+          driverController,
+          false
         )
       );
 
