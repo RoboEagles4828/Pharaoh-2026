@@ -333,6 +333,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
             // unset the button
             SmartDashboard.putBoolean(NT_AUTOSEED_TRIGGER, false);
+
+            double distanceToCenterHub = getState().Pose.getTranslation().getDistance(Constants.FieldConstants.BLUE_HUB_CENTER);
+            SmartDashboard.putNumber("Distance to Center Hub (ft)", Units.metersToFeet(distanceToCenterHub));
         }
 
         Constants.FieldConstants.FIELD.setRobotPose(getState().Pose);
