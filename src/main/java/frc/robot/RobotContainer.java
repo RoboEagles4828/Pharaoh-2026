@@ -10,6 +10,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -24,8 +26,18 @@ import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.kicker.Kicker;
-import frc.robot.subsystems.limelight.Vision;
+import frc.robot.subsystems.shooter.LaunchCalculator;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.PoseSupplier;
+import frc.robot.util.Util4828;
+
+import java.util.Collections;
+
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -38,13 +50,12 @@ import frc.robot.subsystems.shooter.Shooter;
  */
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
-  private static final boolean ENABLE_DRIVETRAIN = true;
   private static final boolean ENABLE_SHOOTER = true;
   private static final boolean ENABLE_KICKER = true;
   private static final boolean ENABLE_INTAKE = true;
   private static final boolean ENABLE_HOPPER = true;
-  private static final boolean ENABLE_VISION = false;
-  private static final boolean ENABLE_CLIMBER = false;
+  private static final boolean ENABLE_VISION = true;
+  private static final boolean ENABLE_CLIMBER = true;
 
 
   /*** DRIVETRAIN SUBSYSTEM ***/
@@ -77,6 +88,12 @@ public class RobotContainer {
   /*** VISION SUBSYSTEM ***/
   private Vision vision = null;
 
+  /*** POSE SUPPLIER ***/
+  private PoseSupplier poseSupplier = null;
+
+  /*** LAUNCH CALCULATOR */
+  private LaunchCalculator launchCalculator = null;
+
   /*** INPUT DEVICES ***/
   private CommandXboxController driverController;
 
@@ -94,12 +111,14 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    if (ENABLE_DRIVETRAIN)
-      drivetrain = TunerConstants.createDrivetrain();
+    drivetrain = TunerConstants.createDrivetrain();
+    poseSupplier = new PoseSupplier(drivetrain);
 
-    if (ENABLE_SHOOTER)
-      shooter = new Shooter();
-    
+    if (ENABLE_SHOOTER){
+      launchCalculator = new LaunchCalculator(poseSupplier);
+      shooter = new Shooter(launchCalculator);
+    }
+
     if (ENABLE_KICKER)
       kicker = new Kicker();
 
@@ -113,7 +132,7 @@ public class RobotContainer {
       climber = new Climber();
 
     if (ENABLE_VISION)
-      vision = new Vision(drivetrain);
+      vision = new Vision(drivetrain, poseSupplier);
     
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -133,8 +152,8 @@ public class RobotContainer {
       // Default command for drivetrain - drive according to driver controller joystick
       drivetrain.setDefaultCommand(
           drivetrain.applyRequest(() -> driveRequest
-              .withVelocityX(driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) // Drive forward with positive Y (forward)
-              .withVelocityY(driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+              .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) // Drive forward with positive Y (forward)
+              .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
               .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) // Drive counterclockwise with negative X (left)
           ));
 
@@ -147,12 +166,16 @@ public class RobotContainer {
       driverController.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
       // Lock-on while holding right trigger
-      driverController.rightTrigger().whileTrue(
-        new LockOnDriveCommand(
-          drivetrain,
-          driverController,
-          false
+      driverController.leftBumper().whileTrue(
+        Commands.defer(() -> {
+          return new LockOnDriveCommand(
+            drivetrain,
+            driverController,
+            false
+          );
+        }, Collections.emptySet()
         )
+
       );
 
       // Run SysId routines when holding back/start and X/Y.
@@ -191,21 +214,21 @@ public class RobotContainer {
       // Reset the field-centric heading on start
       driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-      driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
-      driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+      //driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
+      //driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
 
-      //driverController.leftTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
-      //driverController.rightTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
-      //driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+      driverController.a().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
+      driverController.b().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
+      
     }
 
     /*** SHOOTER ***/
     if (shooter != null) {
       shooter.setDefaultCommand(shooter.stop());
-      driverController.rightTrigger().whileTrue(shooter.start());
+      driverController.leftBumper().whileTrue(shooter.start());
 
-      driverController.rightTrigger().whileTrue(shooter.raiseHood());
-      driverController.rightTrigger().whileFalse(shooter.lowerHood());
+      driverController.leftBumper().whileTrue(shooter.raiseHood());
+      driverController.leftBumper().whileFalse(shooter.lowerHood());
     }
 
     /*** KICKER ***/
@@ -216,10 +239,10 @@ public class RobotContainer {
     /*** CLIMBER ***/
     if (climber != null) {
       climber.setDefaultCommand(climber.stop());
-      driverController.y().whileTrue(climber.climbUp());
-      driverController.x().whileTrue(climber.climbDown());
-      driverController.b().onTrue(climber.climbToPeak());
-      driverController.a().onTrue(climber.retractClimb());
+      driverController.y().whileTrue(climber.climbUpDutyCycle());
+      driverController.x().whileTrue(climber.climbDownDutyCycle());
+      // driverController.y().onTrue(climber.climbToPeak());
+      // driverController.x().onTrue(climber.retractClimb());
     }
 
     /*** INTAKE ***/
@@ -242,11 +265,11 @@ public class RobotContainer {
     /*** HOPPER ***/
     if (hopper != null) {
       hopper.setDefaultCommand(hopper.stopConveyor());
-      driverController.x().whileTrue(hopper.startConveyor());
+      driverController.rightTrigger().whileTrue(hopper.startConveyor());
 
       // We're trying to shoot, start kicker
       if (kicker != null) {
-        driverController.x().whileTrue(kicker.start());
+        driverController.rightTrigger().whileTrue(kicker.start());
       }
     }
   }

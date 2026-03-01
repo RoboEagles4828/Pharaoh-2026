@@ -16,13 +16,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
+
 import frc.robot.Constants;
 
 public class Util4828 {
-    public static double getDistance(double robotX, double robotY, double targetX, double targetY) {
-        double distanceFromTarget = Math.sqrt(Math.abs(Math.pow(targetX-robotX, 2) + Math.pow(targetY-robotY, 2)));
-        return distanceFromTarget;
-    }
 
     /*** Game specific utility functions ***/
     public static Translation2d getHubLocation() {

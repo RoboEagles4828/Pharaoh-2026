@@ -1,25 +1,15 @@
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
-import frc.robot.util.Util4828;
 
 public class ShooterConstants {
     public static final String NT_APPLY_PID_BUTTON = "Tuning/Shooter/ApplyPIDButton";
 
-    /** FLYWHEEL CONSTANTS */
-    public static final String NT_ACTUAL_SPEED_MPS_ONE = "Tuning/Shooter/ActualShooterSpeedMPSOne";
-    public static final String NT_ACTUAL_SPEED_MPS_TWO = "Tuning/Shooter/ActualShooterSpeedMPSTwo"; 
-    public static final String NT_ACTUAL_SPEED_MPS_THREE = "Tuning/Shooter/ActualShooterSpeedMPSThree";
-    public static final String NT_ACTUAL_HOOD_POSITION = "Tuning/Shooter/ActualHoodPosition";
-
-    public static final String NT_SHOOTER_P_VALUE = "Tuning/Shooter/ShooterPValue";
-    public static final String NT_SHOOTER_V_VALUE = "Tuning/Shooter/ShooterVValue";
-
+    /* ================== */
+    /* FLYWHEEL CONSTANTS */
+    /* ================== */
+    
     public static double SHOOTER_GEAR_RATIO = 1.0;
     public static double WHEEL_DIAMETER = Units.inchesToMeters(4);
     public static int DEFAULT_SPEED_MPS = 15;
@@ -29,16 +19,12 @@ public class ShooterConstants {
         static final double STATIC = 0.0;
         static final double VELOCITY = 0.123;
         static final double ACCELERATION = 0.0;        
-        static final double PROPORTIONAL = 0.33;
+        static final double PROPORTIONAL = 0.35;
         static final double INTEGRAL = 0.0;
         static final double DERIVATIVE = 0.0;
     }
 
     /** HOOD CONSTANTS */
-    public static final String NT_TARGET_SPEED_MPS = "Tuning/Shooter/TargetShooterSpeedMPS";
-    public static final String NT_TARGET_HOOD_POSITION = "Tuning/Shooter/TargetHoodPosition";
-    public static final String NT_HOOD_P_VALUE = "Tuning/Shooter/HoodPValue";
-    public static final String NT_HOOD_D_VALUE = "Tuning/Shooter/HoodDValue";
     public static double HOOD_GEAR_RATIO = 20.0;
     public static double HOOD_STARTING_POSITION = 0.0;
     public static double HOOD_TARGET_POSITION = -0.4;
