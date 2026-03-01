@@ -11,14 +11,14 @@ import frc.robot.subsystems.vision.LimelightHelpers.PoseEstimate;
 
 public class Vision extends SubsystemBase {
 
-    private final Limelight limelightOne;
-    // private final Limelight limelightTwo;
+    private final Limelight limelightForward;
+    private final Limelight limelightUp;
     private CommandSwerveDrivetrain drivetrain;
 
     public Vision(CommandSwerveDrivetrain drivetrain) {
 
-        limelightOne = new Limelight(VisionConstants.LIMELIGHT_ONE_NAME);
-        // limelightTwo = new Limelight(LimelightConstants.LIMELIGHT_TWO_NAME, drivetrain);
+        limelightForward = new Limelight(VisionConstants.LIMELIGHT_FORWARD_NAME);
+        limelightUp = new Limelight(VisionConstants.LIMELIGHT_UP_NAME);
         this.drivetrain = drivetrain;
 
         SmartDashboard.putBoolean(VisionConstants.NT_USE_VISION_TOGGLE, true);
@@ -42,8 +42,8 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        processLimelight(limelightOne);
-        // processLimelight(limelightTwo);
+        processLimelight(limelightForward);
+        processLimelight(limelightUp);
     }
 
 }
