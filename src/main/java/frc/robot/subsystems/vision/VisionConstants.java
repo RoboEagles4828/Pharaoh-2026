@@ -1,6 +1,6 @@
-package frc.robot.subsystems.limelight;
+package frc.robot.subsystems.vision;
 
-public class LimelightConstants {
+public class VisionConstants {
     public static String LIMELIGHT_ONE_NAME = "limelight-one";
     public static String LIMELIGHT_TWO_NAME = "limelight-two";
 
@@ -11,4 +11,6 @@ public class LimelightConstants {
     final static double STD_MAX_XY = 2.0; // meters
     final static double STD_MIN_THETA = Math.toRadians(5); // radians
     final static double STD_MAX_THETA = Math.toRadians(45); // radians
+
+    public static final String NT_USE_VISION_TOGGLE = "LL Use Vision";
 }

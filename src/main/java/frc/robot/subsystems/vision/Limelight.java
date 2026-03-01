@@ -1,4 +1,4 @@
-package frc.robot.subsystems.limelight;
+package frc.robot.subsystems.vision;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -13,9 +13,9 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
-import frc.robot.subsystems.limelight.LimelightHelpers.PoseEstimate;
-import frc.robot.subsystems.limelight.LimelightHelpers.RawFiducial;
+import frc.robot.subsystems.vision.LimelightHelpers.PoseEstimate;
+import frc.robot.subsystems.vision.LimelightHelpers.RawFiducial;
+import frc.robot.util.PoseSubsystem;
 import frc.robot.util.Util4828;
 
 public class Limelight {
@@ -28,23 +28,21 @@ public class Limelight {
     private static final String NT_TIMESTAMP = "Timestamp";
 
     private final String name;
-    private final CommandSwerveDrivetrain drivetrain;
 
     private PoseEstimate mostRecentPoseEstimate = null;
     private Matrix<N3, N1> mostRecentPoseStandardDeviation = null;
     private boolean isMostRecentPoseEstimateGood = false;
 
-    public Limelight(String limelightName, CommandSwerveDrivetrain drive) {
+    public Limelight(String limelightName) {
         name = limelightName;
-        drivetrain = drive;
     }
 
+    /** Updates the robot's pose estimate */
     public void updateEstimate() {
-        // feed the robot's current rotation to the limelight (required for MegaTag2
-        // algorithm)
-        if (drivetrain != null) {
-            LimelightHelpers.SetRobotOrientation(name, drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0,
-                    0, 0);
+        // feed the robot's current rotation to the limelight (required for MegaTag2 algorithm)
+        if (PoseSubsystem.getInstance() != null) {
+            LimelightHelpers.SetRobotOrientation(name, PoseSubsystem.getInstance().getPose().getRotation().getDegrees(),
+                0, 0, 0,0, 0);
         }
 
         // Get pose estimate from MegaTag2
@@ -85,8 +83,7 @@ public class Limelight {
         return isMostRecentPoseEstimateGood;
     }
 
-    // Checks if a pose estimate (limelight reading) is of sufficient quality to be
-    // used.
+    /** Checks if a pose estimate (limelight reading) is of sufficient quality to be used */
     private static boolean verifyPoseEstimate(PoseEstimate pose) {
         // if we have no estimate or see no tags, reject
         if (pose == null || pose.tagCount == 0 || pose.rawFiducials.length == 0) {
@@ -99,12 +96,12 @@ public class Limelight {
                 .orElse(null);
 
         // If ambiguity is too high, reject
-        if (bestTag.ambiguity > LimelightConstants.POSE_AMBIGUITY_THRESHOLD) {
+        if (bestTag.ambiguity > VisionConstants.POSE_AMBIGUITY_THRESHOLD) {
             return false;
         }
 
         // If we're too far from the tag, reject
-        if (bestTag.distToCamera > LimelightConstants.POSE_DISTANCE_THRESHOLD) {
+        if (bestTag.distToCamera > VisionConstants.POSE_DISTANCE_THRESHOLD) {
             return false;
         }
 
@@ -113,9 +110,9 @@ public class Limelight {
 
     private static Matrix<N3, N1> calculateStandardDeviationForEstimate(LimelightHelpers.PoseEstimate pose) {
         if (pose == null || pose.rawFiducials.length == 0) {
-            return VecBuilder.fill(LimelightConstants.STD_MAX_XY,
-                    LimelightConstants.STD_MAX_XY,
-                    LimelightConstants.STD_MAX_THETA);
+            return VecBuilder.fill(VisionConstants.STD_MAX_XY,
+                    VisionConstants.STD_MAX_XY,
+                    VisionConstants.STD_MAX_THETA);
         }
 
         Pose2d fusedPose = pose.pose;
@@ -144,18 +141,18 @@ public class Limelight {
 
         if (weightSum == 0.0) {
             // No valid tags
-            return VecBuilder.fill(LimelightConstants.STD_MAX_XY,
-                    LimelightConstants.STD_MAX_XY,
-                    LimelightConstants.STD_MAX_THETA);
+            return VecBuilder.fill(VisionConstants.STD_MAX_XY,
+                    VisionConstants.STD_MAX_XY,
+                    VisionConstants.STD_MAX_THETA);
         }
 
         double xStd = Math.sqrt(xVar / weightSum);
         double yStd = Math.sqrt(yVar / weightSum);
         double thetaStd = Math.sqrt(thetaVar / weightSum);
 
-        xStd = MathUtil.clamp(xStd, LimelightConstants.STD_MIN_XY, LimelightConstants.STD_MAX_XY);
-        yStd = MathUtil.clamp(yStd, LimelightConstants.STD_MIN_XY, LimelightConstants.STD_MAX_XY);
-        thetaStd = MathUtil.clamp(thetaStd, LimelightConstants.STD_MIN_THETA, LimelightConstants.STD_MAX_THETA);
+        xStd = MathUtil.clamp(xStd, VisionConstants.STD_MIN_XY, VisionConstants.STD_MAX_XY);
+        yStd = MathUtil.clamp(yStd, VisionConstants.STD_MIN_XY, VisionConstants.STD_MAX_XY);
+        thetaStd = MathUtil.clamp(thetaStd, VisionConstants.STD_MIN_THETA, VisionConstants.STD_MAX_THETA);
 
         return VecBuilder.fill(xStd, yStd, thetaStd);
     }

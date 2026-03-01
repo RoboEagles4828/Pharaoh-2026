@@ -19,8 +19,8 @@ import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.kicker.Kicker;
-import frc.robot.subsystems.limelight.Vision;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.Util4828;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -210,8 +210,8 @@ public class RobotContainer {
     /*** CLIMBER ***/
     if (climber != null) {
       climber.setDefaultCommand(climber.stop());
-      driverController.y().whileTrue(climber.climbUp());
-      driverController.x().whileTrue(climber.climbDown());
+      driverController.y().whileTrue(climber.climbUpDutyCycle());
+      driverController.x().whileTrue(climber.climbDownDutyCycle());
       driverController.b().onTrue(climber.climbToPeak());
       driverController.a().onTrue(climber.retractClimb());
     }

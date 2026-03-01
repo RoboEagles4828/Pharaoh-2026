@@ -14,75 +14,54 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.Constants;
 import frc.robot.Constants.DigitalIDS;
 import frc.robot.Constants.RioBusCANIds;
 import frc.robot.util.TunableNumber;
 
+/** The intake subsystem controls the collection of fuel. */
 public class Intake extends SubsystemBase {
+
+    /** Motor that controls the deployment of the intake */
     private final TalonFX deployMotor;
+    /** Motor that controls the ground pickup of the fuel */
     private final TalonFX intakeMotor;
+    /** Motor that controls the transfer of fuel from the intake to the hopper */
     private final TalonFX ninjaStarMotor;
+    /** Limit switch that limits the retraction of the intake */
     private final DigitalInput intakeLimitSwitch;
 
+    /** Position control for the deployment of the intake */
     private final PositionVoltage deployPositionControl;
-    //private final VelocityVoltage intakeVelocityControl;
-    //private final VelocityVoltage ninjaStarVelocityControl;
 
-    private static final TunableNumber deployDownPValue = new TunableNumber(IntakeConstants.NT_DEPLOY_DOWN_P_VALUE, IntakeConstants.DEFAULT_DEPLOY_DOWN_P_VALUE);
-    private static final TunableNumber deployDownDValue = new TunableNumber(IntakeConstants.NT_DEPLOY_DOWN_D_VALUE, IntakeConstants.DEFAULT_DEPLOY_DOWN_D_VALUE);
-    private static final TunableNumber deployUpPValue = new TunableNumber(IntakeConstants.NT_DEPLOY_UP_P_VALUE, IntakeConstants.DEFAULT_DEPLOY_UP_P_VALUE);
-    private static final TunableNumber deployUpGValue = new TunableNumber(IntakeConstants.NT_DEPLOY_UP_G_VALUE, IntakeConstants.DEFAULT_DEPLOY_UP_G_VALUE);
-    private static final TunableNumber deployUpDValue = new TunableNumber(IntakeConstants.NT_DEPLOY_UP_D_VALUE, IntakeConstants.DEFAULT_DEPLOY_UP_D_VALUE);
-    private static final TunableNumber deployedPosition = new TunableNumber(IntakeConstants.NT_DEPLOYED_POSITION, IntakeConstants.DEFAULT_DEPLOYED_POSITION);
-    private static final TunableNumber raisedPosition = new TunableNumber(IntakeConstants.NT_RAISED_POSITION, IntakeConstants.DEFAULT_RAISED_POSITION); 
-    // private static final TunableNumber intakeSValue = new TunableNumber(IntakeConstants.NT_INTAKE_S_VALUE, IntakeConstants.DEFAULT_INTAKE_S_VALUE);
-    // private static final TunableNumber intakeVValue = new TunableNumber(IntakeConstants.NT_INTAKE_V_VALUE, IntakeConstants.DEFAULT_INTAKE_V_VALUE);
-    // private static final TunableNumber intakePValue = new TunableNumber(IntakeConstants.NT_INTAKE_P_VALUE, IntakeConstants.DEFAULT_INTAKE_P_VALUE);
-    // private static final TunableNumber intakeIValue = new TunableNumber(IntakeConstants.NT_INTAKE_I_VALUE, IntakeConstants.DEFAULT_INTAKE_I_VALUE);
-    // private static final TunableNumber intakeDValue = new TunableNumber(IntakeConstants.NT_INTAKE_D_VALUE, IntakeConstants.DEFAULT_INTAKE_D_VALUE);
-    // private static final TunableNumber intakeSpeedMPS = new TunableNumber(IntakeConstants.NT_INTAKE_SPEED_KEY, IntakeConstants.DEFAULT_INTAKE_SPEED_MPS); 
+    // PID constants for deploying the intake
+    private static final TunableNumber deployPValue = new TunableNumber("Tuning/Intake/DeployPValue", IntakeConstants.DEPLOY_P);
+    private static final TunableNumber deployDValue = new TunableNumber("Tuning/Intake/DeployDValue", IntakeConstants.DEPLOY_D);
+    
+    // PID constants for retracting the intake
+    private static final TunableNumber retractPValue = new TunableNumber("Tuning/Intake/RetractPValue", IntakeConstants.RETRACT_P);
+    private static final TunableNumber retractDValue = new TunableNumber("Tuning/Intake/RetractDValue", IntakeConstants.RETRACT_D);
+    private static final TunableNumber retractGValue = new TunableNumber("Tuning/Intake/RetractGValue", IntakeConstants.RETRACT_G);
+
+    // Positions to move the intake mechanism to
+    private static final TunableNumber deployedPosition = new TunableNumber("Tuning/Intake/DeployPosition", IntakeConstants.DEPLOYED_POSITION);
+    private static final TunableNumber raisedPosition = new TunableNumber("Tuning/Intake/RaisedPosition", IntakeConstants.RAISED_POSITION);
+    
+    // Duty Cycle Speeds
+    private static final TunableNumber intakeDutyCycle = new TunableNumber("Tuning/Intake/IntakeDutyCycle", IntakeConstants.INTAKE_DUTY_CYCLE); 
+    private static final TunableNumber ninjaStarDutyCycle = new TunableNumber("Tuning/Intake/NinjaStarDutyCycle", IntakeConstants.NINJA_STAR_DUTY_CYCLE);
 
     public Intake() {
-        deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID, Constants.RIO_BUS_NAME);
-        intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID, Constants.RIO_BUS_NAME);
-        ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID, Constants.RIO_BUS_NAME);
+        // Creating the motors on the rio can bus
+        deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID, Constants.RIO_CAN_BUS);
+        intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID, Constants.RIO_CAN_BUS);
+        ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID, Constants.RIO_CAN_BUS);
         intakeLimitSwitch = new DigitalInput(DigitalIDS.INTAKE_LIMIT_SWITCH);
 
-        SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
-        SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
-
-        setMotorPID();
-
-        // We start in the up position. Set the encoder so that 0.0 is the retracted position.
-        deployMotor.setPosition(IntakeConstants.DEFAULT_RAISED_POSITION);
-
-        deployPositionControl = new PositionVoltage(0.0)
-                                        .withEnableFOC(true)
-                                        .withOverrideBrakeDurNeutral(true)
-                                        .withSlot(0);
-
-        
-        // intakeVelocityControl = new VelocityVoltage(0.0)
-        //                                 .withEnableFOC(true)
-        //                                 .withSlot(0);
-        // ninjaStarVelocityControl = new VelocityVoltage(0.0)
-        //                                 .withEnableFOC(true)
-        //                                 .withSlot(0);
-    }
-
-    public void setMotorPID() {
-        // Configuring deploy motor
-        final TalonFXConfiguration deployMotorCfg = new TalonFXConfiguration();
-        deployMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        deployMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.DEPLOY_GEAR_RATIO;
-        deployMotorCfg.Slot0.kP = deployDownPValue.get();
-        deployMotorCfg.Slot0.kD = deployDownDValue.get();
-        deployMotorCfg.Slot1.kG = deployUpGValue.get();
-        deployMotorCfg.Slot1.kP = deployUpPValue.get();
-        deployMotorCfg.Slot1.kD = deployUpDValue.get();
-        deployMotorCfg.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
-        deployMotor.getConfigurator().apply(deployMotorCfg);
+        // Configuring deploy motor (done separately because it has PID values that change)
+        updatePID();
 
         // Configuring intake motor
         final TalonFXConfiguration intakeMotorCfg = new TalonFXConfiguration();
@@ -92,9 +71,39 @@ public class Intake extends SubsystemBase {
         // Configuring ninja star (hopper) motor
         final TalonFXConfiguration ninjaStarCfg = new TalonFXConfiguration();
         ninjaStarCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        ninjaStarCfg.Feedback.SensorToMechanismRatio = IntakeConstants.INTAKE_NINJA_STAR_GEAR_RATIO;
+        ninjaStarCfg.Feedback.SensorToMechanismRatio = IntakeConstants.NINJA_STAR_GEAR_RATIO;
+
+        // We start in the up position. Set the encoder so that 0.0 is the retracted position.
+        deployMotor.setPosition(IntakeConstants.RAISED_POSITION);
+
+        deployPositionControl = new PositionVoltage(0.0)
+                                        .withEnableFOC(true)
+                                        .withOverrideBrakeDurNeutral(true)
+                                        .withSlot(0);
+
+        Trigger limitSwitch = new Trigger(() -> intakeLimitSwitch.get());
+        limitSwitch.onTrue(resetDeployEncoder());
+
+        SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
+        SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
     }
 
+    public void updatePID() {
+        // Configuring deploy motor
+        final TalonFXConfiguration deployMotorCfg = new TalonFXConfiguration();
+        deployMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        deployMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.DEPLOY_GEAR_RATIO;
+        // Use slot 0 for deployment PID values, slot 1 for retraction PID values
+        deployMotorCfg.Slot0.kP = deployPValue.get();
+        deployMotorCfg.Slot0.kD = deployDValue.get();
+        deployMotorCfg.Slot1.kG = retractGValue.get();
+        deployMotorCfg.Slot1.kP = retractPValue.get();
+        deployMotorCfg.Slot1.kD = retractDValue.get();
+        deployMotorCfg.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
+        deployMotor.getConfigurator().apply(deployMotorCfg);
+    }
+
+    /** Returns a command that deploys the intake */
     public Command deployIntake() {
         return Commands.defer(
             () -> {
@@ -105,7 +114,7 @@ public class Intake extends SubsystemBase {
             Collections.emptySet()
         );
     }
-
+    /** Returns a command that retracts the intake back into the robot */
     public Command retractIntake() {
         return Commands.defer(
             () -> {
@@ -117,43 +126,43 @@ public class Intake extends SubsystemBase {
         );
     }
 
-    //Start intake motor
-    private static final TunableNumber intakeSpeed = new TunableNumber(IntakeConstants.NT_INTAKE_SPEED_KEY, IntakeConstants.DEFAULT_INTAKE_SPEED); 
+    /** Returns a command that runs the intake motor */
     public Command startIntake() {
         return Commands.defer(
             () -> Commands.run(() -> {
-            intakeMotor.set(intakeSpeed.get());
+            intakeMotor.set(intakeDutyCycle.get());
             }),
             Collections.emptySet());
-    }
-
-    public Command stopIntake() {
-        return Commands.runOnce(() -> intakeMotor.stopMotor());
-    }
-    
-    //NinjaStartMotor
-    private static final TunableNumber ninjaStarSpeed = new TunableNumber(IntakeConstants.NT_NINJA_STAR_SPEED_KEY, IntakeConstants.DEFAULT_NINJA_STAR_SPEED); 
+    }    
+    /** Returns a command that runs the ninja star motor */
     public Command startNinjaStarMotor() {
         return Commands.defer(
             () -> Commands.run(() -> {
-            ninjaStarMotor.set(ninjaStarSpeed.get());
+            ninjaStarMotor.set(ninjaStarDutyCycle.get());
             }),
             Collections.emptySet());
     }
 
+    /** Returns a command that stops the intake motor */
+    public Command stopIntake() {
+        return Commands.runOnce(() -> intakeMotor.stopMotor());
+    }
+    /** Returns a command that stops the ninja star motors */
     public Command stopNinjaStarMotor() {
         return Commands.runOnce(() -> ninjaStarMotor.stopMotor());
     }
 
+    /** Returns a command that performs the full retraction process: retracting, stopping intake and ninja stars */
     public Command stopAndRetract() {
         return Commands.defer(
             () -> Commands.parallel(
                 stopIntake(),
                 retractIntake(),
-                stopNinjaStarMotor()
-        ), Set.of(this));
+                stopNinjaStarMotor()),
+            Set.of(this));
     }
 
+    /** Returns a command that performs the full intake process: deploying, running intake and ninja stars */
     public Command intake() {
         return Commands.defer(
             () -> Commands.parallel(        
@@ -162,19 +171,21 @@ public class Intake extends SubsystemBase {
                     Commands.waitSeconds(0.25),
                     Commands.parallel(
                         startIntake(),
-                        startNinjaStarMotor()
-                    )
+                        startNinjaStarMotor())
                 )
-
-        ), Set.of(this));
+            ),
+            Set.of(this));
     }
 
-    private boolean resetEncoderRecently = false;
+    /** Resets the encoder of the deploy motor */
+    public Command resetDeployEncoder() {
+        return Commands.runOnce(() -> deployMotor.setPosition(raisedPosition.get()));
+    }
 
     @Override
     public void periodic() {
         if (SmartDashboard.getBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false)) {
-            setMotorPID();
+            updatePID();
             SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
         }
 
@@ -183,14 +194,6 @@ public class Intake extends SubsystemBase {
             SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
         }
 
-        // if (!resetEncoderRecently && intakeLimitSwitch.get() == true){
-        //     deployMotor.setPosition(0);
-        //     resetEncoderRecently = true;
-        // } else {
-        //     resetEncoderRecently = false;
-        // }
-
-        // This method will be called once per scheduler run
         SmartDashboard.putNumber("Tuning/Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());
     }
 }

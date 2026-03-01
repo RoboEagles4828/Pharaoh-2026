@@ -1,6 +1,7 @@
 package frc.robot.subsystems.hopper;
 
 public class HopperConstants {
-    public static final String NT_HOPPER_CONVEYOR_DUTY_CYCLE = "Tuning/Hopper/HopperDutyCycle";
-    public static final double HOPPER_CONVEYOR_DEFAULT_DUTY_CYCLE = -0.8;
+
+    // Negative is toward the shooter, positive is away form the shooter
+    public static final double CONVEYOR_DUTY_CYCLE = -0.8;
 }

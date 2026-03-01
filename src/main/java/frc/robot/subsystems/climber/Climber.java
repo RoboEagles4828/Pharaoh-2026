@@ -7,38 +7,37 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
+import frc.robot.Constants.CANivoreBusCANIds;
 import frc.robot.util.TunableNumber;
 
+/** The climber subsystem controls the climbing of the robot during autonomous and endgame. */
 public class Climber extends SubsystemBase {
     /** Motor that controls the climber */
-    private final TalonFX motor;
+    private final TalonFX climbMotor;
     /** PID control to specific positions; default position is the starting position */
     private final PositionVoltage positionControl;
 
-    /** Tunable number for the duty cycle for climbing up */
-    private static TunableNumber climbUpDutyCycle = new TunableNumber(ClimberConstants.NT_CLIMB_UP_DUTY_CYCLE, ClimberConstants.DEFAULT_CLIMB_UP_DUTY_CYCLE);
-    /** Tunable number for the duty cycle for climbing down */
-    private static TunableNumber climbDownDutyCycle = new TunableNumber(ClimberConstants.NT_CLIMB_DOWN_DUTY_CYCLE, ClimberConstants.DEFAULT_CLIMB_DOWN_DUTY_CYCLE);
+    // Tunable numbers for duty cycle speeds
+    private static TunableNumber climbUpDutyCycle = new TunableNumber("Tuning/Climber/ClimbUpDutyCycle", -ClimberConstants.DEFAULT_DUTY_CYCLE);
+    private static TunableNumber climbDownDutyCycle = new TunableNumber("Tuning/Climber/ClimbDownDutyCycle", ClimberConstants.DEFAULT_DUTY_CYCLE);
 
-    /** Tunable number for the p-value of the climber motor */
-    private static TunableNumber pValue = new TunableNumber(ClimberConstants.NT_CLIMBER_P_VALUE, ClimberConstants.DEFAULT_CLIMBER_P_VALUE);
-    /** Tunable number for the i-value of the climber motor */
-    private static TunableNumber iValue = new TunableNumber(ClimberConstants.NT_CLIMBER_I_VALUE, ClimberConstants.DEFAULT_CLIMBER_I_VALUE);
-    /** Tunable number for the d-value of the climber motor */
-    private static TunableNumber dValue = new TunableNumber(ClimberConstants.NT_CLIMBER_D_VALUE, ClimberConstants.DEFAULT_CLIMBER_D_VALUE);
-
+    // Tunable numbers for PID values
+    private static TunableNumber pValue = new TunableNumber("Tuning/Climber/ClimberP", ClimberConstants.kP);
+    private static TunableNumber iValue = new TunableNumber("Tuning/Climber/ClimberI", ClimberConstants.kI);
+    private static TunableNumber dValue = new TunableNumber("Tuning/Climber/ClimberD", ClimberConstants.kD);
+    
     /** Tunable number for the peak (tallest) position of the climber */
-    private TunableNumber climbPeakPosition = new TunableNumber(ClimberConstants.NT_CLIMB_PEAK_POSITION, ClimberConstants.DEFAULT_CLIMB_PEAK_POSITION);
+    private TunableNumber climbPeakPosition = new TunableNumber("Tuning/Climber/TallestPosition", ClimberConstants.DEFAULT_PEAK_POSITION);
     /** Tunable number for the final position of the climber where it will hang*/
     // TODO might be unnecessary if the robot will pull itself up all the way but I thought that was unnecessary and this is safer
-    private TunableNumber climbFinalPosition = new TunableNumber(ClimberConstants.NT_CLIMB_FINAL_POSITION, ClimberConstants.DEFAULT_CLIMB_FINAL_POSITION);
+    private TunableNumber climbFinalPosition = new TunableNumber("Tuning/Climber/FinalPosition", ClimberConstants.DEFAULT_FINAL_POSITION);
 
     /** Constructs a climber subsystem */
     public Climber() {
-        motor = new TalonFX(Constants.CANivoreBusCANIds.CLIMBER_MOTOR_ID, Constants.CANIVORE_NAME);
+        climbMotor = new TalonFX(CANivoreBusCANIds.CLIMBER_MOTOR_ID, Constants.CANIVORE_CAN_BUS);
         
         // Configuring the motor
         final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
@@ -48,85 +47,87 @@ public class Climber extends SubsystemBase {
         motorCfg.Slot0.kI = iValue.get();
         motorCfg.Slot0.kD = dValue.get();
         // Applying the configuration
-        motor.getConfigurator().apply(motorCfg);
+        climbMotor.getConfigurator().apply(motorCfg);
 
         // assume we start in the lowered position; seed encoder to 0!
-        motor.setPosition(ClimberConstants.CLIMBER_START_POSITION);
+        climbMotor.setPosition(ClimberConstants.START_POSITION);
 
         // Setting the default position control to the starting position
-        positionControl = new PositionVoltage(ClimberConstants.CLIMBER_START_POSITION)
+        positionControl = new PositionVoltage(ClimberConstants.START_POSITION)
                                 .withEnableFOC(true)
                                 .withOverrideBrakeDurNeutral(true)
                                 .withSlot(0);
-
-        SmartDashboard.putBoolean(ClimberConstants.NT_CLIMBER_ZERO_ENCODER_BTN, false);
+        
+        // Putting buttons on smart dashboard to zero the encoder and apply PID changes
+        SmartDashboard.putBoolean("Tuning/Climber/ApplyPIDButton", false);
+        SmartDashboard.putBoolean("Tuning/Climber/ZeroEncoderBtn", false);
     }
 
-    /** Sets the motor speed */
-    public void setMotorSpeed(double speed){
-        motor.set(speed);
+    private void updatePIDConfigs() {
+        final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
+        motorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        motorCfg.Feedback.SensorToMechanismRatio = ClimberConstants.GEAR_RATIO;
+        motorCfg.Slot0.kP = pValue.get();
+        motorCfg.Slot0.kI = iValue.get();
+        motorCfg.Slot0.kD = dValue.get();
+        climbMotor.getConfigurator().apply(motorCfg);
     }
-    /** Command to move the climber up at the constant duty cycle */
-    public Command climbUp() {
-       return this.run(() -> motor.set(climbUpDutyCycle.get()));
-    }
-    /** Command to move the climber down at the constant duty cycle */
-    public Command climbDown() {
-        return this.run(() -> motor.set(climbDownDutyCycle.get()));
-    }
+
     /** Command to stop the climber motor */
     public Command stop() {
-        return this.runOnce(() -> { motor.stopMotor(); });
+        return this.runOnce(() -> climbMotor.stopMotor());
     }
 
-    /** Gets the current position of the climber */
-    public double getPosition(){
-        return motor.getPosition().getValueAsDouble();
+    // Moving via duty cycle
+    /** Command to move the climber up at the constant duty cycle */
+    public Command climbUpDutyCycle() {
+       return this.runOnce(() -> climbMotor.set(climbUpDutyCycle.get()));
+    }
+    /** Command to move the climber down at the constant duty cycle */
+    public Command climbDownDutyCycle() {
+        return this.runOnce(() -> climbMotor.set(climbDownDutyCycle.get()));
     }
 
+    // Moving via position control
     /** Climbs to the peak position */
-public Command climbToPeak() {
-    return this.runOnce(() -> {
-        motor.setControl(positionControl.withPosition(climbPeakPosition.get()));
-    })
-    .andThen(
-        Commands.waitUntil(() ->
-            Math.abs(getPosition() - climbPeakPosition.get()) < 0.02
-        )
-    );
-}
-
+    public Command climbToPeak() {
+        return this.runOnce(() -> {
+            climbMotor.setControl(positionControl.withPosition(climbPeakPosition.get()));
+        });
+    }
     /** Climbs to the final position where the robot will hang */
     public Command climbToFinal() {
-        return this.run(
-            () -> motor.setControl(positionControl.withPosition(climbFinalPosition.get()))
+        return this.runOnce(
+            () -> climbMotor.setControl(positionControl.withPosition(climbFinalPosition.get()))
         );
     }
     /** Retracts the climber back to the starting position */
     public Command retractClimb() {
-        return this.run(
-            () -> motor.setControl(positionControl.withPosition(ClimberConstants.CLIMBER_START_POSITION))
+        return this.runOnce(
+            () -> climbMotor.setControl(positionControl.withPosition(ClimberConstants.START_POSITION))
         );
     }
 
-    /** Full climbing sequence */
-    public Command climb(){
-        return Commands.sequence(
-            climbToPeak(),
-            //climbToFinal()
-            // climbToPeak(),
-            retractClimb()
-        );
+    /** Gets the current position of the climber */
+    public double getPosition(){
+        return climbMotor.getPosition().getValueAsDouble();
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Climber Position", getPosition());
 
-        if (SmartDashboard.getBoolean(ClimberConstants.NT_CLIMBER_ZERO_ENCODER_BTN, false)) {
-            motor.setPosition(0.0);
-            SmartDashboard.putBoolean(ClimberConstants.NT_CLIMBER_ZERO_ENCODER_BTN, false);
+        if (Constants.debugMode) {
+            // Putting a button on the Dashboard to apply PID changes when pressed, and then resetting the button
+            if (SmartDashboard.getBoolean("Tuning/Climber/ApplyPIDButton", false)) {
+                updatePIDConfigs();
+                SmartDashboard.putBoolean("Tuning/Climber/ApplyPIDButton", false);
+            }
+            // Putting a button on the Dashboard to zero the climber encoder when pressed, and then resetting the button
+            if (SmartDashboard.getBoolean("Tuning/Climber/ZeroEncoderBtn", false)) {
+                climbMotor.setPosition(0.0);
+                SmartDashboard.putBoolean("Tuning/Climber/ZeroEncoderBtn", false);
+            }
         }
     }
-    
 }
