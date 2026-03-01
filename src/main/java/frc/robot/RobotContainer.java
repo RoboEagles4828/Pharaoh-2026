@@ -39,13 +39,12 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
  */
 public class RobotContainer {
   /*** Flags which control which subsystems are instantiated. ***/
-  private static final boolean ENABLE_DRIVETRAIN = true;
   private static final boolean ENABLE_SHOOTER = true;
   private static final boolean ENABLE_KICKER = true;
   private static final boolean ENABLE_INTAKE = true;
   private static final boolean ENABLE_HOPPER = true;
-  private static final boolean ENABLE_VISION = false;
-  private static final boolean ENABLE_CLIMBER = false;
+  private static final boolean ENABLE_VISION = true;
+  private static final boolean ENABLE_CLIMBER = true;
 
 
   /*** DRIVETRAIN SUBSYSTEM ***/
@@ -88,11 +87,10 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    if (ENABLE_DRIVETRAIN)
-      drivetrain = TunerConstants.createDrivetrain();
+    drivetrain = TunerConstants.createDrivetrain();
 
     if (ENABLE_SHOOTER)
-      shooter = new Shooter();
+      shooter = new Shooter(drivetrain);
     
     if (ENABLE_KICKER)
       kicker = new Kicker();
