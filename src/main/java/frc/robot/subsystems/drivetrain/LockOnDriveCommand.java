@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.subsystems.drivetrain.DrivetrainConstants.LockOnDriveConstraints;
 import frc.robot.util.TunableNumber;
+import frc.robot.util.Util4828;
 
 public class LockOnDriveCommand extends Command {
 	// Tunable PID constants and constraints for lock-on behavior
@@ -27,10 +28,19 @@ public class LockOnDriveCommand extends Command {
 	private final CommandSwerveDrivetrain drivetrain;
 	/** Driver translation input (field-relative) */
 	private final CommandXboxController controller;
-	/** Target position to lock on to: the center of the hub */
-	private final Translation2d hubPosition;
+	/** Target position to lock on to */
+	private final Translation2d targetPosition;
+
 	/** Profiled PID Controller for rotation */
 	private ProfiledPIDController headingPID;
+
+	/**
+	 * If the command should end (isFinished -> true) when we are within the aim tolerance.
+	 * This is used for autonomous. During teleop, we want the command to run continuously so
+	 * the driver can hold and drive while locked on, but in auto we just want to lock on and then
+	 * move to the next part of the auto sequence.
+	 */
+	private final boolean shouldAutomaticallyEnd;
 
 	/** CTRE swerve drive request with appropriate deadbands and control type for lock-on driving */
 	private final SwerveRequest.FieldCentric driveRequest =
@@ -43,11 +53,15 @@ public class LockOnDriveCommand extends Command {
 	public LockOnDriveCommand(
 		CommandSwerveDrivetrain drivetrain,
 		CommandXboxController controller,
-		Translation2d hubPosition
+		boolean shouldAutomaticallyEnd
 	) {
 		this.drivetrain = drivetrain;
 		this.controller = controller;
-		this.hubPosition = hubPosition;
+
+		Pose2d robotPose = drivetrain.getState().Pose;
+		this.targetPosition = Util4828.getLockOnTargetPosition(robotPose).minus(robotPose.getTranslation());
+
+		this.shouldAutomaticallyEnd = shouldAutomaticallyEnd;
 
 		addRequirements(drivetrain);
 	}
@@ -72,6 +86,21 @@ public class LockOnDriveCommand extends Command {
         headingPID.reset(robotPose.getRotation().getRadians());
     }
 
+	/** Returns if the robot is within tolerance of the angle */
+	// TODO might be unnecessary because you can just set the tolerance of the pid controller
+	private boolean isWithinTolerance() {
+		/** Current robot pose */
+		Pose2d robotPose = drivetrain.getState().Pose;
+
+		/** Vector from robot to hub */
+		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
+
+		/** Desired heading */
+		Rotation2d desiredHeading = toTarget.getAngle();
+		Rotation2d currentHeading = robotPose.getRotation();
+
+		return Math.abs(desiredHeading.minus(currentHeading).getRadians()) < Math.toRadians(LockOnDriveConstraints.AIM_TOLERANCE_DEGREES);
+	}
 
 	@Override
 	public void execute() {
@@ -79,22 +108,21 @@ public class LockOnDriveCommand extends Command {
 		Pose2d robotPose = drivetrain.getState().Pose;
 
 		/** Vector from robot to hub */
-		Translation2d toHub = hubPosition.minus(robotPose.getTranslation());
+		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
 
 		/** Desired heading */
-		Rotation2d desiredHeading = toHub.getAngle();
+		Rotation2d desiredHeading = toTarget.getAngle();
 		Rotation2d currentHeading = robotPose.getRotation();
 
 		/** Calculated rotational velocity */
 		double omega = headingPID.calculate(currentHeading.getRadians(), desiredHeading.getRadians());
 
-		// // Optional aim deadband (prevents jitter when lined up)
-		// if (Math.abs(
-		// 	desiredHeading.minus(currentHeading).getRadians()
-		// ) < Math.toRadians(AIM_TOLERANCE_DEGREES)) {
-		// 	omega = 0.0;
-		// }
+		// Optional aim deadband (prevents jitter when lined up)
+		if (isWithinTolerance()) {
+			omega = 0.0;
+		}
 
+		// Apply CTRE request
 		drivetrain.setControl(
 			driveRequest
 				.withVelocityX(controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
@@ -116,7 +144,12 @@ public class LockOnDriveCommand extends Command {
 
 	@Override
 	public boolean isFinished() {
-		// Runs while button is held so never finishes on its own
+		// Automatically terminating lockon whn we're in auton
+		if (shouldAutomaticallyEnd && isWithinTolerance()) {
+			return true;
+		}
+
+		// Runs while button is held so never finishes on its own during teleop
 		return false;
 	}
 }

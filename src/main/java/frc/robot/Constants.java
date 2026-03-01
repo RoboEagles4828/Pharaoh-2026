@@ -37,6 +37,12 @@ public final class Constants {
     /** Border of the Red Alliance Zone */
     public static final double RED_ALLIANCE_ZONE = Units.inchesToMeters(650.12 - 181.56);
     
+
+    public static final Translation2d BLUE_PASS_TOP = new Translation2d(2, 5.801);
+    public static final Translation2d BLUE_PASS_BOTTOM = new Translation2d(2, 1.687);
+    public static final Translation2d RED_PASS_TOP = new Translation2d(14.493, 5.801);
+    public static final Translation2d RED_PASS_BOTTOM = new Translation2d(14.493, 1.687);
+    public static final double FIELD_MIDPOINT_Y = 4.0;
   }
 
   public static class OperatorConstants {
@@ -60,13 +66,13 @@ public final class Constants {
     public static int INTAKE_DEPLOY_MOTOR_ID = 35; 
     public static int NINJA_STAR_MOTOR_ID = 34; 
     public static int HOPPER_CONVEYOR_MOTOR_ID = 33; 
+    public static int CLIMBER_MOTOR_ID = 22;
   }
 
   public static String CANIVORE_NAME = "canivore";
   public static final CANBus CANIVORE_CAN_BUS = new CANBus("canivore");
   public static class CANivoreBusCANIds {
     // NOTE - 1 to 12 are reserved for the swerve drivetrain.
-    public static int CLIMBER_MOTOR_ID = 22;
   }
 
   public static class RobotConstants {

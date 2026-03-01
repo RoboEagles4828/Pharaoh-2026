@@ -29,6 +29,41 @@ public class Util4828 {
             : Constants.FieldConstants.BLUE_HUB_CENTER;
     }
 
+    public static Translation2d getPassLocation(Pose2d robotPose) {
+        boolean aim_top = robotPose.getY() > Constants.FieldConstants.FIELD_MIDPOINT_Y;
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+        if (alliance == Alliance.Red)
+            return aim_top ? Constants.FieldConstants.RED_PASS_TOP : Constants.FieldConstants.RED_PASS_BOTTOM;
+        else 
+            return aim_top ? Constants.FieldConstants.BLUE_PASS_TOP : Constants.FieldConstants.BLUE_PASS_BOTTOM; 
+    }
+
+    public static boolean isInAllianceZone(Pose2d robotPose) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        if (alliance == Alliance.Red) {
+            return robotPose.getX() > Constants.FieldConstants.RED_HUB_CENTER.getX();
+        }
+        else {
+            return robotPose.getX() < Constants.FieldConstants.BLUE_HUB_CENTER.getX();
+        }
+    }
+
+    public static boolean isInTopHalfOfField(Pose2d robotPose) {
+        return robotPose.getY() > Constants.FieldConstants.FIELD_MIDPOINT_Y;
+    }
+
+    public static Translation2d getLockOnTargetPosition(Pose2d robotPose) {
+        // If we're on our half of the field, lock to hub
+        if (isInAllianceZone(robotPose)) {
+            return getHubLocation();
+        }
+        
+        // Otherwise, we're passing, lock to passing position
+        return getPassLocation(robotPose);
+
+    }
+
     /*** Generic utility functions ***/
     public static double metersPerSecondToWheelRPS(
             double metersPerSecond,

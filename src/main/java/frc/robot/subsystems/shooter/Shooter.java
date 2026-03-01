@@ -39,17 +39,20 @@ public class Shooter extends SubsystemBase {
     private static final TunableNumber hoodDValue = new TunableNumber("Tuning/Shooter/HoodDValue", ShooterConstants.HOOD_PID_CONFIG.DERIVATIVE);
 
     /** Motor controlling the launching wheels */
-    //one
+    // one
     private final TalonFX shooterMotorOne;
-    //two
+    // two
     private final TalonFX shooterMotorTwo;
-    //three
+    // three
     private final TalonFX shooterMotorThree;
 
     /** Motor controlling the hood */
     private final TalonFX hoodMotor;
 
     private final DigitalInput hoodLimitSwitch;
+
+    private double targetHoodPosition = 0.5;
+    private double targetLaunchVelocity = 0.0;
 
     /** Request for controlling the motor in MPS */
     private final VelocityVoltage shooterVelocityVoltageRequest = new VelocityVoltage(0);
@@ -105,7 +108,8 @@ public class Shooter extends SubsystemBase {
     public Command start() {
         return Commands.run(() -> {
             // convert from target meters per second to wheel rotations per second
-            double shootingwheelRPS = Util4828.metersPerSecondToWheelRPS(shootingSpeedMPS.get(), ShooterConstants.WHEEL_DIAMETER);
+            // double shootingwheelRPS = Util4828.metersPerSecondToWheelRPS(shootingSpeedMPS.get(), ShooterConstants.WHEEL_DIAMETER);
+            double shootingwheelRPS = Util4828.metersPerSecondToWheelRPS(targetLaunchVelocity, ShooterConstants.WHEEL_DIAMETER);
             shooterMotorOne.setControl(shooterVelocityVoltageRequest.withVelocity(-shootingwheelRPS));
             shooterMotorTwo.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
             shooterMotorThree.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
@@ -139,7 +143,8 @@ public class Shooter extends SubsystemBase {
                 return Commands.run(
                     () -> {
                         hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
-                            MathUtil.clamp(hoodPosition.get(), ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION)));
+                            // MathUtil.clamp(hoodPosition.get(), ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION)));
+                            MathUtil.clamp(targetHoodPosition, ShooterConstants.HOOD_MIN_POSITION, ShooterConstants.HOOD_MAX_POSITION)));
                     }
                 );
             },
@@ -160,8 +165,16 @@ public class Shooter extends SubsystemBase {
 
     // private boolean resetEncoderRecently = false;
 
+    private void setTargetParams(double targetLaunchVelocity, double targetHoodPosition) {
+        this.targetLaunchVelocity = targetLaunchVelocity;
+        this.targetHoodPosition = targetHoodPosition;
+    }
+
     @Override
     public void periodic() {
+        var launchParams = LaunchCalculator.getInstance().getParameters(null);
+        setTargetParams(launchParams.velocityMPS(), launchParams.hoodPosition());
+
         // apply new PID configs 
         if (SmartDashboard.getBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false)) {
             updatePIDConfigs();

@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
-import frc.robot.Constants.CANivoreBusCANIds;
 import frc.robot.util.TunableNumber;
 
 /** The climber subsystem controls the climbing of the robot during autonomous and endgame. */
@@ -37,7 +36,7 @@ public class Climber extends SubsystemBase {
 
     /** Constructs a climber subsystem */
     public Climber() {
-        climbMotor = new TalonFX(CANivoreBusCANIds.CLIMBER_MOTOR_ID, Constants.CANIVORE_CAN_BUS);
+        climbMotor = new TalonFX(Constants.RioBusCANIds.CLIMBER_MOTOR_ID, Constants.RIO_CAN_BUS);
         
         // Configuring the motor
         final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
