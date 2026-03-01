@@ -4,8 +4,13 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -21,12 +26,6 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.limelight.Vision;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.util.Util4828;
-
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -81,8 +80,15 @@ public class RobotContainer {
   /*** INPUT DEVICES ***/
   private CommandXboxController driverController;
 
+  /* === COMMANDS === */
+	// Register named commands
+	private final Command shootCommand = new InstantCommand(() -> shooter.start());
+	private final Command autonLockOnCommand = new LockOnDriveCommand(drivetrain, driverController, true);
+	private final Command climbCommand = new InstantCommand(() -> climber.climb());
+	private final Command intakeCommand = new InstantCommand(() -> intake.intake());
+
   /*** PATHPLANNER WIDGET ***/
-  // private final SendableChooser<Command> autonomousChooser;
+  //private final SendableChooser<Command> autonomousChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -112,10 +118,10 @@ public class RobotContainer {
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
     // Pathplanner
-    // TODO - register commands here
-    // NamedCommands.registerCommand("CommandName", command);
-    // autonomousChooser = AutoBuilder.buildAutoChooser();
-    // SmartDashboard.putData("Autonomous Chooser", autonomousChooser);
+    NamedCommands.registerCommand("Shoot", shootCommand);
+		NamedCommands.registerCommand("LockOnHub", autonLockOnCommand);
+		NamedCommands.registerCommand("ClimbL1", climbCommand);
+		NamedCommands.registerCommand("Intake", intakeCommand);
 
     // Configure the trigger bindings
     configureBindings();
