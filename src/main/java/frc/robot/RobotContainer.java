@@ -19,8 +19,10 @@ import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.kicker.Kicker;
+import frc.robot.subsystems.shooter.LaunchCalculator;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.PoseSupplier;
 import frc.robot.util.Util4828;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -77,6 +79,12 @@ public class RobotContainer {
   /*** VISION SUBSYSTEM ***/
   private Vision vision = null;
 
+  /*** POSE SUPPLIER ***/
+  private PoseSupplier poseSupplier = null;
+
+  /*** LAUNCH CALCULATOR */
+  private LaunchCalculator launchCalculator = null;
+
   /*** INPUT DEVICES ***/
   private CommandXboxController driverController;
 
@@ -88,10 +96,13 @@ public class RobotContainer {
    */
   public RobotContainer() {
     drivetrain = TunerConstants.createDrivetrain();
+    poseSupplier = new PoseSupplier(drivetrain);
 
-    if (ENABLE_SHOOTER)
-      shooter = new Shooter(drivetrain);
-    
+    if (ENABLE_SHOOTER){
+      launchCalculator = new LaunchCalculator(poseSupplier);
+      shooter = new Shooter(launchCalculator);
+    }
+
     if (ENABLE_KICKER)
       kicker = new Kicker();
 
@@ -105,7 +116,7 @@ public class RobotContainer {
       climber = new Climber();
 
     if (ENABLE_VISION)
-      vision = new Vision(drivetrain);
+      vision = new Vision(drivetrain, poseSupplier);
     
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.vision.LimelightHelpers.PoseEstimate;
+import frc.robot.util.PoseSupplier;
 
 public class Vision extends SubsystemBase {
 
@@ -15,10 +16,10 @@ public class Vision extends SubsystemBase {
     private final Limelight limelightUp;
     private CommandSwerveDrivetrain drivetrain;
 
-    public Vision(CommandSwerveDrivetrain drivetrain) {
+    public Vision(CommandSwerveDrivetrain drivetrain, PoseSupplier poseSupplier) {
 
-        limelightForward = new Limelight(VisionConstants.LIMELIGHT_FORWARD_NAME);
-        limelightUp = new Limelight(VisionConstants.LIMELIGHT_UP_NAME);
+        limelightForward = new Limelight(VisionConstants.LIMELIGHT_FORWARD_NAME, poseSupplier);
+        limelightUp = new Limelight(VisionConstants.LIMELIGHT_UP_NAME, poseSupplier);
         this.drivetrain = drivetrain;
 
         SmartDashboard.putBoolean(VisionConstants.NT_USE_VISION_TOGGLE, true);

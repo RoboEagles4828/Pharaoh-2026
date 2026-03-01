@@ -39,8 +39,6 @@ public class Shooter extends SubsystemBase {
     private static final TunableNumber hoodPValue = new TunableNumber("Tuning/Shooter/HoodPValue", ShooterConstants.HOOD_PID_CONFIG.PROPORTIONAL);
     private static final TunableNumber hoodDValue = new TunableNumber("Tuning/Shooter/HoodDValue", ShooterConstants.HOOD_PID_CONFIG.DERIVATIVE);
 
-    private final CommandSwerveDrivetrain drivetrain;
-
     /** Motor controlling the launching wheels */
     // one
     private final TalonFX shooterMotorOne;
@@ -52,7 +50,11 @@ public class Shooter extends SubsystemBase {
     /** Motor controlling the hood */
     private final TalonFX hoodMotor;
 
+    /** Limit switch limitting the minimum hood movement */
     private final DigitalInput hoodLimitSwitch;
+
+    /** Launch calculator for calculating shooter parameters */
+    private final LaunchCalculator launchCalculator;
 
     private double targetHoodPosition = 0.5;
     private double targetLaunchVelocity = 0.0;
@@ -64,14 +66,14 @@ public class Shooter extends SubsystemBase {
                                         .withOverrideBrakeDurNeutral(true)
                                         .withSlot(0);
 
-    public Shooter(CommandSwerveDrivetrain drivetrain) {
+    public Shooter(LaunchCalculator launchCalculator) {
         shooterMotorOne = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_ONE_ID, Constants.RIO_CAN_BUS);
         shooterMotorTwo = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_TWO_ID, Constants.RIO_CAN_BUS);
         shooterMotorThree = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_THREE_ID, Constants.RIO_CAN_BUS);
         hoodMotor = new TalonFX(RioBusCANIds.HOOD_MOTOR_ID, Constants.RIO_CAN_BUS);
         hoodLimitSwitch = new DigitalInput(DigitalIDS.HOOD_LIMIT_SWITCH);
 
-        this.drivetrain = drivetrain;
+        this.launchCalculator = launchCalculator;
 
         updatePIDConfigs();
 
@@ -174,7 +176,7 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        var launchParams = LaunchCalculator.getInstance().getParameters(drivetrain.getState().Pose);
+        var launchParams = launchCalculator.getParameters();
         setTargetParams(launchParams.velocityMPS(), launchParams.hoodPosition());
 
         // apply new PID configs 

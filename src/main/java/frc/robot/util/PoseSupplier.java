@@ -8,8 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
-public class PoseSubsystem {
-    private static PoseSubsystem instance;
+public class PoseSupplier {
     private final CommandSwerveDrivetrain drivetrain;
     private Zone currentZone = Zone.SCORING_ZONE;
 
@@ -23,18 +22,8 @@ public class PoseSubsystem {
         OPPONENT_ZONE
     }
 
-    public PoseSubsystem(CommandSwerveDrivetrain drivetrain) {
-        if (instance == null) {
-            instance = new PoseSubsystem(drivetrain);
-        }
-        
+    public PoseSupplier(CommandSwerveDrivetrain drivetrain) {        
         this.drivetrain = drivetrain;
-    }
-
-    /** Returns the singleton instance of the PoseSubsystem */
-    public static PoseSubsystem getInstance() {
-        
-        return instance;
     }
 
     /** Returns a formatted string of the x, y, theta */
@@ -46,23 +35,12 @@ public class PoseSubsystem {
     public Rotation2d getHeading() {
         return drivetrain.getState().Pose.getRotation();
     }
-    /** Sets the heading of the robot to the given heading */
-    public void setHeading(Rotation2d newHeading) {
-        drivetrain.seedFieldCentric(newHeading);
-    }
-    /** Resets the heading of the robot */
-    public void resetHeading() {
-        setHeading(Rotation2d.kZero);
-    }
 
     /** Returns the current pose of the robot */
     public Pose2d getPose() {
         return drivetrain.getState().Pose;
     }
-    /** Sets the pose of the robot to the given pose */
-    public void setPose(Pose2d newPose) {
-        drivetrain.resetPose(newPose);
-    }
+    
     /** Returns the current zone of the robot */
     public Zone getZone() {
         if (getPose().getX() < Constants.FieldConstants.BLUE_ALLIANCE_ZONE) {
@@ -84,15 +62,15 @@ public class PoseSubsystem {
     }
 
     /** Returns the distance of the robot to the given translation */
-    public static double distanceTo(Translation2d target) {
-        return getInstance().getPose().getTranslation().getDistance(target);
+    public double distanceTo(Translation2d target) {
+        return getPose().getTranslation().getDistance(target);
     }
     /** Returns the distance of the robot to the given position */
-    public static double distanceTo(Pose2d target) {
+    public double distanceTo(Pose2d target) {
         return distanceTo(target.getTranslation());
     }
     /** Returns the distance of the robot to the center of the hub */
-    public static double distanceToHubCenter() {
+    public double distanceToHubCenter() {
         return distanceTo(Constants.FieldConstants.BLUE_HUB_CENTER);
     }
 }

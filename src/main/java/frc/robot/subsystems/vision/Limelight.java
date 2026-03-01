@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.vision.LimelightHelpers.PoseEstimate;
 import frc.robot.subsystems.vision.LimelightHelpers.RawFiducial;
-import frc.robot.util.PoseSubsystem;
+import frc.robot.util.PoseSupplier;
 import frc.robot.util.Util4828;
 
 public class Limelight {
@@ -28,20 +28,22 @@ public class Limelight {
     private static final String NT_TIMESTAMP = "Timestamp";
 
     private final String name;
+    private PoseSupplier poseSupplier;
 
     private PoseEstimate mostRecentPoseEstimate = null;
     private Matrix<N3, N1> mostRecentPoseStandardDeviation = null;
     private boolean isMostRecentPoseEstimateGood = false;
 
-    public Limelight(String limelightName) {
+    public Limelight(String limelightName, PoseSupplier poseSupplier) {
         name = limelightName;
+        this.poseSupplier = poseSupplier;
     }
 
     /** Updates the robot's pose estimate */
     public void updateEstimate() {
         // feed the robot's current rotation to the limelight (required for MegaTag2 algorithm)
-        if (PoseSubsystem.getInstance() != null) {
-            LimelightHelpers.SetRobotOrientation(name, PoseSubsystem.getInstance().getPose().getRotation().getDegrees(),
+        if (poseSupplier != null) {
+            LimelightHelpers.SetRobotOrientation(name, poseSupplier.getPose().getRotation().getDegrees(),
                 0, 0, 0,0, 0);
         }
 
