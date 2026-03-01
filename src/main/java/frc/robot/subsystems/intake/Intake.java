@@ -190,7 +190,7 @@ public class Intake extends SubsystemBase {
         }
 
         if (SmartDashboard.getBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false)) {
-            deployMotor.setPosition(raisedPosition.get()); // also reset encoder to 0.1 for testing
+            deployMotor.setPosition(raisedPosition.get()); // also reset encoder for testing
             SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
         }
 

@@ -167,9 +167,7 @@ public class Shooter extends SubsystemBase {
     public Command resetHoodEncoder() {
         return Commands.runOnce(() -> hoodMotor.setPosition(ShooterConstants.HOOD_MIN_POSITION));
     }
-
-    // private boolean resetEncoderRecently = false;
-
+    
     private void setTargetParams(double targetLaunchVelocity, double targetHoodPosition) {
         this.targetLaunchVelocity = targetLaunchVelocity;
         this.targetHoodPosition = targetHoodPosition;
@@ -185,13 +183,6 @@ public class Shooter extends SubsystemBase {
             updatePIDConfigs();
             SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false); // reset btn
         }
-
-        // if (!resetEncoderRecently && hoodLimitSwitch.get() == true){
-        //     hoodMotor.setPosition(0);
-        //     resetEncoderRecently = true;
-        // } else {
-        //     resetEncoderRecently = false;
-        // }
 
         // output the current measured speed of the flywheel, for verification/tuning
         double actualMPS_ONE = shooterMotorOne.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;

@@ -1,12 +1,7 @@
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
-import frc.robot.util.Util4828;
 
 public class ShooterConstants {
     public static final String NT_APPLY_PID_BUTTON = "Tuning/Shooter/ApplyPIDButton";
