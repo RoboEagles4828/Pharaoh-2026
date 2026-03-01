@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -24,6 +25,8 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PoseSupplier;
 import frc.robot.util.Util4828;
+
+import java.util.Collections;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -150,12 +153,16 @@ public class RobotContainer {
       driverController.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
       // Lock-on while holding right trigger
-      driverController.rightTrigger().whileTrue(
-        new LockOnDriveCommand(
-          drivetrain,
-          driverController,
-          false
+      driverController.leftBumper().whileTrue(
+        Commands.defer(() -> {
+          return new LockOnDriveCommand(
+            drivetrain,
+            driverController,
+            false
+          );
+        }, Collections.emptySet()
         )
+
       );
 
       // Run SysId routines when holding back/start and X/Y.
@@ -205,10 +212,10 @@ public class RobotContainer {
     /*** SHOOTER ***/
     if (shooter != null) {
       shooter.setDefaultCommand(shooter.stop());
-      driverController.rightTrigger().whileTrue(shooter.start());
+      driverController.leftBumper().whileTrue(shooter.start());
 
-      driverController.rightTrigger().whileTrue(shooter.raiseHood());
-      driverController.rightTrigger().whileFalse(shooter.lowerHood());
+      driverController.leftBumper().whileTrue(shooter.raiseHood());
+      driverController.leftBumper().whileFalse(shooter.lowerHood());
     }
 
     /*** KICKER ***/
@@ -245,11 +252,11 @@ public class RobotContainer {
     /*** HOPPER ***/
     if (hopper != null) {
       hopper.setDefaultCommand(hopper.stopConveyor());
-      driverController.x().whileTrue(hopper.startConveyor());
+      driverController.rightTrigger().whileTrue(hopper.startConveyor());
 
       // We're trying to shoot, start kicker
       if (kicker != null) {
-        driverController.x().whileTrue(kicker.start());
+        driverController.rightTrigger().whileTrue(kicker.start());
       }
     }
   }

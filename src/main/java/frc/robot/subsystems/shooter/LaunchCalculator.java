@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PoseSupplier;
 import frc.robot.util.Util4828;
@@ -41,12 +42,12 @@ public class LaunchCalculator {
         Translation2d targetPos = Util4828.getLockOnTargetPosition(robotPose);
         
         // Calculating parameters to shoot from anywhere.
-        double distanceToTarget = robotPose.getTranslation().getDistance(targetPos);
-        double targetVelocity = isScoring ? launchVelocityMap.get(distanceToTarget) : passVelocityMap.get(distanceToTarget);
-        double targetHoodPosition = isScoring ? launchHoodPositionMap.get(distanceToTarget) : ShooterConstants.HOOD_MAX_POSITION;
+        double distanceToTargetInches = Units.metersToInches(robotPose.getTranslation().getDistance(targetPos));
+        double targetVelocity = isScoring ? launchVelocityMap.get(distanceToTargetInches) : passVelocityMap.get(distanceToTargetInches);
+        double targetHoodPosition = isScoring ? launchHoodPositionMap.get(distanceToTargetInches) : ShooterConstants.HOOD_MAX_POSITION;
 
         // debugging - publish info
-        SmartDashboard.putNumber("Tuning/Launch/DistanceToTarget", distanceToTarget);
+        SmartDashboard.putNumber("Tuning/Launch/DistanceToTarget", distanceToTargetInches);
         SmartDashboard.putNumber("Tuning/Launch/TargetVelocity", targetVelocity);
         SmartDashboard.putNumber("Tuning/Launch/TargetHood", targetHoodPosition);
 

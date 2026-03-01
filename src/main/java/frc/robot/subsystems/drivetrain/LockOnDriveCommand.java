@@ -59,7 +59,7 @@ public class LockOnDriveCommand extends Command {
 		this.controller = controller;
 
 		Pose2d robotPose = drivetrain.getState().Pose;
-		this.targetPosition = Util4828.getLockOnTargetPosition(robotPose).minus(robotPose.getTranslation());
+		this.targetPosition = Util4828.getLockOnTargetPosition(robotPose);
 
 		this.shouldAutomaticallyEnd = shouldAutomaticallyEnd;
 

@@ -36,7 +36,6 @@ public final class Constants {
     public static final double BLUE_ALLIANCE_ZONE = Units.inchesToMeters(181.56);
     /** Border of the Red Alliance Zone */
     public static final double RED_ALLIANCE_ZONE = Units.inchesToMeters(650.12 - 181.56);
-    
 
     public static final Translation2d BLUE_PASS_TOP = new Translation2d(2, 5.801);
     public static final Translation2d BLUE_PASS_BOTTOM = new Translation2d(2, 1.687);
