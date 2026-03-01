@@ -148,8 +148,7 @@ public class Shooter extends SubsystemBase {
                 return Commands.run(
                     () -> {
                         hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
-                            // MathUtil.clamp(hoodPosition.get(), ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION)));
-                            MathUtil.clamp(targetHoodPosition, ShooterConstants.HOOD_MIN_POSITION, ShooterConstants.HOOD_MAX_POSITION)));
+                            MathUtil.clamp(targetHoodPosition, ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION)));
                     }
                 );
             },
@@ -167,7 +166,7 @@ public class Shooter extends SubsystemBase {
     public Command resetHoodEncoder() {
         return Commands.runOnce(() -> hoodMotor.setPosition(ShooterConstants.HOOD_MIN_POSITION));
     }
-    
+
     private void setTargetParams(double targetLaunchVelocity, double targetHoodPosition) {
         this.targetLaunchVelocity = targetLaunchVelocity;
         this.targetHoodPosition = targetHoodPosition;

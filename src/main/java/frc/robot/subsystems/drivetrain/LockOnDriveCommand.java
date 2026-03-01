@@ -87,7 +87,6 @@ public class LockOnDriveCommand extends Command {
     }
 
 	/** Returns if the robot is within tolerance of the angle */
-	// TODO might be unnecessary because you can just set the tolerance of the pid controller
 	private boolean isWithinTolerance() {
 		/** Current robot pose */
 		Pose2d robotPose = drivetrain.getState().Pose;
