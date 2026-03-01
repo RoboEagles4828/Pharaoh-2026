@@ -19,7 +19,7 @@ public class ShooterConstants {
         static final double STATIC = 0.0;
         static final double VELOCITY = 0.123;
         static final double ACCELERATION = 0.0;        
-        static final double PROPORTIONAL = 0.33;
+        static final double PROPORTIONAL = 0.35;
         static final double INTEGRAL = 0.0;
         static final double DERIVATIVE = 0.0;
     }

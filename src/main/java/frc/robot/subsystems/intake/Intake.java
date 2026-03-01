@@ -168,7 +168,7 @@ public class Intake extends SubsystemBase {
             () -> Commands.parallel(        
                 deployIntake(),
                 Commands.sequence(
-                    Commands.waitSeconds(0.25),
+                    Commands.waitSeconds(IntakeConstants.DELAY_BEFORE_START_SPINNING_SECONDS),
                     Commands.parallel(
                         startIntake(),
                         startNinjaStarMotor())

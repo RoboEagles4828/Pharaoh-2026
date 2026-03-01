@@ -139,8 +139,8 @@ public class RobotContainer {
       // Default command for drivetrain - drive according to driver controller joystick
       drivetrain.setDefaultCommand(
           drivetrain.applyRequest(() -> driveRequest
-              .withVelocityX(driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) // Drive forward with positive Y (forward)
-              .withVelocityY(driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
+              .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) // Drive forward with positive Y (forward)
+              .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
               .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) // Drive counterclockwise with negative X (left)
           ));
 
@@ -174,39 +174,39 @@ public class RobotContainer {
 
       // Use dpad for basic movement in the 4 cardinal directions
       // Drive straight forward slowly
-      driverController.povUp().whileTrue(
-        drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED)
-          .withVelocityY(0.0)
-          .withRotationalRate(0.0)));
-      // Drive straight backward slowly
-      driverController.povDown().whileTrue(
-        drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED)
-          .withVelocityY(0.0)
-          .withRotationalRate(0.0)));
-      // Drive straight right slowly
-      driverController.povRight().whileTrue(
-        drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(0.0)
-          .withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED)
-          .withRotationalRate(0)));
-      // Drive straight left slowly
-      driverController.povLeft().whileTrue(
-        drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(0.0)
-          .withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED)
-          .withRotationalRate(0)));
+      // driverController.povUp().whileTrue(
+      //   drivetrain.applyRequest(() -> driveRequestRobotCentric
+      //     .withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED)
+      //     .withVelocityY(0.0)
+      //     .withRotationalRate(0.0)));
+      // // Drive straight backward slowly
+      // driverController.povDown().whileTrue(
+      //   drivetrain.applyRequest(() -> driveRequestRobotCentric
+      //     .withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED)
+      //     .withVelocityY(0.0)
+      //     .withRotationalRate(0.0)));
+      // // Drive straight right slowly
+      // driverController.povRight().whileTrue(
+      //   drivetrain.applyRequest(() -> driveRequestRobotCentric
+      //     .withVelocityX(0.0)
+      //     .withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED)
+      //     .withRotationalRate(0)));
+      // // Drive straight left slowly
+      // driverController.povLeft().whileTrue(
+      //   drivetrain.applyRequest(() -> driveRequestRobotCentric
+      //     .withVelocityX(0.0)
+      //     .withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED)
+      //     .withRotationalRate(0)));
 
       // Reset the field-centric heading on start
       driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-      driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
-      driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+      //driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
+      //driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
 
-      //driverController.leftTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
-      //driverController.rightTrigger().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
-      //driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+      driverController.povLeft().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
+      driverController.povRight().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
+      
     }
 
     /*** SHOOTER ***/

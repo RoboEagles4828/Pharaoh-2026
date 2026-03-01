@@ -80,11 +80,11 @@ public class Climber extends SubsystemBase {
     // Moving via duty cycle
     /** Command to move the climber up at the constant duty cycle */
     public Command climbUpDutyCycle() {
-       return this.runOnce(() -> climbMotor.set(climbUpDutyCycle.get()));
+       return this.run(() -> climbMotor.set(climbUpDutyCycle.get()));
     }
     /** Command to move the climber down at the constant duty cycle */
     public Command climbDownDutyCycle() {
-        return this.runOnce(() -> climbMotor.set(climbDownDutyCycle.get()));
+        return this.run(() -> climbMotor.set(climbDownDutyCycle.get()));
     }
 
     // Moving via position control

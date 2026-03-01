@@ -124,8 +124,8 @@ public class LockOnDriveCommand extends Command {
 		// Apply CTRE request
 		drivetrain.setControl(
 			driveRequest
-				.withVelocityX(controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
-				.withVelocityY(controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
+				.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
+				.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
 				.withRotationalRate(omega)
 		);
 	}
