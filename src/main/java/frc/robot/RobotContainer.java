@@ -8,6 +8,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -111,6 +112,11 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    // For 2026, the field is rotationally symmetrical, not mirrored.
+    // We need to tell PathPlanner this so it correctly rotates our
+    //  auto paths for the red alliance side. (By default, it mirrors, we want 180 rotation.)
+    FlippingUtil.symmetryType = FlippingUtil.FieldSymmetry.kRotational;
+
     drivetrain = TunerConstants.createDrivetrain();
     poseSupplier = new PoseSupplier(drivetrain);
 
