@@ -11,7 +11,7 @@ public class DrivetrainConstants {
     /** Teleoperated max angular valocity of the robot in radians per second */
     public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     public static final double ROTATIONAL_DEADBAND = 0.1;
-    public static final double MAX_AUTOALIGN_TOWER_DISTANCE = 3.0;
+    public static final double MAX_AUTOALIGN_TOWER_DISTANCE = 1000.0; // todo real distance...
 
     static class LockOnDriveConstraints {
         public static final double kP = 12.0; 
@@ -22,21 +22,16 @@ public class DrivetrainConstants {
         public static final double AIM_TOLERANCE_DEGREES = 1.5; // degrees
     }
 
+    public static final double TOWER_ALIGN_STRAFE_SPEED_MPS = 0.5; //meters p/s
+    public static final double TOWER_ALIGN_STRAFE_TIMEOUT_SEC = 3.0; //sec
+
     static class PathPlannerConstraints {
-
-        public static final double TOWER_ALIGN_STEP1_X_LEFT = 1.607;
-        public static final double TOWER_ALIGN_STEP1_Y_LEFT = 4.675;
-        public static final double TOWER_ALIGN_STEP1_THETA_LEFT = 180; // degrees
-        public static final double TOWER_ALIGN_STEP2_X_LEFT = 1.1;
-        public static final double TOWER_ALIGN_STEP2_Y_LEFT = 2.9;
-        public static final double TOWER_ALIGN_STEP2_THETA_LEFT = -180; // degrees
-
-        public static final double TOWER_ALIGN_STEP1_X_RIGHT = 1.607;
-        public static final double TOWER_ALIGN_STEP1_Y_RIGHT = 2.730;
-        public static final double TOWER_ALIGN_STEP1_THETA_RIGHT = 0; // degrees
-        public static final double TOWER_ALIGN_STEP2_X_RIGHT = 1.107;
-        public static final double TOWER_ALIGN_STEP2_Y_RIGHT = 4.675;
-        public static final double TOWER_ALIGN_STEP2_THETA_RIGHT = 0; // degrees
+        public static final double TOWER_ALIGN_STAGING_X_LEFT = 1.607;
+        public static final double TOWER_ALIGN_STAGING_Y_LEFT = 4.675;
+        public static final double TOWER_ALIGN_STAGING_THETA_LEFT = 180; // degrees
+        public static final double TOWER_ALIGN_STAGING_X_RIGHT = 1.607;
+        public static final double TOWER_ALIGN_STAGING_Y_RIGHT = 2.730;
+        public static final double TOWER_ALIGN_STAGING_THETA_RIGHT = 0; // degrees
 
         public static final PathConstraints SAFE = new PathConstraints(
             0.5,  // max velocity (m/s)

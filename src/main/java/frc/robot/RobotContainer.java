@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -14,7 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -31,14 +29,10 @@ import frc.robot.subsystems.shooter.LaunchCalculator;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PoseSupplier;
-import frc.robot.util.Util4828;
 
 import java.util.Collections;
 
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -50,15 +44,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  /*** Flags which control which subsystems are instantiated. ***/
-  private static final boolean ENABLE_SHOOTER = true;
-  private static final boolean ENABLE_KICKER = true;
-  private static final boolean ENABLE_INTAKE = true;
-  private static final boolean ENABLE_HOPPER = true;
-  private static final boolean ENABLE_VISION = true;
-  private static final boolean ENABLE_CLIMBER = true;
-
-
   /*** DRIVETRAIN SUBSYSTEM ***/
   public CommandSwerveDrivetrain drivetrain = null;
   private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
@@ -87,6 +72,7 @@ public class RobotContainer {
   private Climber climber = null;
 
   /*** VISION SUBSYSTEM ***/
+  @SuppressWarnings("unused")
   private Vision vision = null;
 
   /*** POSE SUPPLIER ***/
@@ -98,15 +84,54 @@ public class RobotContainer {
   /*** INPUT DEVICES ***/
   private CommandXboxController driverController;
 
-  /* === COMMANDS === */
-	// Register named commands
-	private final Command shootCommand = new InstantCommand(() -> shooter.start());
-	private final Command autonLockOnCommand = new LockOnDriveCommand(drivetrain, driverController, true);
-	private final Command climbCommand = new InstantCommand(() -> climber.climb());
-	private final Command intakeCommand = new InstantCommand(() -> intake.intake());
-
   /*** PATHPLANNER WIDGET ***/
-  //private final SendableChooser<Command> autonomousChooser;
+  private final SendableChooser<Command> autonomousChooser;
+
+  /*** more complex commands that require multiple subsystems */
+  public Command aimAndShoot() {
+    return Commands.sequence(
+      Commands.deadline(
+        Commands.waitSeconds(3.0),
+        new LockOnDriveCommand(drivetrain, driverController, true),
+        shooter.start(),
+        shooter.raiseHood(),
+        Commands.sequence(
+          Commands.waitSeconds(1.0),
+          Commands.parallel(
+            hopper.startConveyor(),
+            kicker.start()
+          )
+        )
+      ),
+      shooter.lowerHood() // $hack$ to lower hood at the end
+    );
+  }
+
+  public Command climbLeft() {
+    return Commands.sequence(
+        Commands.print("Staging to tower LEFT."),
+        drivetrain.stageToTower(Constants.FieldConstants.TowerSide.LEFT),
+        Commands.print("Raising climber."),
+        climber.climbToPeak(),
+        Commands.print("Aligning to tower."),
+        drivetrain.alignToTower(),
+        Commands.print("Climbing up."),
+        climber.retractClimb(),
+        Commands.print("Climb completed."));
+  }
+
+  public Command climbRight() {
+    return Commands.sequence(
+        Commands.print("Staging to tower RIGHT."),
+        drivetrain.stageToTower(Constants.FieldConstants.TowerSide.RIGHT),
+        Commands.print("Raising climber."),
+        climber.climbToPeak(),
+        Commands.print("Aligning to tower."),
+        drivetrain.alignToTower(),
+        Commands.print("Climbing up."),
+        climber.retractClimb(),
+        Commands.print("Climb completed."));
+  }
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -117,166 +142,101 @@ public class RobotContainer {
     //  auto paths for the red alliance side. (By default, it mirrors, we want 180 rotation.)
     FlippingUtil.symmetryType = FlippingUtil.FieldSymmetry.kRotational;
 
+    /** SUBSYSTEMS **/
     drivetrain = TunerConstants.createDrivetrain();
     poseSupplier = new PoseSupplier(drivetrain);
 
-    if (ENABLE_SHOOTER){
-      launchCalculator = new LaunchCalculator(poseSupplier);
-      shooter = new Shooter(launchCalculator);
-    }
-
-    if (ENABLE_KICKER)
-      kicker = new Kicker();
-
-    if (ENABLE_INTAKE)
-      intake = new Intake();
+    launchCalculator = new LaunchCalculator(poseSupplier);
+    shooter = new Shooter(launchCalculator);
     
-    if (ENABLE_HOPPER)
-      hopper = new Hopper();
+    kicker = new Kicker();
 
-    if (ENABLE_CLIMBER)
-      climber = new Climber();
+    intake = new Intake();
+  
+    hopper = new Hopper();
 
-    if (ENABLE_VISION)
-      vision = new Vision(drivetrain, poseSupplier);
+    climber = new Climber();
+
+    vision = new Vision(drivetrain, poseSupplier);
     
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-    // Pathplanner
-    NamedCommands.registerCommand("Shoot", shootCommand);
-		NamedCommands.registerCommand("LockOnHub", autonLockOnCommand);
-		NamedCommands.registerCommand("ClimbL1", climbCommand);
-		NamedCommands.registerCommand("Intake", intakeCommand);
+    /** PATHPLANNER **/
+    NamedCommands.registerCommand("Shoot", Commands.defer(this::aimAndShoot, Collections.emptySet()));
+    NamedCommands.registerCommand("ClimbRight", Commands.defer(this::climbRight, Collections.emptySet()));
+    NamedCommands.registerCommand("ClimbLeft", Commands.defer(this::climbLeft, Collections.emptySet()));
+		// NamedCommands.registerCommand("StartIntake", startIntaking);
+		// NamedCommands.registerCommand("StopIntake", stopIntaking);
+
+		// Create and populate a SendableChooser with the autonomous routines from PathPlanner, and add it to dashboard.
+		autonomousChooser = AutoBuilder.buildAutoChooser();
+		SmartDashboard.putData("Auto Chooser", autonomousChooser);
 
     // Configure the trigger bindings
     configureBindings();
   }
 
   private void configureBindings() {
-    /*** DRIVETRAIN ***/
-    if (drivetrain != null) {
-      // Default command for drivetrain - drive according to driver controller joystick
-      drivetrain.setDefaultCommand(
-          drivetrain.applyRequest(() -> driveRequest
-              .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) // Drive forward with positive Y (forward)
-              .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) // Drive left with negative X (left)
-              .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) // Drive counterclockwise with negative X (left)
-          ));
+    /*** DEFAULT COMMANDS ***/
+    shooter.setDefaultCommand(shooter.stop());
+    kicker.setDefaultCommand(kicker.stop());
+    intake.setDefaultCommand(intake.stopAndRetract());
+    hopper.setDefaultCommand(hopper.stopConveyor());
 
-      // While disabled, idle.
-      final var idle = new SwerveRequest.Idle();
-      RobotModeTriggers.disabled().whileTrue(
-          drivetrain.applyRequest(() -> idle).ignoringDisable(true)
-      );
-      
-      driverController.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+    /*** Driving */
+    // Default command for drivetrain - drive according to driver controller joystick
+    drivetrain.setDefaultCommand(
+        drivetrain.applyRequest(() -> driveRequest
+            .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) 
+            .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) 
+            .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) 
+        ));
 
-      // Lock-on while holding right trigger
-      driverController.leftBumper().whileTrue(
-        Commands.defer(() -> {
-          return new LockOnDriveCommand(
-            drivetrain,
-            driverController,
-            false
-          );
+    // While disabled, idle.
+    final var idle = new SwerveRequest.Idle();
+    RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+
+    // Run SysId routines when holding back/start and X/Y. Note that each routine should be run exactly once in a single log.
+    driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+    // Use dpad for basic movement in the 4 cardinal directions
+    driverController.povUp().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED).withVelocityY(0.0).withRotationalRate(0.0)));
+    driverController.povDown().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED).withVelocityY(0.0).withRotationalRate(0.0)));
+    driverController.povRight().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.0).withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED).withRotationalRate(0)));
+    driverController.povLeft().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.0).withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED).withRotationalRate(0)));
+
+    // Reset the field-centric heading
+    driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    driverController.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+    /*** Intaking */
+    driverController.leftTrigger().whileTrue(intake.intake());
+    driverController.leftTrigger().whileTrue(hopper.startConveyor());
+    driverController.leftTrigger().whileTrue(shooter.startIntake());
+    driverController.leftTrigger().whileTrue(kicker.startIntake());
+
+    /*** Aim/lockon **/
+    driverController.leftBumper().whileTrue(
+      Commands.defer(() -> {
+        return new LockOnDriveCommand(drivetrain, driverController,false);
         }, Collections.emptySet()
-        )
+      )
+    );
+    driverController.leftBumper().whileTrue(shooter.start());
+    driverController.leftBumper().whileTrue(shooter.raiseHood());
+    driverController.leftBumper().onFalse(shooter.lowerHood()); //< this is sort a $hack$ but it's ok for now...
 
-      );
+    /*** Shooting */
+    driverController.rightTrigger().whileTrue(hopper.startConveyor());
+    driverController.rightTrigger().whileTrue(kicker.start());
 
-      // Run SysId routines when holding back/start and X/Y.
-      // Note that each routine should be run exactly once in a single log.
-      driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-      driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-      driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-      driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-      // Use dpad for basic movement in the 4 cardinal directions
-      // Drive straight forward slowly
-      driverController.povUp().whileTrue(
-        drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED)
-          .withVelocityY(0.0)
-          .withRotationalRate(0.0)));
-      // Drive straight backward slowly
-      driverController.povDown().whileTrue(
-        drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED)
-          .withVelocityY(0.0)
-          .withRotationalRate(0.0)));
-      // Drive straight right slowly
-      driverController.povRight().whileTrue(
-        drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(0.0)
-          .withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED)
-          .withRotationalRate(0)));
-      // Drive straight left slowly
-      driverController.povLeft().whileTrue(
-        drivetrain.applyRequest(() -> driveRequestRobotCentric
-          .withVelocityX(0.0)
-          .withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED)
-          .withRotationalRate(0)));
-
-      // Reset the field-centric heading on start
-      driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-      //driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
-      //driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
-
-      driverController.a().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
-      driverController.b().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));
-      
-    }
-
-    /*** SHOOTER ***/
-    if (shooter != null) {
-      shooter.setDefaultCommand(shooter.stop());
-      driverController.leftBumper().whileTrue(shooter.start());
-
-      driverController.leftBumper().whileTrue(shooter.raiseHood());
-      driverController.leftBumper().whileFalse(shooter.lowerHood());
-    }
-
-    /*** KICKER ***/
-    if (kicker != null) {
-      kicker.setDefaultCommand(kicker.stop());
-    }
-
-    /*** CLIMBER ***/
-    if (climber != null) {
-      climber.setDefaultCommand(climber.stop());
-      driverController.y().whileTrue(climber.climbUpDutyCycle());
-      driverController.x().whileTrue(climber.climbDownDutyCycle());
-      // driverController.y().onTrue(climber.climbToPeak());
-      // driverController.x().onTrue(climber.retractClimb());
-    }
-
-    /*** INTAKE ***/
-    if (intake != null) {
-      intake.setDefaultCommand(intake.stopAndRetract());
-      driverController.leftTrigger().whileTrue(intake.intake());
-
-      // Also run the conveyor while intaking
-      if (hopper != null) {
-        driverController.leftTrigger().whileTrue(hopper.startConveyor());
-      }
-      if (shooter != null) {
-        driverController.leftTrigger().whileTrue(shooter.startIntake());
-      }
-      if (kicker != null) {
-        driverController.leftTrigger().whileTrue(kicker.startIntake());
-      }
-    }
-
-    /*** HOPPER ***/
-    if (hopper != null) {
-      hopper.setDefaultCommand(hopper.stopConveyor());
-      driverController.rightTrigger().whileTrue(hopper.startConveyor());
-
-      // We're trying to shoot, start kicker
-      if (kicker != null) {
-        driverController.rightTrigger().whileTrue(kicker.start());
-      }
-    }
+    /*** Climbing ***/
+    driverController.b().onTrue(climbRight());
+    driverController.x().onTrue(climbLeft());
+    driverController.y().onTrue(climber.climbToPeak());
+    driverController.a().onTrue(climber.retractClimb());
   }
 }

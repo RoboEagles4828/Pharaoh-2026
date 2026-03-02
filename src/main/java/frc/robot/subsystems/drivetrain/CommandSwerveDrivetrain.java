@@ -16,7 +16,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -74,18 +73,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final String NT_AUTOSEED_FACE_TAG = "AutoSeedFaceTag";
     private static final String NT_AUTOSEED_TRIGGER = "AutoSeedPoseTrigger";
 
-    public static final String NT_TOWERALIGN_STEP1_X_LEFT = "TowerAlign/Step1XLeft";
-    public static final String NT_TOWERALIGN_STEP1_Y_LEFT = "TowerAlign/Step1YLeft";
-    public static final String NT_TOWERALIGN_STEP1_THETA_LEFT = "TowerAlign/Step1Theta";
-    public static final String NT_TOWERALIGN_STEP2_X_LEFT = "TowerAlign/Left/Step2X";
-    public static final String NT_TOWERALIGN_STEP2_Y_LEFT = "TowerAlign/Left/Step2Y";
-    public static final String NT_TOWERALIGN_STEP2_THETA_LEFT = "TowerAlign/Left/Step2Theta";
-    public static final String NT_TOWERALIGN_STEP1_X_RIGHT = "TowerAlign/Right/Step1X";
-    public static final String NT_TOWERALIGN_STEP1_Y_RIGHT = "TowerAlign/Right/Step1Y";
-    public static final String NT_TOWERALIGN_STEP1_THETA_RIGHT = "TowerAlign/Right/Step1Theta";
-    public static final String NT_TOWERALIGN_STEP2_X_RIGHT = "TowerAlign/Right/Step2X";
-    public static final String NT_TOWERALIGN_STEP2_Y_RIGHT = "TowerAlign/Right/Step2Y";
-    public static final String NT_TOWERALIGN_STEP2_THETA_RIGHT = "TowerAlign/Right/Step2Theta";
+    public static final String NT_TOWERALIGN_STAGING_X_LEFT = "TowerAlign/StagingXLeft";
+    public static final String NT_TOWERALIGN_STAGING_Y_LEFT = "TowerAlign/StagingYLeft";
+    public static final String NT_TOWERALIGN_STAGING_THETA_LEFT = "TowerAlign/Staging1Theta";
+    public static final String NT_TOWERALIGN_STAGING_X_RIGHT = "TowerAlign/Right/Staging1X";
+    public static final String NT_TOWERALIGN_STAGING_Y_RIGHT = "TowerAlign/Right/Staging1Y";
+    public static final String NT_TOWERALIGN_STAGING_THETA_RIGHT = "TowerAlign/Right/Staging1Theta";
 
     /*
      * SysId routine for characterizing translation. This is used to find PID gains
@@ -234,11 +227,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    private PathPlannerPath towerAlignPathLeft;
-    private PathPlannerPath towerAlignPathRight;
-    private boolean loadedPathsSuccessfully;
-
-        /**
+     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the
      * odometry pose estimate
      * while still accounting for measurement noise.
@@ -314,15 +303,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private void init() {
         configureAutoBuilder();
 
-        try {
-            towerAlignPathLeft = PathPlannerPath.fromPathFile("TowerAlign_Left");
-            towerAlignPathRight = PathPlannerPath.fromPathFile("TowerAlign_Right");
-            loadedPathsSuccessfully = true;
-        } catch (Exception e) {
-            System.out.println("Failed to load PathPlanner paths!\nFalling back to pathfindToPose.");
-            loadedPathsSuccessfully = false;
-        }
-
         SmartDashboard.putNumber(NT_SEED_X, 0);
         SmartDashboard.putNumber(NT_SEED_Y, 0);
         SmartDashboard.putNumber(NT_SEED_THETA, 0);
@@ -333,18 +313,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putBoolean(NT_AUTOSEED_FACE_TAG, true);
         SmartDashboard.putBoolean(NT_AUTOSEED_TRIGGER, false);
 
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_X_LEFT, PathPlannerConstraints.TOWER_ALIGN_STEP1_X_LEFT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_Y_LEFT, PathPlannerConstraints.TOWER_ALIGN_STEP1_Y_LEFT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_THETA_LEFT, PathPlannerConstraints.TOWER_ALIGN_STEP1_THETA_LEFT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_X_LEFT, PathPlannerConstraints.TOWER_ALIGN_STEP2_X_LEFT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_Y_LEFT, PathPlannerConstraints.TOWER_ALIGN_STEP2_Y_LEFT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_THETA_LEFT, PathPlannerConstraints.TOWER_ALIGN_STEP2_THETA_LEFT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_X_RIGHT, PathPlannerConstraints.TOWER_ALIGN_STEP1_X_RIGHT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_Y_RIGHT, PathPlannerConstraints.TOWER_ALIGN_STEP1_Y_RIGHT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP1_THETA_RIGHT, PathPlannerConstraints.TOWER_ALIGN_STEP1_THETA_RIGHT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_X_RIGHT, PathPlannerConstraints.TOWER_ALIGN_STEP2_X_RIGHT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_Y_RIGHT, PathPlannerConstraints.TOWER_ALIGN_STEP2_Y_RIGHT);
-        SmartDashboard.putNumber(NT_TOWERALIGN_STEP2_THETA_RIGHT, PathPlannerConstraints.TOWER_ALIGN_STEP2_THETA_RIGHT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STAGING_X_LEFT, PathPlannerConstraints.TOWER_ALIGN_STAGING_X_LEFT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STAGING_Y_LEFT, PathPlannerConstraints.TOWER_ALIGN_STAGING_Y_LEFT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STAGING_THETA_LEFT, PathPlannerConstraints.TOWER_ALIGN_STAGING_THETA_LEFT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STAGING_X_RIGHT, PathPlannerConstraints.TOWER_ALIGN_STAGING_X_RIGHT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STAGING_Y_RIGHT, PathPlannerConstraints.TOWER_ALIGN_STAGING_Y_RIGHT);
+        SmartDashboard.putNumber(NT_TOWERALIGN_STAGING_THETA_RIGHT, PathPlannerConstraints.TOWER_ALIGN_STAGING_THETA_RIGHT);
     }
 
 
@@ -371,9 +345,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-    /* =============================================================== */
-    /* END OF AUTOGENERATED CODE, EVERYTHING BELOW THIS LINE IS CUSTOM */
-    /* =============================================================== */
+        /* =============================================================== */
+        /* END OF AUTOGENERATED CODE, EVERYTHING BELOW THIS LINE IS CUSTOM */
+        /* =============================================================== */
 
         if (SmartDashboard.getBoolean(NT_SEED_TRIGGER, false)) {
             double seedX = SmartDashboard.getNumber(NT_SEED_X, 0);
@@ -418,39 +392,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Constants.FieldConstants.FIELD.setRobotPose(getState().Pose);
 
         // Draw the target climb positions on Elastic
-        double targetX1Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_LEFT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP1_X_LEFT);
-        double targetY1Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_LEFT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP1_Y_LEFT);
-        double targetTheta1Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA_LEFT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP1_THETA_LEFT);
+        double targetX1Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_X_LEFT,
+                PathPlannerConstraints.TOWER_ALIGN_STAGING_X_LEFT);
+        double targetY1Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_Y_LEFT,
+                PathPlannerConstraints.TOWER_ALIGN_STAGING_Y_LEFT);
+        double targetTheta1Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_THETA_LEFT,
+                PathPlannerConstraints.TOWER_ALIGN_STAGING_THETA_LEFT);
         Pose2d climbPose1Left = new Pose2d(targetX1Left, targetY1Left, Rotation2d.fromDegrees(targetTheta1Left));
-        Constants.FieldConstants.FIELD.getObject("Tower Step1 Left").setPose(climbPose1Left);
-        double targetX2Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_LEFT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP2_X_LEFT);
-        double targetY2Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_LEFT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP2_Y_LEFT);
-        double targetTheta2Left = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_THETA_LEFT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP2_THETA_LEFT);
-        Pose2d climbPose2Left = new Pose2d(targetX2Left, targetY2Left, Rotation2d.fromDegrees(targetTheta2Left));
-        Constants.FieldConstants.FIELD.getObject("Tower Step2 Left").setPose(climbPose2Left);
+        Constants.FieldConstants.FIELD.getObject("Tower Staging Left").setPose(climbPose1Left);
 
-        double targetX1Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_RIGHT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP1_X_RIGHT);
-        double targetY1Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_RIGHT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP1_Y_RIGHT);
-        double targetTheta1Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA_RIGHT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP1_THETA_RIGHT);
+        double targetX1Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_X_RIGHT,
+                PathPlannerConstraints.TOWER_ALIGN_STAGING_X_RIGHT);
+        double targetY1Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_Y_RIGHT,
+                PathPlannerConstraints.TOWER_ALIGN_STAGING_Y_RIGHT);
+        double targetTheta1Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_THETA_RIGHT,
+                PathPlannerConstraints.TOWER_ALIGN_STAGING_THETA_RIGHT);
         Pose2d climbPose1Right = new Pose2d(targetX1Right, targetY1Right, Rotation2d.fromDegrees(targetTheta1Right));
-        Constants.FieldConstants.FIELD.getObject("Tower Step1 Right").setPose(climbPose1Right);
-        double targetX2Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_RIGHT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP2_X_RIGHT);
-        double targetY2Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_RIGHT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP2_Y_RIGHT);
-        double targetTheta2Right = SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_THETA_RIGHT,
-                PathPlannerConstraints.TOWER_ALIGN_STEP2_THETA_RIGHT);
-        Pose2d climbPose2Right = new Pose2d(targetX2Right, targetY2Right, Rotation2d.fromDegrees(targetTheta2Right));
-        Constants.FieldConstants.FIELD.getObject("Tower Step2 Right").setPose(climbPose2Right);
+        Constants.FieldConstants.FIELD.getObject("Tower Staging Right").setPose(climbPose1Right);
 
         SmartDashboard.putString("Robot Pose", Util4828.formatPose(getState().Pose));
     }
@@ -463,61 +421,31 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return AutoBuilder.pathfindToPose(targetPose, constraints);
     }
 
-    private Pose2d getTowerAlignPoseStep1(Constants.FieldConstants.TowerSide side) {
-        // todo(ben) - test for both towers
+    private Pose2d getTowerAlignStagingPose(Constants.FieldConstants.TowerSide side) {
         double targetX = side == Constants.FieldConstants.TowerSide.LEFT
-                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_LEFT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP1_X_LEFT)
-                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_X_RIGHT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP1_X_RIGHT);
+                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_X_LEFT,
+                        PathPlannerConstraints.TOWER_ALIGN_STAGING_X_LEFT)
+                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_X_RIGHT,
+                        PathPlannerConstraints.TOWER_ALIGN_STAGING_X_RIGHT);
 
         double targetY = side == Constants.FieldConstants.TowerSide.LEFT
-                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_LEFT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP1_Y_LEFT)
-                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_Y_RIGHT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP1_Y_RIGHT);
+                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_Y_LEFT,
+                        PathPlannerConstraints.TOWER_ALIGN_STAGING_Y_LEFT)
+                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_Y_RIGHT,
+                        PathPlannerConstraints.TOWER_ALIGN_STAGING_Y_RIGHT);
 
         double targetTheta = side == Constants.FieldConstants.TowerSide.LEFT
-                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA_LEFT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP1_THETA_LEFT)
-                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP1_THETA_RIGHT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP1_THETA_RIGHT);
+                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_THETA_LEFT,
+                        PathPlannerConstraints.TOWER_ALIGN_STAGING_THETA_LEFT)
+                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STAGING_THETA_RIGHT,
+                        PathPlannerConstraints.TOWER_ALIGN_STAGING_THETA_RIGHT);
 
         return new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
-    }
-
-    private Pose2d getTowerAlignPoseStep2(Constants.FieldConstants.TowerSide side) {
-        double targetX = side == Constants.FieldConstants.TowerSide.LEFT
-                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_LEFT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP2_X_LEFT)
-                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_X_RIGHT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP2_X_RIGHT);
-
-        double targetY = side == Constants.FieldConstants.TowerSide.LEFT
-                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_LEFT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP2_Y_LEFT)
-                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_Y_RIGHT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP2_Y_RIGHT);
-
-        double targetTheta = side == Constants.FieldConstants.TowerSide.LEFT
-                ? SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_THETA_LEFT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP2_THETA_LEFT)
-                : SmartDashboard.getNumber(CommandSwerveDrivetrain.NT_TOWERALIGN_STEP2_THETA_RIGHT,
-                        PathPlannerConstraints.TOWER_ALIGN_STEP2_THETA_RIGHT);
-
-        return new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetTheta));
-    }
-
-    private Command pathfindThenFollowPathToTower(Constants.FieldConstants.TowerSide side) {
-        return AutoBuilder.pathfindThenFollowPath(
-                side == Constants.FieldConstants.TowerSide.LEFT ? towerAlignPathLeft : towerAlignPathRight,
-                DrivetrainConstants.PathPlannerConstraints.FAST);
     }
 
     private double getDistanceToTower(Constants.FieldConstants.TowerSide side) {
         // get the target positions for the towers
-        Pose2d step1Target = getTowerAlignPoseStep1(side);
-        Pose2d step2Target = getTowerAlignPoseStep2(side);
+        Pose2d step1Target = getTowerAlignStagingPose(side);
 
         // calculate distance from robot -> tower
         double distanceToTarget = getState().Pose.minus(step1Target).getTranslation().getNorm();
@@ -525,30 +453,37 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return distanceToTarget;
     }
 
-    /* Returns a command which performs an alignment to the tower. */
-    public Command alignToTower(Constants.FieldConstants.TowerSide side) {
-        Pose2d step1Target = getTowerAlignPoseStep1(side);
-        Pose2d step2Target = getTowerAlignPoseStep2(side);
+    /* Returns a command which moves us to the alignment staging position. */
+    public Command stageToTower(Constants.FieldConstants.TowerSide side) {
+        Pose2d stagingTarget = getTowerAlignStagingPose(side);
 
-        if (loadedPathsSuccessfully) {
-            return Commands.defer(
-                    () -> Commands.either(
-                            pathfindThenFollowPathToTower(side),
-                            Commands.print("Too far for auto align"),
-                            () -> getDistanceToTower(side) <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE),
-                    Set.of(this));
-        } else {
-            // use defer so we read SmartDashboard values at runtime instead of
-            // initialization
-            return Commands.defer(
-                    () -> Commands.either(
-                            Commands.sequence(
-                                    pathfindToPose(step1Target, DrivetrainConstants.PathPlannerConstraints.SAFE),
-                                    pathfindToPose(step2Target, DrivetrainConstants.PathPlannerConstraints.SAFE)),
-                            Commands.print("Too far for auto align2"),
-                            () -> getDistanceToTower(side) <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE),
-                    Set.of(this) // < the drivetrain (this) is a requirement for the command
-            );
-        }
+        // use defer so we read SmartDashboard values at runtime
+        return Commands.defer(
+                () -> Commands.either(
+                        pathfindToPose(stagingTarget, DrivetrainConstants.PathPlannerConstraints.SAFE),
+                        Commands.print("Too far for auto align."),
+                        () -> getDistanceToTower(side) <= DrivetrainConstants.MAX_AUTOALIGN_TOWER_DISTANCE),
+                Set.of(this) // < the drivetrain (this) is a requirement for the command
+        );
+    }
+
+    /* Returns a command which align us to the tower from the staging position. */
+    public Command alignToTower() {
+            final double strafeMps = DrivetrainConstants.TOWER_ALIGN_STRAFE_SPEED_MPS;
+            final double timeoutSec = DrivetrainConstants.TOWER_ALIGN_STRAFE_TIMEOUT_SEC;
+
+            SwerveRequest.RobotCentric strafeRight = new SwerveRequest.RobotCentric()
+                            .withVelocityX(0.0)
+                            .withVelocityY(strafeMps) // +Y = right strafe in robot frame
+                            .withRotationalRate(0.0);
+
+            SwerveRequest.RobotCentric stop = new SwerveRequest.RobotCentric()
+                            .withVelocityX(0.0)
+                            .withVelocityY(0.0)
+                            .withRotationalRate(0.0);
+
+            return Commands.sequence(
+                            applyRequest(() -> strafeRight).withTimeout(timeoutSec),
+                            applyRequest(() -> stop).withTimeout(0.05));
     }
 }
