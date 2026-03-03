@@ -115,13 +115,13 @@ public class RobotContainer {
         Commands.print("Staging to tower LEFT."),
         drivetrain.stageToTower(Constants.FieldConstants.TowerSide.LEFT),
         Commands.print("Raising climber."),
-        climber.climbToPeak(),
+        climber.extendToPeak(),
         Commands.waitSeconds(0.5),
         Commands.print("Aligning to tower."),
         drivetrain.alignToTower(),
         Commands.waitSeconds(1.0),
         Commands.print("Climbing up."),
-        climber.retractClimb(),
+        climber.retractForClimb(),
         Commands.print("Climb completed."));
   }
 
@@ -130,13 +130,13 @@ public class RobotContainer {
         Commands.print("Staging to tower RIGHT."),
         drivetrain.stageToTower(Constants.FieldConstants.TowerSide.RIGHT),
         Commands.print("Raising climber."),
-        climber.climbToPeak(),
+        climber.extendToPeak(),
         Commands.waitSeconds(0.5),
         Commands.print("Aligning to tower."),
         drivetrain.alignToTower(),
         Commands.waitSeconds(1.0),
         Commands.print("Climbing up."),
-        //climber.retractClimb(),
+        //climber.retractForClimb(),
         Commands.print("Climb completed."));
   }
 
@@ -243,8 +243,8 @@ public class RobotContainer {
     /*** Climbing ***/
     driverController.b().onTrue(climbRight());
     driverController.x().onTrue(climbLeft());
-    driverController.y().onTrue(climber.climbToPeak());
-    driverController.a().onTrue(climber.retractClimb());
+    driverController.y().onTrue(climber.extendToPeak());
+    driverController.a().onTrue(climber.retractToBottom());
 
     driverController.rightBumper().whileTrue(climber.climbDownDutyCycle());
     driverController.rightBumper().onFalse(climber.stop());

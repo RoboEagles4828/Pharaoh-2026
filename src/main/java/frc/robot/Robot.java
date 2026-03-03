@@ -4,8 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
@@ -14,13 +16,18 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
+  /** The robot subsystems, and trigger and command bindings. */
+  private final RobotContainer robotContainer;
+
+  /** Command selected for execution during autonomous mode */
+  private Command autonomousCommand = null;
 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   public Robot() {
-    new RobotContainer();
+    this.robotContainer = new RobotContainer();
   }
 
   /**
@@ -51,7 +58,12 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    autonomousCommand = robotContainer.getAutonomousCommand();
+
     // schedule the autonomous command (example)
+    if (autonomousCommand != null) {
+      autonomousCommand.schedule();
+    }
   }
 
   /** This function is called periodically during autonomous. */
@@ -60,7 +72,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-
+      if (autonomousCommand != null) {
+          // Cancel any command still running from autonomous.
+          autonomousCommand.cancel();
+      }
   }
 
   /** This function is called periodically during operator control. */

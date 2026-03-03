@@ -30,10 +30,10 @@ public class Climber extends SubsystemBase {
     private static TunableNumber dValue = new TunableNumber("Tuning/Climber/ClimberD", ClimberConstants.kD);
     
     /** Tunable number for the peak (tallest) position of the climber */
-    private TunableNumber climbPeakPosition = new TunableNumber("Tuning/Climber/TallestPosition", ClimberConstants.DEFAULT_PEAK_POSITION);
+    private TunableNumber climbPeakPosition = new TunableNumber("Tuning/Climber/TallestPosition", ClimberConstants.PEAK_POSITION);
     /** Tunable number for the final position of the climber where it will hang*/
     // TODO might be unnecessary if the robot will pull itself up all the way but I thought that was unnecessary and this is safer
-    private TunableNumber climbFinalPosition = new TunableNumber("Tuning/Climber/FinalPosition", ClimberConstants.DEFAULT_FINAL_POSITION);
+    private TunableNumber climbFinalPosition = new TunableNumber("Tuning/Climber/FinalPosition", ClimberConstants.CLIMB_POSITION);
 
     /** Constructs a climber subsystem */
     public Climber() {
@@ -90,32 +90,23 @@ public class Climber extends SubsystemBase {
 
     // Moving via position control
     /** Climbs to the peak position */
-    public Command climbToPeak() {
+    public Command extendToPeak() {
         return this.runOnce(() -> {
             climbMotor.setControl(positionControl.withPosition(climbPeakPosition.get()));
         });
     }
-    /** Climbs to the final position where the robot will hang */
-    public Command climbToFinal() {
-        return this.runOnce(
-            () -> climbMotor.setControl(positionControl.withPosition(climbFinalPosition.get()))
-        );
-    }
+
     /** Retracts the climber back to the starting position */
-    public Command retractClimb() {
+    public Command retractForClimb() {
         return this.runOnce(
-            () -> climbMotor.setControl(positionControl.withPosition(ClimberConstants.START_POSITION))
+            () -> climbMotor.setControl(positionControl.withPosition(ClimberConstants.CLIMB_POSITION))
         );
     }
 
-        /** Full climbing sequence */
-    public Command climb(){
-        return Commands.sequence(
-            climbToPeak(),
-            //climbToFinal()
-            // climbToPeak(),
-            retractClimb()
-        );
+    public Command retractToBottom() {
+        return this.runOnce(
+            () -> climbMotor.setControl(positionControl.withPosition(ClimberConstants.START_POSITION))
+        ); 
     }
 
     /** Gets the current position of the climber */
