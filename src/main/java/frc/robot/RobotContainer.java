@@ -90,14 +90,17 @@ public class RobotContainer {
   /*** more complex commands that require multiple subsystems */
   public Command aimAndShoot() {
     return Commands.sequence(
+      Commands.print("Start aim n shoot"),
       Commands.deadline(
         Commands.waitSeconds(3.0),
+        Commands.print("Aim and Shoot"),
         new LockOnDriveCommand(drivetrain, driverController, true),
         shooter.start(),
         shooter.raiseHood(),
         Commands.sequence(
           Commands.waitSeconds(1.0),
           Commands.parallel(
+            Commands.print("Start shooting"),
             hopper.startConveyor(),
             kicker.start()
           )
@@ -113,8 +116,10 @@ public class RobotContainer {
         drivetrain.stageToTower(Constants.FieldConstants.TowerSide.LEFT),
         Commands.print("Raising climber."),
         climber.climbToPeak(),
+        Commands.waitSeconds(0.5),
         Commands.print("Aligning to tower."),
         drivetrain.alignToTower(),
+        Commands.waitSeconds(1.0),
         Commands.print("Climbing up."),
         climber.retractClimb(),
         Commands.print("Climb completed."));
@@ -126,10 +131,12 @@ public class RobotContainer {
         drivetrain.stageToTower(Constants.FieldConstants.TowerSide.RIGHT),
         Commands.print("Raising climber."),
         climber.climbToPeak(),
+        Commands.waitSeconds(0.5),
         Commands.print("Aligning to tower."),
         drivetrain.alignToTower(),
+        Commands.waitSeconds(1.0),
         Commands.print("Climbing up."),
-        climber.retractClimb(),
+        //climber.retractClimb(),
         Commands.print("Climb completed."));
   }
 
@@ -238,5 +245,12 @@ public class RobotContainer {
     driverController.x().onTrue(climbLeft());
     driverController.y().onTrue(climber.climbToPeak());
     driverController.a().onTrue(climber.retractClimb());
+
+    driverController.rightBumper().whileTrue(climber.climbDownDutyCycle());
+    driverController.rightBumper().onFalse(climber.stop());
+  }
+
+  public Command getAutonomousCommand() {
+    return autonomousChooser.getSelected();
   }
 }
