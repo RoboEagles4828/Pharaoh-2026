@@ -167,10 +167,10 @@ public class RobotContainer {
 
       // Run SysId routines when holding back/start and X/Y.
       // Note that each routine should be run exactly once in a single log.
-      driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-      driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-      driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-      driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+      // driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+      // driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+      // driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+      // driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
       // Use dpad for basic movement in the 4 cardinal directions
       // Drive straight forward slowly
@@ -196,13 +196,13 @@ public class RobotContainer {
       //   drivetrain.applyRequest(() -> driveRequestRobotCentric
       //     .withVelocityX(0.0)
       //     .withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED)
-      //     .withRotationalRate(0)));
+      // .withRotationalRate(0)));
 
       // Reset the field-centric heading on start
       driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-      //driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
-      //driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
+      // driverController.povUp().onTrue(new InstantCommand(() -> SignalLogger.start()));
+      // driverController.povDown().onTrue(new InstantCommand(() -> SignalLogger.stop()));
 
       driverController.povLeft().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.LEFT));
       driverController.povRight().onTrue(drivetrain.alignToTower(Constants.FieldConstants.TowerSide.RIGHT));

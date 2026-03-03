@@ -39,8 +39,8 @@ public final class Constants {
 
     public static final Translation2d BLUE_PASS_TOP = new Translation2d(2, 5.801);
     public static final Translation2d BLUE_PASS_BOTTOM = new Translation2d(2, 1.687);
-    public static final Translation2d RED_PASS_TOP = new Translation2d(14.493, 5.801);
-    public static final Translation2d RED_PASS_BOTTOM = new Translation2d(14.493, 1.687);
+    public static final Translation2d RED_PASS_TOP = new Translation2d(13.493, 5.801);
+    public static final Translation2d RED_PASS_BOTTOM = new Translation2d(13.493, 1.687);
     public static final double FIELD_MIDPOINT_Y = 4.0;
   }
 
