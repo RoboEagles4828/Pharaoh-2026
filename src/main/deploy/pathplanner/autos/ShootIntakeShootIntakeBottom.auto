@@ -7,26 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "LockOnHub"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              }
-            ]
+            "name": "Shoot"
           }
         },
         {
@@ -49,15 +30,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "IntakeToShootBottom"
+            "name": "StopIntake"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "LockOnHub"
+            "pathName": "IntakeToShootBottom"
           }
         },
         {
@@ -83,6 +64,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopIntake"
           }
         }
       ]
