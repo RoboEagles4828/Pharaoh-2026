@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
@@ -95,38 +97,50 @@ public class RobotContainer {
         Commands.waitSeconds(3.0),
         Commands.print("Aim and Shoot"),
         new LockOnDriveCommand(drivetrain, driverController, true),
-        shooter.start(),
-        shooter.raiseHood(),
-        Commands.sequence(
-          Commands.waitSeconds(1.0),
-          Commands.parallel(
-            Commands.print("Start shooting"),
-            hopper.startConveyor(),
-            kicker.start()
+        Commands.parallel(
+          shooter.start(),
+          shooter.raiseHood(),
+          Commands.sequence(
+            Commands.waitSeconds(1.0),
+            Commands.parallel(
+              Commands.print("Start shooting"),
+              hopper.startConveyor(),
+              kicker.start()
+            )
           )
         )
       ),
-      shooter.lowerHood() // $hack$ to lower hood at the end
+      new ParallelDeadlineGroup(
+        Commands.waitSeconds(1.0),
+        shooter.lowerHood(), // $hack$ to lower hood at the end
+        shooter.stop(),
+        kicker.stop(),
+        hopper.stopConveyor()
+      )
     );
+
   }
 
   public Command climbLeft() {
-    return Commands.sequence(
+    return Commands.defer(() -> 
+      Commands.sequence(
         Commands.print("Staging to tower LEFT."),
         drivetrain.stageToTower(Constants.FieldConstants.TowerSide.LEFT),
         Commands.print("Raising climber."),
         climber.extendToPeak(),
-        Commands.waitSeconds(0.5),
+        Commands.waitSeconds(0.8),
         Commands.print("Aligning to tower."),
         drivetrain.alignToTower(),
         Commands.waitSeconds(1.0),
         Commands.print("Climbing up."),
         climber.retractForClimb(),
-        Commands.print("Climb completed."));
+        Commands.print("Climb completed.")
+        ), Collections.emptySet());
   }
 
   public Command climbRight() {
-    return Commands.sequence(
+    return Commands.defer(() -> 
+      Commands.sequence(
         Commands.print("Staging to tower RIGHT."),
         drivetrain.stageToTower(Constants.FieldConstants.TowerSide.RIGHT),
         Commands.print("Raising climber."),
@@ -137,7 +151,8 @@ public class RobotContainer {
         Commands.waitSeconds(1.0),
         Commands.print("Climbing up."),
         //climber.retractForClimb(),
-        Commands.print("Climb completed."));
+        Commands.print("Climb completed.")
+        ), Collections.emptySet());
   }
 
   /**
@@ -185,10 +200,10 @@ public class RobotContainer {
 
   private void configureBindings() {
     /*** DEFAULT COMMANDS ***/
-    shooter.setDefaultCommand(shooter.stop());
-    kicker.setDefaultCommand(kicker.stop());
-    intake.setDefaultCommand(intake.stopAndRetract());
-    hopper.setDefaultCommand(hopper.stopConveyor());
+    // shooter.setDefaultCommand(shooter.stop());
+    // kicker.setDefaultCommand(kicker.stop());
+    // intake.setDefaultCommand(intake.stopAndRetract());
+    // hopper.setDefaultCommand(hopper.stopConveyor());
 
     /*** Driving */
     // Default command for drivetrain - drive according to driver controller joystick

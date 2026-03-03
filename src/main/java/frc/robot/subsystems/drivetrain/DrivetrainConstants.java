@@ -23,14 +23,15 @@ public class DrivetrainConstants {
     }
 
     public static final double TOWER_ALIGN_STRAFE_SPEED_MPS = 0.4; //meters p/s
-    public static final double TOWER_ALIGN_STRAFE_TIMEOUT_SEC = 1.5; //sec
+    public static final double TOWER_ALIGN_STRAFE_LEFT_TIMEOUT_SEC = 1.4; //sec
+    public static final double TOWER_ALIGN_STRAFE_UP_TIMEOUT_SEC = 0.2;
 
     static class PathPlannerConstraints {
         public static final double TOWER_ALIGN_STAGING_X_LEFT = 1.607;
         public static final double TOWER_ALIGN_STAGING_Y_LEFT = 4.675;
         public static final double TOWER_ALIGN_STAGING_THETA_LEFT = 180; // degrees
-        public static final double TOWER_ALIGN_STAGING_X_RIGHT = 0.975;
-        public static final double TOWER_ALIGN_STAGING_Y_RIGHT = 2.8;
+        public static final double TOWER_ALIGN_STAGING_X_RIGHT = 0.93;
+        public static final double TOWER_ALIGN_STAGING_Y_RIGHT = 2.67;
         public static final double TOWER_ALIGN_STAGING_THETA_RIGHT = 0; // degrees
 
         public static final PathConstraints SAFE = new PathConstraints(

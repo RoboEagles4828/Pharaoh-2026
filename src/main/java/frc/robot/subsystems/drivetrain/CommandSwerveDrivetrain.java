@@ -470,12 +470,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Returns a command which align us to the tower from the staging position. */
     public Command alignToTower() {
             final double strafeMps = DrivetrainConstants.TOWER_ALIGN_STRAFE_SPEED_MPS;
-            final double timeoutSec = DrivetrainConstants.TOWER_ALIGN_STRAFE_TIMEOUT_SEC;
 
             SwerveRequest.RobotCentric strafeRight = new SwerveRequest.RobotCentric()
                             .withVelocityX(0.0)
                             .withVelocityY(strafeMps) // +Y = right strafe in robot frame
                             .withRotationalRate(0.0);
+
+            SwerveRequest.RobotCentric strafeUp = new SwerveRequest.RobotCentric()
+                            .withVelocityX(strafeMps)
+                            .withVelocityY(0.0) // +Y = right strafe in robot frame
+                            .withRotationalRate(0.0);             
 
             SwerveRequest.RobotCentric stop = new SwerveRequest.RobotCentric()
                             .withVelocityX(0.0)
@@ -483,7 +487,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                             .withRotationalRate(0.0);
 
             return Commands.sequence(
-                            applyRequest(() -> strafeRight).withTimeout(timeoutSec),
+                            applyRequest(() -> strafeRight).withTimeout(DrivetrainConstants.TOWER_ALIGN_STRAFE_LEFT_TIMEOUT_SEC),
+                            applyRequest(() -> strafeUp).withTimeout(DrivetrainConstants.TOWER_ALIGN_STRAFE_UP_TIMEOUT_SEC),
                             applyRequest(() -> stop).withTimeout(0.05));
     }
 }
