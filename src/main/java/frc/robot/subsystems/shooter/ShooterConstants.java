@@ -31,8 +31,8 @@ public class ShooterConstants {
     public static double HOOD_MAX_POSITION = -1.542236328125;
     public static double HOOD_MIN_POSITION = 0.0;
     static class HOOD_PID_CONFIG {
-        static final double PROPORTIONAL = 110.0;
-        static final double DERIVATIVE = 1.0;
+        static final double PROPORTIONAL = 100.0;
+        static final double DERIVATIVE = 0.5;
     }
 
     /** SHOOT FROM ANYWHERE DATA */

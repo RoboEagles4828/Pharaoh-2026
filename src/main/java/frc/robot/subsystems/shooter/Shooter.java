@@ -118,7 +118,7 @@ public class Shooter extends SubsystemBase {
             double shootingwheelRPS = Util4828.metersPerSecondToWheelRPS(targetLaunchVelocity, ShooterConstants.WHEEL_DIAMETER);
             shooterMotorOne.setControl(shooterVelocityVoltageRequest.withVelocity(-shootingwheelRPS));
             shooterMotorTwo.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
-            //shooterMotorThree.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
+            shooterMotorThree.setControl(shooterVelocityVoltageRequest.withVelocity(shootingwheelRPS));
         }, this);
     }
 
@@ -127,7 +127,7 @@ public class Shooter extends SubsystemBase {
         return Commands.run(() -> {
             // convert from target meters per second to wheel rotations per second
             double intakeWheelRPS = Util4828.metersPerSecondToWheelRPS(intakeSpeedMPS.get(), ShooterConstants.WHEEL_DIAMETER);
-            //shooterMotorOne.setControl(shooterVelocityVoltageRequest.withVelocity(-intakeWheelRPS));
+            shooterMotorOne.setControl(shooterVelocityVoltageRequest.withVelocity(-intakeWheelRPS));
             shooterMotorTwo.setControl(shooterVelocityVoltageRequest.withVelocity(intakeWheelRPS));
             shooterMotorThree.setControl(shooterVelocityVoltageRequest.withVelocity(intakeWheelRPS));
         }, this);

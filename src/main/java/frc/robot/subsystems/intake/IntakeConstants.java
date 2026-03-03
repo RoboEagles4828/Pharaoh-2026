@@ -17,7 +17,7 @@ public class IntakeConstants {
     public static double DEPLOY_P = 9.0;
     public static double DEPLOY_D = 0.1;
 
-    public static double RETRACT_P = 15.0;
+    public static double RETRACT_P = 16.0;
     public static double RETRACT_D = 0.2;
     public static double RETRACT_G = 2.3;
 
