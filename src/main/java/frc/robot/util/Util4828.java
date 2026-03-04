@@ -16,13 +16,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
+
 import frc.robot.Constants;
 
 public class Util4828 {
-    public static double getDistance(double robotX, double robotY, double targetX, double targetY) {
-        double distanceFromTarget = Math.sqrt(Math.abs(Math.pow(targetX-robotX, 2) + Math.pow(targetY-robotY, 2)));
-        return distanceFromTarget;
-    }
 
     /*** Game specific utility functions ***/
     public static Translation2d getHubLocation() {
@@ -30,6 +27,41 @@ public class Util4828 {
         return (alliance == Alliance.Red)
             ? Constants.FieldConstants.RED_HUB_CENTER
             : Constants.FieldConstants.BLUE_HUB_CENTER;
+    }
+
+    public static Translation2d getPassLocation(Pose2d robotPose) {
+        boolean aim_top = robotPose.getY() > Constants.FieldConstants.FIELD_MIDPOINT_Y;
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+        if (alliance == Alliance.Red)
+            return aim_top ? Constants.FieldConstants.RED_PASS_TOP : Constants.FieldConstants.RED_PASS_BOTTOM;
+        else 
+            return aim_top ? Constants.FieldConstants.BLUE_PASS_TOP : Constants.FieldConstants.BLUE_PASS_BOTTOM; 
+    }
+
+    public static boolean isInAllianceZone(Pose2d robotPose) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        if (alliance == Alliance.Red) {
+            return robotPose.getX() > Constants.FieldConstants.RED_HUB_CENTER.getX();
+        }
+        else {
+            return robotPose.getX() < Constants.FieldConstants.BLUE_HUB_CENTER.getX();
+        }
+    }
+
+    public static boolean isInTopHalfOfField(Pose2d robotPose) {
+        return robotPose.getY() > Constants.FieldConstants.FIELD_MIDPOINT_Y;
+    }
+
+    public static Translation2d getLockOnTargetPosition(Pose2d robotPose) {
+        // If we're on our half of the field, lock to hub
+        if (isInAllianceZone(robotPose)) {
+            return getHubLocation();
+        }
+        
+        // Otherwise, we're passing, lock to passing position
+        return getPassLocation(robotPose);
+
     }
 
     /*** Generic utility functions ***/
