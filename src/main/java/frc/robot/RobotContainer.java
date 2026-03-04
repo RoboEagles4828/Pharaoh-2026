@@ -117,6 +117,7 @@ public class RobotContainer {
         shooter.lowerHood()
       )
     );
+
   }
 
   public Command climbLeft() {
@@ -258,8 +259,8 @@ public class RobotContainer {
     driverController.rightBumper().onFalse(climber.stop());
   }
 
-  public void setDefaults() {
-    /*** DEFAULT COMMANDS ***/
+  public void setDefaultCommands() {
+    // Set defaults after the autonomous performs so it doesn't interfere with the command
     shooter.setDefaultCommand(shooter.stop());
     kicker.setDefaultCommand(kicker.stop());
     intake.setDefaultCommand(intake.stopAndRetract());

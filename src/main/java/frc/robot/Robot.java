@@ -77,8 +77,7 @@ public class Robot extends TimedRobot {
           autonomousCommand.cancel();
       }
 
-      // TODO test
-      robotContainer.setDefaults();
+      robotContainer.setDefaultCommands();
   }
 
   /** This function is called periodically during operator control. */
