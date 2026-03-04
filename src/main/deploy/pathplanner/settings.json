@@ -3,12 +3,14 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
+    "Testing Paths",
     "Precision"
   ],
   "autoFolders": [
-    "ShootIntakeShootClimbHP",
+    "Testing (Comp. Autos)",
     "ShootClimb",
     "ShootIntakeShootClimbHF",
+    "ShootIntakeShootClimbHP",
     "ShootIntakeShootIntake"
   ],
   "defaultMaxVel": 3.0,
