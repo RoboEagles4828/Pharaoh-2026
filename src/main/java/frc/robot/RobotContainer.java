@@ -186,8 +186,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot", Commands.defer(this::aimAndShoot, Collections.emptySet()));
     NamedCommands.registerCommand("ClimbRight", Commands.defer(this::climbRight, Collections.emptySet()));
     NamedCommands.registerCommand("ClimbLeft", Commands.defer(this::climbLeft, Collections.emptySet()));
-		// NamedCommands.registerCommand("StartIntake", startIntaking);
-		// NamedCommands.registerCommand("StopIntake", stopIntaking);
+		NamedCommands.registerCommand("StartIntake", intake.intake());
+		NamedCommands.registerCommand("StopIntake", intake.stopAndRetract());
 
 		// Create and populate a SendableChooser with the autonomous routines from PathPlanner, and add it to dashboard.
 		autonomousChooser = AutoBuilder.buildAutoChooser();
