@@ -24,7 +24,7 @@ public class DrivetrainConstants {
 
     public static final double TOWER_ALIGN_STRAFE_SPEED_MPS = 0.4; //meters p/s
     public static final double TOWER_ALIGN_STRAFE_LEFT_TIMEOUT_SEC = 1.4; //sec
-    public static final double TOWER_ALIGN_STRAFE_UP_TIMEOUT_SEC = 0.2;
+    public static final double TOWER_ALIGN_STRAFE_UP_TIMEOUT_SEC = 0.6;
 
     static class PathPlannerConstraints {
         public static final double TOWER_ALIGN_STAGING_X_LEFT = 1.607;

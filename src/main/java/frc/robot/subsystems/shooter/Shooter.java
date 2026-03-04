@@ -146,7 +146,7 @@ public class Shooter extends SubsystemBase {
     public Command raiseHood() {
         return Commands.defer(
             () -> {
-                return Commands.run(
+                return Commands.runOnce(
                     () -> {
                         hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
                             MathUtil.clamp(targetHoodPosition, ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION)));
@@ -159,7 +159,7 @@ public class Shooter extends SubsystemBase {
 
     /** Returns a command that lowers the hood to the minimum position */
     public Command lowerHood() {
-        return Commands.run(() -> hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
+        return Commands.runOnce(() -> hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
             MathUtil.clamp(0.0, ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION))));
     }
 

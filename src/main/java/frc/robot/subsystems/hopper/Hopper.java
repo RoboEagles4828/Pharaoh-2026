@@ -38,7 +38,7 @@ public class Hopper extends SubsystemBase {
     public Command stopConveyor() {
         return Commands.defer(
                 () -> {
-                    return Commands.run(() -> {
+                    return Commands.runOnce(() -> {
                         conveyorMotor.stopMotor();
                     });
                 },

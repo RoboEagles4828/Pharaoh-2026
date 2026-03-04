@@ -42,7 +42,7 @@ public class LaunchCalculator {
         Translation2d targetPos = Util4828.getLockOnTargetPosition(robotPose);
         
         // Calculating parameters to shoot from anywhere.
-        double distanceToTargetInches = Units.metersToInches(robotPose.getTranslation().getDistance(targetPos));
+        double distanceToTargetInches = Units.metersToInches(robotPose.getTranslation().getDistance(targetPos)) - 2.0;
         double targetVelocity = isScoring ? launchVelocityMap.get(distanceToTargetInches) : passVelocityMap.get(distanceToTargetInches);
         double targetHoodPosition = isScoring ? launchHoodPositionMap.get(distanceToTargetInches) : ShooterConstants.HOOD_MAX_POSITION;
 

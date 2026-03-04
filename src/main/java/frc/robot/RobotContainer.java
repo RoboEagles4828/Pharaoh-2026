@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
@@ -92,33 +93,30 @@ public class RobotContainer {
   /*** more complex commands that require multiple subsystems */
   public Command aimAndShoot() {
     return Commands.sequence(
-      Commands.print("Start aim n shoot"),
-      Commands.deadline(
+      Commands.print("Start aim and shoot"),
+      new LockOnDriveCommand(drivetrain, driverController, true),
+
+      new ParallelDeadlineGroup(
         Commands.waitSeconds(3.0),
-        Commands.print("Aim and Shoot"),
-        new LockOnDriveCommand(drivetrain, driverController, true),
-        Commands.parallel(
-          shooter.start(),
-          shooter.raiseHood(),
-          Commands.sequence(
-            Commands.waitSeconds(1.0),
-            Commands.parallel(
-              Commands.print("Start shooting"),
-              hopper.startConveyor(),
-              kicker.start()
-            )
+        Commands.print("Aim and shoot"),
+        shooter.raiseHood(),
+        shooter.start(),
+        Commands.sequence(
+          Commands.waitSeconds(1.0),
+          Commands.parallel(
+            hopper.startConveyor().withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withTimeout(2.0),
+            kicker.start().withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withTimeout(2.0)
           )
         )
-      ),
-      new ParallelDeadlineGroup(
-        Commands.waitSeconds(1.0),
-        shooter.lowerHood(), // $hack$ to lower hood at the end
+      )
+    ).andThen(
+      Commands.parallel(
         shooter.stop(),
         kicker.stop(),
-        hopper.stopConveyor()
+        hopper.stopConveyor(),
+        shooter.lowerHood()
       )
     );
-
   }
 
   public Command climbLeft() {
@@ -199,11 +197,6 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    /*** DEFAULT COMMANDS ***/
-    // shooter.setDefaultCommand(shooter.stop());
-    // kicker.setDefaultCommand(kicker.stop());
-    // intake.setDefaultCommand(intake.stopAndRetract());
-    // hopper.setDefaultCommand(hopper.stopConveyor());
 
     /*** Driving */
     // Default command for drivetrain - drive according to driver controller joystick
@@ -263,6 +256,14 @@ public class RobotContainer {
 
     driverController.rightBumper().whileTrue(climber.climbDownDutyCycle());
     driverController.rightBumper().onFalse(climber.stop());
+  }
+
+  public void setDefaults() {
+    /*** DEFAULT COMMANDS ***/
+    shooter.setDefaultCommand(shooter.stop());
+    kicker.setDefaultCommand(kicker.stop());
+    intake.setDefaultCommand(intake.stopAndRetract());
+    hopper.setDefaultCommand(hopper.stopConveyor());
   }
 
   public Command getAutonomousCommand() {
