@@ -51,7 +51,7 @@ public final class Constants {
 
   public static class DigitalIDS {
     public static int HOOD_LIMIT_SWITCH = 0;
-    public static int INTAKE_LIMIT_SWITCH = 1;
+    public static int INTAKE_LIMIT_SWITCH = 9;
   }
 
   public static final CANBus RIO_CAN_BUS = new CANBus("rio");

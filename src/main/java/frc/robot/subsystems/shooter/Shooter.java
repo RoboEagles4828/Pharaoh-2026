@@ -80,7 +80,7 @@ public class Shooter extends SubsystemBase {
         // The hood should always start in the lowest possible possition
         hoodMotor.setPosition(ShooterConstants.HOOD_MIN_POSITION);
 
-        Trigger limitSwitch = new Trigger(() -> hoodLimitSwitch.get());
+        Trigger limitSwitch = new Trigger(() -> !hoodLimitSwitch.get());
         limitSwitch.onTrue(resetHoodEncoder());
 
         SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false);
@@ -194,6 +194,7 @@ public class Shooter extends SubsystemBase {
 
         // output actual hood position
         SmartDashboard.putNumber("Tuning/Shooter/ActualHoodPosition", hoodMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitch", !hoodLimitSwitch.get());
     }
 
 }

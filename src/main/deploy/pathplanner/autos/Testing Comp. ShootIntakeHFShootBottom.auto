@@ -17,19 +17,19 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "StartIntake"
-                }
-              },
               {
                 "type": "path",
                 "data": {
                   "pathName": "HalfShootIntakeBottom2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartIntake"
                 }
               }
             ]

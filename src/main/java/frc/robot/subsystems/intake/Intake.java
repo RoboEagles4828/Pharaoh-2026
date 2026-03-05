@@ -81,7 +81,7 @@ public class Intake extends SubsystemBase {
                                         .withOverrideBrakeDurNeutral(true)
                                         .withSlot(0);
 
-        Trigger limitSwitch = new Trigger(() -> intakeLimitSwitch.get());
+        Trigger limitSwitch = new Trigger(() -> !intakeLimitSwitch.get());
         limitSwitch.onTrue(resetDeployEncoder());
 
         SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
@@ -195,5 +195,6 @@ public class Intake extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("Tuning/Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putBoolean("Tuning/Intake/LimitSwitch", !intakeLimitSwitch.get());
     }
 }

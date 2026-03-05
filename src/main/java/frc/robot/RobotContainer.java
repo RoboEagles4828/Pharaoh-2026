@@ -94,7 +94,7 @@ public class RobotContainer {
   public Command aimAndShoot() {
     return Commands.sequence(
       Commands.print("Start aim and shoot"),
-      new LockOnDriveCommand(drivetrain, driverController, true),
+      (new LockOnDriveCommand(drivetrain, driverController, true)).withTimeout(1.0),
 
       new ParallelDeadlineGroup(
         Commands.waitSeconds(3.0),
@@ -187,7 +187,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ClimbRight", Commands.defer(this::climbRight, Collections.emptySet()));
     NamedCommands.registerCommand("ClimbLeft", Commands.defer(this::climbLeft, Collections.emptySet()));
 		NamedCommands.registerCommand("StartIntake", intake.intake());
-		NamedCommands.registerCommand("StopIntake", intake.stopAndRetract());
+		NamedCommands.registerCommand("StopIntake", intake.stopAndRetract().withTimeout(1.0));
 
 		// Create and populate a SendableChooser with the autonomous routines from PathPlanner, and add it to dashboard.
 		autonomousChooser = AutoBuilder.buildAutoChooser();
