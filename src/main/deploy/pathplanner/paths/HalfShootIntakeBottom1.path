@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.556089743589746,
-        "y": 0.6323568205128232
+        "x": 5.385070374624137,
+        "y": 0.6676663377343854
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.636,
-        "y": 1.14
+        "x": 6.390714285714285,
+        "y": 0.7070982142857145
       },
       "prevControl": {
-        "x": 7.6463996954888644,
-        "y": 0.48598414248443944
+        "x": 5.744709821428571,
+        "y": 0.5048139880952385
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "starting intake bottom"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 1.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -41,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 90.43541830166654
+    "velocity": 3.0,
+    "rotation": 79.08217224190778
   },
   "reversed": false,
   "folder": "Testing Paths",
@@ -50,5 +50,5 @@
     "velocity": 0,
     "rotation": 90.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
