@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.533,
-        "y": 0.6046794871794885
+        "x": 6.390714285714285,
+        "y": 7.042655999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.385070374624137,
-        "y": 0.6676663377343854
+        "x": 7.7358777777777785,
+        "y": 6.614911111111111
       },
       "isLocked": false,
-      "linkedName": "bottom shooting position"
+      "linkedName": "starting intake top"
     },
     {
       "anchor": {
-        "x": 6.390714285714285,
-        "y": 1.0426559999999991
+        "x": 7.636192771084337,
+        "y": 4.57
       },
       "prevControl": {
-        "x": 5.744709821428571,
-        "y": 0.8403717738095233
+        "x": 7.483933333333333,
+        "y": 5.104244000000001
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "starting intake bottom"
+      "linkedName": "farthest intake point top"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 3.0,
-    "rotation": 71.43427433193933
+    "velocity": 0,
+    "rotation": -67.31837307947434
   },
   "reversed": false,
   "folder": "Testing Paths",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 90.0
+    "velocity": 3.0,
+    "rotation": -64.3893923736657
   },
   "useDefaultConstraints": false
 }

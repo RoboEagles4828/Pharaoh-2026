@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 6.390714285714285,
-        "y": 0.7070982142857145
+        "y": 1.0426559999999991
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.813229166666666,
-        "y": 1.9534300595238094
+        "y": 2.2889878452380943
       },
       "isLocked": false,
       "linkedName": "starting intake bottom"
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "farthest intake point bottom"
     }
   ],
   "rotationTargets": [],
@@ -48,7 +48,7 @@
   "folder": "Testing Paths",
   "idealStartingState": {
     "velocity": 3.0,
-    "rotation": 79.08217224190778
+    "rotation": 71.43427433193933
   },
   "useDefaultConstraints": false
 }

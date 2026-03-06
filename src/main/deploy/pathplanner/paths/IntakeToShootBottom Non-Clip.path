@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.636,
-        "y": 3.43
+        "x": 7.636192771084337,
+        "y": 3.430333333333333
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.352202354377541,
-        "y": 2.866255161088454
+        "x": 7.352395125461878,
+        "y": 2.8665884944217868
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "farthest intake point bottom"
     },
     {
       "anchor": {
@@ -32,16 +32,16 @@
     },
     {
       "anchor": {
-        "x": 3.65,
-        "y": 0.619
+        "x": 3.533,
+        "y": 0.6046794871794885
       },
       "prevControl": {
-        "x": 4.671632416922016,
-        "y": 0.5751943926135148
+        "x": 4.554632416922016,
+        "y": 0.5608738797930033
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom shooting position"
     }
   ],
   "rotationTargets": [],
@@ -64,7 +64,7 @@
   "folder": "Testing Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 87.22419655121676
+    "rotation": 80.0
   },
   "useDefaultConstraints": false
 }

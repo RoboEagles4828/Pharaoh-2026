@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.533,
-        "y": 0.6046794871794885
+        "x": 3.554,
+        "y": 7.473
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.385070374624137,
-        "y": 0.6676663377343854
+        "x": 4.811387241272786,
+        "y": 7.488971269694161
       },
       "isLocked": false,
-      "linkedName": "bottom shooting position"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.390714285714285,
-        "y": 1.0426559999999991
+        "x": 7.786,
+        "y": 6.857
       },
       "prevControl": {
-        "x": 5.744709821428571,
-        "y": 0.8403717738095233
+        "x": 7.786,
+        "y": 7.211609842591552
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "starting intake bottom"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.5,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 3.0,
-    "rotation": 71.43427433193933
+    "velocity": 0,
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Testing Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
