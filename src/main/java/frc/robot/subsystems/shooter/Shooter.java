@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import java.util.Collections;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -51,6 +52,7 @@ public class Shooter extends SubsystemBase {
 
     /** Limit switch limitting the minimum hood movement */
     private final DigitalInput hoodLimitSwitch;
+    private final Trigger limitSwitch;
 
     /** Launch calculator for calculating shooter parameters */
     private final LaunchCalculator launchCalculator;
@@ -80,7 +82,7 @@ public class Shooter extends SubsystemBase {
         // The hood should always start in the lowest possible possition
         hoodMotor.setPosition(ShooterConstants.HOOD_MIN_POSITION);
 
-        Trigger limitSwitch = new Trigger(() -> !hoodLimitSwitch.get());
+        limitSwitch = new Trigger(() -> !hoodLimitSwitch.get());
         limitSwitch.onTrue(resetHoodEncoder());
 
         SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false);
@@ -96,12 +98,16 @@ public class Shooter extends SubsystemBase {
         shooterMotorCfg.Slot0.kP = shooterPValue.get();
         shooterMotorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
         shooterMotorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
+        shooterMotorCfg.CurrentLimits = (new CurrentLimitsConfigs())
+            .withSupplyCurrentLimit(40);
         
         final TalonFXConfiguration hoodMotorCfg = new TalonFXConfiguration();
         hoodMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         hoodMotorCfg.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO;
         hoodMotorCfg.Slot0.kP = hoodPValue.get();
         hoodMotorCfg.Slot0.kD = hoodDValue.get();
+        hoodMotorCfg.CurrentLimits = (new CurrentLimitsConfigs())
+            .withSupplyCurrentLimit(40);
 
         // Applying the configuration
         shooterMotorOne.getConfigurator().apply(shooterMotorCfg);
@@ -195,6 +201,7 @@ public class Shooter extends SubsystemBase {
         // output actual hood position
         SmartDashboard.putNumber("Tuning/Shooter/ActualHoodPosition", hoodMotor.getPosition().getValueAsDouble());
         SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitch", !hoodLimitSwitch.get());
+        SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitchTrigger", limitSwitch.getAsBoolean());
     }
 
 }

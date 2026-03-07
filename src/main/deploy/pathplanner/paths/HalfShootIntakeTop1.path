@@ -20,15 +20,20 @@
         "y": 7.042655999999999
       },
       "prevControl": {
-        "x": 5.518766666666667,
-        "y": 7.501755555555555
+        "x": 5.902225392296718,
+        "y": 7.573723252496434
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "starting intake top"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6289484206317469,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 3.0,
+    "velocity": 1.5,
     "rotation": -64.3893923736657
   },
   "reversed": false,
   "folder": "Testing Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 1.4213493290293324
   },
   "useDefaultConstraints": false
 }

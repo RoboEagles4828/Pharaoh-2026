@@ -2,6 +2,8 @@ package frc.robot.subsystems.hopper;
 
 import java.util.Set;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +23,10 @@ public class Hopper extends SubsystemBase {
 
     public Hopper() {
         conveyorMotor = new TalonFX(Constants.RioBusCANIds.HOPPER_CONVEYOR_MOTOR_ID, Constants.RIO_CAN_BUS);
+        final TalonFXConfiguration hopperMotorConfig = new TalonFXConfiguration();
+        hopperMotorConfig.CurrentLimits = (new CurrentLimitsConfigs())
+            .withSupplyCurrentLimit(40);
+        conveyorMotor.getConfigurator().apply(hopperMotorConfig);
     }
 
     /** Returns a command that runs the conveyer motors */

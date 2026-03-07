@@ -1,15 +1,17 @@
 package frc.robot.subsystems.climber;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.util.TunableNumber;
 
@@ -19,6 +21,9 @@ public class Climber extends SubsystemBase {
     private final TalonFX climbMotor;
     /** PID control to specific positions; default position is the starting position */
     private final PositionVoltage positionControl;
+    /** Hall effect sensor limitting the retraction of the climber */
+    private final DigitalInput climberHallEffect;
+    private final Trigger climberLimitSensor;
 
     // Tunable numbers for duty cycle speeds
     private static TunableNumber climbUpDutyCycle = new TunableNumber("Tuning/Climber/ClimbUpDutyCycle", -ClimberConstants.DEFAULT_DUTY_CYCLE);
@@ -46,6 +51,8 @@ public class Climber extends SubsystemBase {
         motorCfg.Slot0.kP = pValue.get();
         motorCfg.Slot0.kI = iValue.get();
         motorCfg.Slot0.kD = dValue.get();
+        motorCfg.CurrentLimits = (new CurrentLimitsConfigs())
+            .withSupplyCurrentLimit(40);
         // Applying the configuration
         climbMotor.getConfigurator().apply(motorCfg);
 
@@ -58,6 +65,12 @@ public class Climber extends SubsystemBase {
                                 .withOverrideBrakeDurNeutral(true)
                                 .withSlot(0);
         
+        climberHallEffect = new DigitalInput(Constants.DigitalIDS.CLIMBER_HALL_EFFECT);
+        
+        climberLimitSensor = new Trigger(() -> climberHallEffect.get());
+        climberLimitSensor.onTrue(resetClimberEncoder());
+
+
         // Putting buttons on smart dashboard to zero the encoder and apply PID changes
         SmartDashboard.putBoolean("Tuning/Climber/ApplyPIDButton", false);
         SmartDashboard.putBoolean("Tuning/Climber/ZeroEncoderBtn", false);
@@ -114,6 +127,11 @@ public class Climber extends SubsystemBase {
         return climbMotor.getPosition().getValueAsDouble();
     }
 
+    /** Resets the climber encoder position to the starting */
+    public Command resetClimberEncoder() {
+        return Commands.runOnce(() -> climbMotor.setPosition(ClimberConstants.START_POSITION));
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Climber Position", getPosition());
@@ -130,5 +148,8 @@ public class Climber extends SubsystemBase {
                 SmartDashboard.putBoolean("Tuning/Climber/ZeroEncoderBtn", false);
             }
         }
+
+        SmartDashboard.putBoolean("Tuning/Climber/HallEffect", climberHallEffect.get());
+        SmartDashboard.putBoolean("Tuning/Climber/LimitSensor", climberLimitSensor.getAsBoolean());
     }
 }

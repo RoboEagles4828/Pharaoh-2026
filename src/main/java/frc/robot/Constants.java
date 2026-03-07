@@ -50,8 +50,9 @@ public final class Constants {
   }
 
   public static class DigitalIDS {
-    public static int HOOD_LIMIT_SWITCH = 0;
-    public static int INTAKE_LIMIT_SWITCH = 9;
+    public static final int HOOD_LIMIT_SWITCH = 0;
+    public static final int INTAKE_LIMIT_SWITCH = 9;
+    public static final int CLIMBER_HALL_EFFECT = 1;
   }
 
   public static final CANBus RIO_CAN_BUS = new CANBus("rio");

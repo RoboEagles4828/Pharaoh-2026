@@ -234,6 +234,8 @@ public class RobotContainer {
     driverController.leftTrigger().whileTrue(shooter.startIntake());
     driverController.leftTrigger().whileTrue(kicker.startIntake());
 
+    driverController.b().whileTrue(intake.outtake());
+
     /*** Aim/lockon **/
     driverController.leftBumper().whileTrue(
       Commands.defer(() -> {
@@ -250,13 +252,14 @@ public class RobotContainer {
     driverController.rightTrigger().whileTrue(kicker.start());
 
     /*** Climbing ***/
-    driverController.b().onTrue(climbRight());
-    driverController.x().onTrue(climbLeft());
+    // driverController.b().onTrue(climbRight());
+    // driverController.x().onTrue(climbLeft());
     driverController.y().onTrue(climber.extendToPeak());
     driverController.a().onTrue(climber.retractToBottom());
 
-    driverController.rightBumper().whileTrue(climber.climbDownDutyCycle());
-    driverController.rightBumper().onFalse(climber.stop());
+
+    // driverController.rightBumper().whileTrue(climber.climbDownDutyCycle());
+    // driverController.rightBumper().onFalse(climber.stop());
   }
 
   public void setDefaultCommands() {

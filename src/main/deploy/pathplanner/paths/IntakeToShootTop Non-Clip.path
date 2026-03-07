@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 7.636,
-        "y": 7.45
+        "x": 6.1351212553495005,
+        "y": 7.314950071326677
       },
       "prevControl": {
-        "x": 8.677293688341814,
-        "y": 6.992145303637562
+        "x": 7.176414943691316,
+        "y": 6.8570953749642385
       },
       "nextControl": {
-        "x": 7.407145767028109,
-        "y": 7.550626736262525
+        "x": 5.90626702237761,
+        "y": 7.4155768075892015
       },
       "isLocked": false,
       "linkedName": null
@@ -44,12 +44,17 @@
       "linkedName": "top shooting position"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.174730107956814,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 1.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -58,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 1.4213493290293324
   },
   "reversed": false,
   "folder": "Testing Paths",
@@ -66,5 +71,5 @@
     "velocity": 0,
     "rotation": -67.31837307947434
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
