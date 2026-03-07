@@ -202,6 +202,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Tuning/Shooter/ActualHoodPosition", hoodMotor.getPosition().getValueAsDouble());
         SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitch", !hoodLimitSwitch.get());
         SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitchTrigger", limitSwitch.getAsBoolean());
+
+        SmartDashboard.putString("Tuning/Shooter/ShootingMode", launchCalculator.getMode());
     }
 
 }

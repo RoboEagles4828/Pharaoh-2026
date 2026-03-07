@@ -40,6 +40,12 @@ public class LaunchCalculator {
         else
             enterHubShotMode();
     }
+    public String getMode() {
+        if (currentMode == Mode.HUB_SHOT_ONLY) {
+            return "Hub Shot Only";
+        }
+        return "Shoot From Anywhere";
+    }
 
     public void enterHubShotMode() {
         currentMode = Mode.HUB_SHOT_ONLY;
