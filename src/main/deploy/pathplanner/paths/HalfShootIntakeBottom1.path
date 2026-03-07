@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2239229671897287,
+        "x": 3.5732667617689007,
         "y": 0.6386019971469341
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.876348074179743,
-        "y": 0.4057061340941527
+        "x": 6.235896933463438,
+        "y": 0.6386019971469341
       },
       "isLocked": false,
-      "linkedName": "bottom shooting position"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 1.0426559999999991
       },
       "prevControl": {
-        "x": 5.744709821428571,
-        "y": 0.8403717738095235
+        "x": 5.669329529243937,
+        "y": 0.4186447931526389
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.47860855657737467,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
@@ -53,7 +53,7 @@
   "folder": "Testing Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -0.9500189974390274
+    "rotation": 88.56790381583535
   },
   "useDefaultConstraints": false
 }

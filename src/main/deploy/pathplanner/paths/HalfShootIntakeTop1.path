@@ -53,7 +53,7 @@
   "folder": "Testing Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 1.4213493290293324
+    "rotation": -89.845133278153
   },
   "useDefaultConstraints": false
 }

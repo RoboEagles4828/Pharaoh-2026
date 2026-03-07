@@ -32,21 +32,25 @@
     },
     {
       "anchor": {
-        "x": 3.533,
-        "y": 7.437655999999999
+        "x": 3.198045649072753,
+        "y": 7.314950071326677
       },
       "prevControl": {
-        "x": 3.797346159549788,
-        "y": 7.400424584475562
+        "x": 3.462391808622541,
+        "y": 7.27771865580224
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "top shooting position"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.174730107956814,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.7728908436625308,
       "rotationDegrees": 0.0
     }
   ],
@@ -63,7 +67,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.4213493290293324
+    "rotation": -69.07549825507884
   },
   "reversed": false,
   "folder": "Testing Paths",
