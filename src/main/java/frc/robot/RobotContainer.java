@@ -251,9 +251,11 @@ public class RobotContainer {
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
 
+    driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.toggleMode()));
+
     /*** Climbing ***/
-    // driverController.b().onTrue(climbRight());
-    // driverController.x().onTrue(climbLeft());
+    //driverController.b().onTrue(climbRight());
+    //driverController.x().onTrue(climbLeft());
     driverController.y().onTrue(climber.extendToPeak());
     driverController.a().onTrue(climber.retractToBottom());
 

@@ -28,6 +28,27 @@ public class LaunchCalculator {
     // maps for passing
     private static final InterpolatingDoubleTreeMap passVelocityMap = ShooterConstants.PASS_VELOCITY_MAP;
 
+    private Mode currentMode = Mode.SHOOT_FROM_ANYWHERE;
+    private enum Mode {
+        HUB_SHOT_ONLY,
+        SHOOT_FROM_ANYWHERE
+    }
+
+    public void toggleMode() {
+        if (currentMode == Mode.HUB_SHOT_ONLY)
+            enterShootFromAnywhereMode();
+        else
+            enterHubShotMode();
+    }
+
+    public void enterHubShotMode() {
+        currentMode = Mode.HUB_SHOT_ONLY;
+    }
+
+    public void enterShootFromAnywhereMode() {
+        currentMode = Mode.SHOOT_FROM_ANYWHERE;
+    }
+
     public LaunchParameters getParameters() {
         Pose2d robotPose = poseSupplier.getPose();
 
@@ -43,10 +64,13 @@ public class LaunchCalculator {
         
         // Calculating parameters to shoot from anywhere.
         double distanceToTargetInches = Units.metersToInches(robotPose.getTranslation().getDistance(targetPos)) - 5.0;
+        if (currentMode == Mode.HUB_SHOT_ONLY && isScoring) // if we're in hub shot mode, use distance to hub specifically
+            distanceToTargetInches = 39.851142;
         double targetVelocity = isScoring ? launchVelocityMap.get(distanceToTargetInches) : passVelocityMap.get(distanceToTargetInches);
         double targetHoodPosition = isScoring ? launchHoodPositionMap.get(distanceToTargetInches) : ShooterConstants.HOOD_MAX_POSITION;
 
         // debugging - publish info
+        SmartDashboard.putBoolean("Tuning/Launch/HubShotModeActive", currentMode == Mode.HUB_SHOT_ONLY);
         SmartDashboard.putNumber("Tuning/Launch/DistanceToTarget", distanceToTargetInches);
         SmartDashboard.putNumber("Tuning/Launch/TargetVelocity", targetVelocity);
         SmartDashboard.putNumber("Tuning/Launch/TargetHood", targetHoodPosition);
