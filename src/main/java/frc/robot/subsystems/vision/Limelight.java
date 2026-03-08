@@ -48,8 +48,8 @@ public class Limelight {
         }
 
         // Get pose estimate from MegaTag2
-        mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
-        //mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+        //mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+        mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
 
         // Compute standard deviation based on spread of tags
         mostRecentPoseStandardDeviation = calculateStandardDeviationForEstimate(mostRecentPoseEstimate);
@@ -111,55 +111,53 @@ public class Limelight {
         return true;
     }
 
-private static Matrix<N3, N1> calculateStandardDeviationForEstimate(PoseEstimate pose) {
-    if (pose == null || pose.rawFiducials.length == 0) {
-        return VecBuilder.fill(
-            VisionConstants.STD_MAX_XY,
-            VisionConstants.STD_MAX_XY,
-            VisionConstants.STD_MAX_THETA
-        );
+    private static Matrix<N3, N1> calculateStandardDeviationForEstimate(LimelightHelpers.PoseEstimate pose) {
+        if (pose == null || pose.rawFiducials.length == 0) {
+            return VecBuilder.fill(VisionConstants.STD_MAX_XY,
+                    VisionConstants.STD_MAX_XY,
+                    VisionConstants.STD_MAX_THETA);
+        }
+
+        Pose2d fusedPose = pose.pose;
+
+        double xVar = 0.0;
+        double yVar = 0.0;
+        double thetaVar = 0.0;
+        double weightSum = 0.0;
+
+        for (RawFiducial tag : pose.rawFiducials) {
+            Pose2d tagPose = Util4828.getAprilTagPose(tag.id);
+            if (tagPose == null)
+                continue; // Skip missing tags
+
+            double weight = 1.0 / (tag.ambiguity + 0.01);
+
+            double dx = tagPose.getX() - fusedPose.getX();
+            double dy = tagPose.getY() - fusedPose.getY();
+            double dtheta = tagPose.getRotation().minus(fusedPose.getRotation()).getRadians();
+
+            xVar += weight * dx * dx;
+            yVar += weight * dy * dy;
+            thetaVar += weight * dtheta * dtheta;
+            weightSum += weight;
+        }
+
+        if (weightSum == 0.0) {
+            // No valid tags
+            return VecBuilder.fill(VisionConstants.STD_MAX_XY,
+                    VisionConstants.STD_MAX_XY,
+                    VisionConstants.STD_MAX_THETA);
+        }
+
+        double xStd = Math.sqrt(xVar / weightSum);
+        double yStd = Math.sqrt(yVar / weightSum);
+        double thetaStd = Math.sqrt(thetaVar / weightSum);
+
+        xStd = MathUtil.clamp(xStd, VisionConstants.STD_MIN_XY, VisionConstants.STD_MAX_XY);
+        yStd = MathUtil.clamp(yStd, VisionConstants.STD_MIN_XY, VisionConstants.STD_MAX_XY);
+        thetaStd = MathUtil.clamp(thetaStd, VisionConstants.STD_MIN_THETA, VisionConstants.STD_MAX_THETA);
+
+        return VecBuilder.fill(xStd, yStd, thetaStd);
     }
-
-    double totalWeight = 0.0;
-    double weightedDist = 0.0;
-    double weightedAmbiguity = 0.0;
-
-    for (RawFiducial tag : pose.rawFiducials) {
-        double weight = 1.0 / (tag.ambiguity + 0.01);
-
-        weightedDist += tag.distToCamera * weight;
-        weightedAmbiguity += tag.ambiguity * weight;
-        totalWeight += weight;
-    }
-
-    double avgDist = weightedDist / totalWeight;
-    double avgAmbiguity = weightedAmbiguity / totalWeight;
-
-    // Base uncertainty grows with distance
-    double xyStd = 0.02 + 0.08 * avgDist;
-
-    // Ambiguity penalty
-    xyStd *= 1.0 + avgAmbiguity * 2.0;
-
-    // Multiple tags improves accuracy
-    if (pose.tagCount >= 2) {
-        xyStd *= 0.6;
-    }
-
-    double thetaStd = xyStd * 2.0;
-
-    xyStd = MathUtil.clamp(xyStd,
-        VisionConstants.STD_MIN_XY,
-        VisionConstants.STD_MAX_XY
-    );
-
-    thetaStd = MathUtil.clamp(thetaStd,
-        VisionConstants.STD_MIN_THETA,
-        VisionConstants.STD_MAX_THETA
-    );
-
-    // Multiply final estimate by a decimal scalar to increase trust in camera.
-    return VecBuilder.fill(xyStd, xyStd, thetaStd).times(VisionConstants.VISION_TRUST_SCALAR);
-}
 
 }

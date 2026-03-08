@@ -14,12 +14,12 @@ public class IntakeConstants {
     public static double INTAKE_DUTY_CYCLE = 0.9;
     public static double NINJA_STAR_DUTY_CYCLE = -0.9;
 
-    public static double DEPLOY_P = 48.0;
+    public static double DEPLOY_P = 32.0;
     public static double DEPLOY_D = 0.1;
 
-    public static double RETRACT_P = 2.0;
+    public static double RETRACT_P = 64.0;
     public static double RETRACT_D = 0.2;
-    public static double RETRACT_G = 2.0;
+    public static double RETRACT_G = 4.0;
 
     public static double DEPLOYED_POSITION = 0.0; // in mechanism rotations
     public static double RAISED_POSITION = 0.22; // in mechanism rotations
