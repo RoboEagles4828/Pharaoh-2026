@@ -12,7 +12,7 @@
         "y": 0.6386019971469341
       },
       "isLocked": false,
-      "linkedName": "bottom starting position"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.47860855657737467,
       "rotationDegrees": 90.0
     }
   ],
@@ -53,7 +53,7 @@
   "folder": "Testing Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 88.56790381583535
   },
   "useDefaultConstraints": false
 }
