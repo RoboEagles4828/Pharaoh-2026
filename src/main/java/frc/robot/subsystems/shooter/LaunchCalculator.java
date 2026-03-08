@@ -17,6 +17,8 @@ public class LaunchCalculator {
 
     public LaunchCalculator(PoseSupplier poseSupplier) {
         this.poseSupplier = poseSupplier;
+
+        SmartDashboard.putString("Shot Mode", "Anywhere");
     }
 
     public record LaunchParameters(double velocityMPS, double hoodPosition) {}
@@ -30,11 +32,12 @@ public class LaunchCalculator {
 
     private Mode currentMode = Mode.SHOOT_FROM_ANYWHERE;
     private enum Mode {
-        HUB_SHOT_ONLY,
-        SHOOT_FROM_ANYWHERE
+        HUB_SHOT_ONLY,      //hardcoded for close range hub shots
+        FAR_SHOT_ONLY,      //hardcoded for far range corner shots
+        SHOOT_FROM_ANYWHERE //dynamically adjust based on distance
     }
 
-    public void toggleMode() {
+    public void toggleHubShotMode() {
         if (currentMode == Mode.HUB_SHOT_ONLY)
             enterShootFromAnywhereMode();
         else
@@ -47,12 +50,26 @@ public class LaunchCalculator {
         return "Shoot From Anywhere";
     }
 
+    public void toggleFarShotMode() {
+        if (currentMode == Mode.FAR_SHOT_ONLY)
+            enterShootFromAnywhereMode();
+        else
+            enterFarShotMode();
+    }
+
     public void enterHubShotMode() {
         currentMode = Mode.HUB_SHOT_ONLY;
+        SmartDashboard.putString("Shot Mode", "Hub");
     }
 
     public void enterShootFromAnywhereMode() {
         currentMode = Mode.SHOOT_FROM_ANYWHERE;
+        SmartDashboard.putString("Shot Mode", "Anywhere");
+    }
+
+    public void enterFarShotMode() {
+        currentMode = Mode.FAR_SHOT_ONLY;
+        SmartDashboard.putString("Shot Mode", "Far");
     }
 
     public LaunchParameters getParameters() {
@@ -72,11 +89,12 @@ public class LaunchCalculator {
         double distanceToTargetInches = Units.metersToInches(robotPose.getTranslation().getDistance(targetPos)) - 5.0;
         if (currentMode == Mode.HUB_SHOT_ONLY && isScoring) // if we're in hub shot mode, use distance to hub specifically
             distanceToTargetInches = 39.851142;
+        if (currentMode == Mode.FAR_SHOT_ONLY && isScoring)
+            distanceToTargetInches = 205.851142;
         double targetVelocity = isScoring ? launchVelocityMap.get(distanceToTargetInches) : passVelocityMap.get(distanceToTargetInches);
         double targetHoodPosition = isScoring ? launchHoodPositionMap.get(distanceToTargetInches) : ShooterConstants.HOOD_MAX_POSITION;
 
         // debugging - publish info
-        SmartDashboard.putBoolean("Tuning/Launch/HubShotModeActive", currentMode == Mode.HUB_SHOT_ONLY);
         SmartDashboard.putNumber("Tuning/Launch/DistanceToTarget", distanceToTargetInches);
         SmartDashboard.putNumber("Tuning/Launch/TargetVelocity", targetVelocity);
         SmartDashboard.putNumber("Tuning/Launch/TargetHood", targetHoodPosition);
