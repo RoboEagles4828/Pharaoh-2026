@@ -254,7 +254,8 @@ public class RobotContainer {
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
 
-    driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.toggleMode()));
+    driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.toggleHubShotMode()));
+    driverController.y().onTrue(Commands.runOnce(() -> launchCalculator.toggleFarShotMode()));
 
     /*** Climbing ***/
     //driverController.b().onTrue(climbRight());
