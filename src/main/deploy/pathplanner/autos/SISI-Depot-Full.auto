@@ -13,19 +13,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ShootToClimbBottom"
+            "pathName": "ShootToIntake-Depot-Full"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IntakeToShoot-Depot-Full"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ClimbRight"
+            "name": "Shoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "ShootClimb",
+  "folder": "ShootIntakeShootIntake",
   "choreoAuto": false
 }

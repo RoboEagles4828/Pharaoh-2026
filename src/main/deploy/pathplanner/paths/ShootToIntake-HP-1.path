@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.749,
-        "y": 2.178
+        "x": 3.5732667617689007,
+        "y": 0.6386019971469341
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8211950996343387,
-        "y": 2.530631750680672
+        "x": 6.235896933463438,
+        "y": 0.6386019971469341
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.607,
-        "y": 2.71
+        "x": 6.87,
+        "y": 1.077
       },
       "prevControl": {
-        "x": 1.5465021769901952,
-        "y": 2.328253324861705
+        "x": 6.148615243529652,
+        "y": 0.45298879315263996
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Shoot to Intake HP Midpoint"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.47860855657737467,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 3.0,
+    "rotation": 71.434
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 88.56790381583535
   },
   "useDefaultConstraints": true
 }

@@ -31,6 +31,7 @@ import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.shooter.LaunchCalculator;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.AutonCommands;
 import frc.robot.util.PoseSupplier;
 
 import java.util.Collections;
@@ -91,68 +92,68 @@ public class RobotContainer {
   private final SendableChooser<Command> autonomousChooser;
 
   /*** more complex commands that require multiple subsystems */
-  public Command aimAndShoot() {
-    return Commands.sequence(
-      Commands.print("Start aim and shoot"),
-      (new LockOnDriveCommand(drivetrain, driverController, true)).withTimeout(1.0),
+  // public Command aimAndShoot() {
+  //   return Commands.sequence(
+  //     Commands.print("Start aim and shoot"),
+  //     (new LockOnDriveCommand(drivetrain, driverController, true)).withTimeout(1.0),
 
-      new ParallelDeadlineGroup(
-        Commands.waitSeconds(3.0),
-        Commands.print("Aim and shoot"),
-        shooter.raiseHood(),
-        shooter.start(),
-        Commands.sequence(
-          Commands.waitSeconds(1.0),
-          Commands.parallel(
-            hopper.startConveyor().withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withTimeout(2.0),
-            kicker.start().withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withTimeout(2.0)
-          )
-        )
-      )
-    ).andThen(
-      Commands.parallel(
-        shooter.stop(),
-        kicker.stop(),
-        hopper.stopConveyor(),
-        shooter.lowerHood()
-      )
-    );
+  //     new ParallelDeadlineGroup(
+  //       Commands.waitSeconds(3.0),
+  //       Commands.print("Aim and shoot"),
+  //       shooter.raiseHood(),
+  //       shooter.start(),
+  //       Commands.sequence(
+  //         Commands.waitSeconds(1.0),
+  //         Commands.parallel(
+  //           hopper.startConveyor().withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withTimeout(2.0),
+  //           kicker.start().withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withTimeout(2.0)
+  //         )
+  //       )
+  //     )
+  //   ).andThen(
+  //     Commands.parallel(
+  //       shooter.stop(),
+  //       kicker.stop(),
+  //       hopper.stopConveyor(),
+  //       shooter.lowerHood()
+  //     )
+  //   );
 
-  }
+  // }
 
-  public Command climbLeft() {
-    return Commands.defer(() -> 
-      Commands.sequence(
-        Commands.print("Staging to tower LEFT."),
-        drivetrain.stageToTower(Constants.FieldConstants.TowerSide.LEFT),
-        Commands.print("Raising climber."),
-        climber.extendToPeak(),
-        Commands.waitSeconds(0.8),
-        Commands.print("Aligning to tower."),
-        drivetrain.alignToTower(),
-        Commands.waitSeconds(1.0),
-        Commands.print("Climbing up."),
-        climber.retractForClimb(),
-        Commands.print("Climb completed.")
-        ), Collections.emptySet());
-  }
+  // public Command climbLeft() {
+  //   return Commands.defer(() -> 
+  //     Commands.sequence(
+  //       Commands.print("Staging to tower LEFT."),
+  //       drivetrain.stageToTower(Constants.FieldConstants.TowerSide.LEFT),
+  //       Commands.print("Raising climber."),
+  //       climber.extendToPeak(),
+  //       Commands.waitSeconds(0.8),
+  //       Commands.print("Aligning to tower."),
+  //       drivetrain.alignToTower(),
+  //       Commands.waitSeconds(1.0),
+  //       Commands.print("Climbing up."),
+  //       climber.retractForClimb(),
+  //       Commands.print("Climb completed.")
+  //       ), Collections.emptySet());
+  // }
 
-  public Command climbRight() {
-    return Commands.defer(() -> 
-      Commands.sequence(
-        Commands.print("Staging to tower RIGHT."),
-        drivetrain.stageToTower(Constants.FieldConstants.TowerSide.RIGHT),
-        Commands.print("Raising climber."),
-        climber.extendToPeak(),
-        Commands.waitSeconds(0.5),
-        Commands.print("Aligning to tower."),
-        drivetrain.alignToTower(),
-        Commands.waitSeconds(1.0),
-        Commands.print("Climbing up."),
-        //climber.retractForClimb(),
-        Commands.print("Climb completed.")
-        ), Collections.emptySet());
-  }
+  // public Command climbRight() {
+  //   return Commands.defer(() -> 
+  //     Commands.sequence(
+  //       Commands.print("Staging to tower RIGHT."),
+  //       drivetrain.stageToTower(Constants.FieldConstants.TowerSide.RIGHT),
+  //       Commands.print("Raising climber."),
+  //       climber.extendToPeak(),
+  //       Commands.waitSeconds(0.5),
+  //       Commands.print("Aligning to tower."),
+  //       drivetrain.alignToTower(),
+  //       Commands.waitSeconds(1.0),
+  //       Commands.print("Climbing up."),
+  //       //climber.retractForClimb(),
+  //       Commands.print("Climb completed.")
+  //       ), Collections.emptySet());
+  // }
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -183,9 +184,9 @@ public class RobotContainer {
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
     /** PATHPLANNER **/
-    NamedCommands.registerCommand("Shoot", Commands.defer(this::aimAndShoot, Collections.emptySet()));
-    NamedCommands.registerCommand("ClimbRight", Commands.defer(this::climbRight, Collections.emptySet()));
-    NamedCommands.registerCommand("ClimbLeft", Commands.defer(this::climbLeft, Collections.emptySet()));
+    NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController, shooter, hopper, kicker), Collections.emptySet()));
+    NamedCommands.registerCommand("ClimbRight", Commands.defer(() -> AutonCommands.climbRight(drivetrain, climber), Collections.emptySet()));
+    NamedCommands.registerCommand("ClimbLeft", Commands.defer(() -> AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
 		NamedCommands.registerCommand("StartIntake", intake.intake());
 		NamedCommands.registerCommand("StopIntake", intake.stopAndRetract().withTimeout(1.0));
 

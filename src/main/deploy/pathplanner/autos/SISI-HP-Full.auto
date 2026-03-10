@@ -5,21 +5,27 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "SimplyMoveBack"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootToIntake-HP-Full"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IntakeToShoot-HP-Full"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Testing (Comp. Autos)",
+  "folder": "ShootIntakeShootIntake",
   "choreoAuto": false
 }

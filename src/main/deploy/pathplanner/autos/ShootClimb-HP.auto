@@ -13,13 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ShootToClimb-Depot"
+            "pathName": "ShootToClimb-HP"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ClimbLeft"
+            "name": "ClimbRight"
           }
         }
       ]

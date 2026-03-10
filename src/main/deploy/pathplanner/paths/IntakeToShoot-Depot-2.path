@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.554,
-        "y": 7.473
+        "x": 5.824593437945791,
+        "y": 7.43
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3551336952432496,
-        "y": 7.225988038114264
+        "x": 6.184749817905699,
+        "y": 7.430953888282705
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Intake to Shoot Depot Midpoint"
     },
     {
       "anchor": {
-        "x": 1.607,
-        "y": 4.675
+        "x": 3.586113575865128,
+        "y": 7.43
       },
       "prevControl": {
-        "x": 2.0783738375635883,
-        "y": 5.521948123057664
+        "x": 3.1260895513169062,
+        "y": 7.429055773118815
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,8 +47,8 @@
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -90.0
+    "velocity": 3.0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

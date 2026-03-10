@@ -1,0 +1,96 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.6102573203194313,
+        "y": 7.4432919254658385
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.0246317657497785,
+        "y": 7.539866903283052
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.87,
+        "y": 6.992
+      },
+      "prevControl": {
+        "x": 6.391969022462966,
+        "y": 7.127245424926786
+      },
+      "nextControl": {
+        "x": 7.465208518189885,
+        "y": 6.82360248447205
+      },
+      "isLocked": false,
+      "linkedName": "Shoot to Intake Depot Midpoint"
+    },
+    {
+      "anchor": {
+        "x": 7.636192771084337,
+        "y": 4.6393
+      },
+      "prevControl": {
+        "x": 7.682132036391992,
+        "y": 4.885042922386369
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Depot Intake Endpoint"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3638170974155071,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Intaking",
+      "minWaypointRelativePos": 1.047169811320756,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "StartIntake",
+      "waypointRelativePos": 1.0424528301886815,
+      "endWaypointRelativePos": 2.0,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -71.412
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -91.56935480474891
+  },
+  "useDefaultConstraints": true
+}
