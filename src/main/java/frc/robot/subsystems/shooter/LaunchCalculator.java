@@ -47,6 +47,9 @@ public class LaunchCalculator {
         if (currentMode == Mode.HUB_SHOT_ONLY) {
             return "Hub Shot Only";
         }
+        else if (currentMode == Mode.FAR_SHOT_ONLY) {
+            return "Far Shot Only";
+        }
         return "Shoot From Anywhere";
     }
 
@@ -89,7 +92,7 @@ public class LaunchCalculator {
         double distanceToTargetInches = Units.metersToInches(robotPose.getTranslation().getDistance(targetPos)) - 5.0;
         if (currentMode == Mode.HUB_SHOT_ONLY && isScoring) // if we're in hub shot mode, use distance to hub specifically
             distanceToTargetInches = 39.851142;
-        if (currentMode == Mode.FAR_SHOT_ONLY && isScoring)
+        else if (currentMode == Mode.FAR_SHOT_ONLY && isScoring)
             distanceToTargetInches = 205.851142;
         double targetVelocity = isScoring ? launchVelocityMap.get(distanceToTargetInches) : passVelocityMap.get(distanceToTargetInches);
         double targetHoodPosition = isScoring ? launchHoodPositionMap.get(distanceToTargetInches) : ShooterConstants.HOOD_MAX_POSITION;

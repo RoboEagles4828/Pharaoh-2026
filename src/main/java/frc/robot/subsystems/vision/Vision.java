@@ -36,7 +36,7 @@ public class Vision extends SubsystemBase {
         if (SmartDashboard.getBoolean(VisionConstants.NT_USE_VISION_TOGGLE, true)) {
             if (limelight.isPoseEstimateGood()) {
                 PoseEstimate estimate = limelight.getPoseEstimate();
-                drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds, limelight.getPoseStandardDeviation());
+                drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds, limelight.getPoseStandardDeviation().times(0.5));
             }
         }
     }

@@ -67,7 +67,7 @@ public class Climber extends SubsystemBase {
         
         climberHallEffect = new DigitalInput(Constants.DigitalIDS.CLIMBER_HALL_EFFECT);
         
-        climberLimitSensor = new Trigger(() -> climberHallEffect.get());
+        climberLimitSensor = new Trigger(() -> !climberHallEffect.get());
         climberLimitSensor.onTrue(resetClimberEncoder());
 
 
@@ -149,7 +149,7 @@ public class Climber extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putBoolean("Tuning/Climber/HallEffect", climberHallEffect.get());
+        SmartDashboard.putBoolean("Tuning/Climber/HallEffect", !climberHallEffect.get());
         SmartDashboard.putBoolean("Tuning/Climber/LimitSensor", climberLimitSensor.getAsBoolean());
     }
 }

@@ -51,7 +51,7 @@ public final class Constants {
 
   public static class DigitalIDS {
     public static final int HOOD_LIMIT_SWITCH = 0;
-    public static final int INTAKE_LIMIT_SWITCH = 9;
+    public static final int INTAKE_LIMIT_SWITCH = 2;
     public static final int CLIMBER_HALL_EFFECT = 1;
   }
 

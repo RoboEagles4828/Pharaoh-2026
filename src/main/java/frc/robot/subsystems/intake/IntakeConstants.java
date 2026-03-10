@@ -11,10 +11,10 @@ public class IntakeConstants {
 
     public static double WHEEL_DIAMETER = Units.inchesToMeters(2.25);
 
-    public static double INTAKE_DUTY_CYCLE = 0.9;
-    public static double NINJA_STAR_DUTY_CYCLE = -0.9;
+    public static double INTAKE_DUTY_CYCLE = 0.8;
+    public static double NINJA_STAR_DUTY_CYCLE = -0.8;
 
-    public static double DEPLOY_P = 32.0;
+    public static double DEPLOY_P = 20.0;
     public static double DEPLOY_D = 0.1;
 
     public static double RETRACT_P = 64.0;

@@ -32,7 +32,9 @@ public class Intake extends SubsystemBase {
     /** Motor that controls the transfer of fuel from the intake to the hopper */
     private final TalonFX ninjaStarMotor;
     /** Limit switch that limits the retraction of the intake */
-    private final DigitalInput intakeLimitSwitch;
+    // private final DigitalInput intakeLimitSwitch;
+
+    // private final Trigger limitSwitch;
 
     /** Position control for the deployment of the intake */
     private final PositionVoltage deployPositionControl;
@@ -59,7 +61,7 @@ public class Intake extends SubsystemBase {
         deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID, Constants.RIO_CAN_BUS);
         intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID, Constants.RIO_CAN_BUS);
         ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID, Constants.RIO_CAN_BUS);
-        intakeLimitSwitch = new DigitalInput(DigitalIDS.INTAKE_LIMIT_SWITCH);
+        // intakeLimitSwitch = new DigitalInput(DigitalIDS.INTAKE_LIMIT_SWITCH);
 
         // Configuring deploy motor (done separately because it has PID values that change)
         updatePID();
@@ -86,8 +88,8 @@ public class Intake extends SubsystemBase {
                                         .withOverrideBrakeDurNeutral(true)
                                         .withSlot(0);
 
-        Trigger limitSwitch = new Trigger(() -> !intakeLimitSwitch.get());
-        limitSwitch.onTrue(resetDeployEncoder());
+        // limitSwitch = new Trigger(() -> !intakeLimitSwitch.get());
+        //limitSwitch.onTrue(resetDeployEncoder());
 
         SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
         SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
@@ -231,6 +233,7 @@ public class Intake extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("Tuning/Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putBoolean("Tuning/Intake/LimitSwitch", !intakeLimitSwitch.get());
+        // SmartDashboard.putBoolean("Tuning/Intake/LimitSwitch", !intakeLimitSwitch.get());
+        // SmartDashboard.putBoolean("Tuning/Intake/LimitTrigger", limitSwitch.getAsBoolean());
     }
 }
