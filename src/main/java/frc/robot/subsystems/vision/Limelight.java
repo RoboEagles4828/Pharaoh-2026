@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.vision.LimelightHelpers.PoseEstimate;
@@ -26,6 +27,8 @@ public class Limelight {
     private static final String NT_IS_ESTIMATE_GOOD = "Is Estimate Good";
     private static final String NT_STANDARD_DEVIATION = "Standard Dev";
     private static final String NT_TIMESTAMP = "Timestamp";
+    private static final String NT_AMBIGUITY = "Ambiguity";
+    private static final String NT_DISTANCE = "Distance";
 
     private final String name;
     private PoseSupplier poseSupplier;
@@ -72,6 +75,15 @@ public class Limelight {
                 mostRecentPoseEstimate == null ? "NULL" : Util4828.formatMatrix3x1(mostRecentPoseStandardDeviation));
         SmartDashboard.putNumber(String.format("%s/%s", name, NT_TIMESTAMP),
                 mostRecentPoseEstimate == null ? -1 : mostRecentPoseEstimate.timestampSeconds);
+
+        RawFiducial bestTag = getBestTag(mostRecentPoseEstimate);
+        SmartDashboard.putNumber(String.format("%s%s", name, NT_AMBIGUITY),
+            bestTag == null ?-1 : bestTag.ambiguity);
+        SmartDashboard.putNumber(String.format("%s%s", name, NT_DISTANCE),
+            bestTag == null ?-1 : bestTag.distToCamera);
+
+        double[] std_devs = NetworkTableInstance.getDefault().getTable("limelight").getEntry("stddevs").getDoubleArray(new double[6]);
+        SmartDashboard.putNumberArray("LL Standard Deviations", std_devs);
     }
 
     public PoseEstimate getPoseEstimate() {
@@ -86,6 +98,13 @@ public class Limelight {
         return isMostRecentPoseEstimateGood;
     }
 
+    // Retrieves the tag with the lowest ambiguity from the pose estimate
+    private static RawFiducial getBestTag(PoseEstimate pose) {
+        return Arrays.stream(pose.rawFiducials)
+                .min(Comparator.comparingDouble(f -> f.ambiguity))
+                .orElse(null);
+    }
+
     /** Checks if a pose estimate (limelight reading) is of sufficient quality to be used */
     private static boolean verifyPoseEstimate(PoseEstimate pose) {
         // if we have no estimate or see no tags, reject
@@ -93,10 +112,7 @@ public class Limelight {
             return false;
         }
 
-        // pick the fiducial with lowest ambiguity
-        RawFiducial bestTag = Arrays.stream(pose.rawFiducials)
-                .min(Comparator.comparingDouble(f -> f.ambiguity))
-                .orElse(null);
+        RawFiducial bestTag = getBestTag(pose);
 
         // If ambiguity is too high, reject
         if (bestTag.ambiguity > VisionConstants.POSE_AMBIGUITY_THRESHOLD) {
