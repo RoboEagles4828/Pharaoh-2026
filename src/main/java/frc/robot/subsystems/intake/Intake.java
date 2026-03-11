@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -35,6 +36,7 @@ public class Intake extends SubsystemBase {
 
     /** Position control for the deployment of the intake */
     private final PositionVoltage deployPositionControl;
+    private final MotionMagicVoltage deployMotionMagicControl;
 
     // PID constants for deploying the intake
     private static final TunableNumber deployPValue = new TunableNumber("Tuning/Intake/DeployPValue", IntakeConstants.DEPLOY_P);
@@ -49,6 +51,9 @@ public class Intake extends SubsystemBase {
     private static final TunableNumber deployedPosition = new TunableNumber("Tuning/Intake/DeployPosition", IntakeConstants.DEPLOYED_POSITION);
     private static final TunableNumber raisedPosition = new TunableNumber("Tuning/Intake/RaisedPosition", IntakeConstants.RAISED_POSITION);
     
+    private static final TunableNumber motionMagicVelocity = new TunableNumber("Tuning/Intake/MotionMagicVelocity",1);
+    private static final TunableNumber motionMagicAcceleration = new TunableNumber("Tuning/Intake/MotionMagicAcceleration",1);
+
     // Duty Cycle Speeds
     private static final TunableNumber intakeDutyCycle = new TunableNumber("Tuning/Intake/IntakeDutyCycle", IntakeConstants.INTAKE_DUTY_CYCLE); 
     private static final TunableNumber ninjaStarDutyCycle = new TunableNumber("Tuning/Intake/NinjaStarDutyCycle", IntakeConstants.NINJA_STAR_DUTY_CYCLE);
@@ -81,9 +86,13 @@ public class Intake extends SubsystemBase {
         deployMotor.setPosition(IntakeConstants.RAISED_POSITION);
 
         deployPositionControl = new PositionVoltage(0.0)
-                                        .withEnableFOC(true)
-                                        .withOverrideBrakeDurNeutral(true)
-                                        .withSlot(0);
+                                    .withEnableFOC(true)
+                                    .withOverrideBrakeDurNeutral(true)
+                                    .withSlot(0);
+        deployMotionMagicControl = new MotionMagicVoltage(0.0)
+                                    .withEnableFOC(true)
+                                    .withOverrideBrakeDurNeutral(true)
+                                    .withSlot(0);
 
         // limitSwitch = new Trigger(() -> !intakeLimitSwitch.get());
         //limitSwitch.onTrue(resetDeployEncoder());
@@ -103,9 +112,12 @@ public class Intake extends SubsystemBase {
         deployMotorCfg.Slot1.kG = retractGValue.get();
         deployMotorCfg.Slot1.kP = retractPValue.get();
         deployMotorCfg.Slot1.kD = retractDValue.get();
-        deployMotorCfg.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
         deployMotorCfg.CurrentLimits = (new CurrentLimitsConfigs())
             .withSupplyCurrentLimit(40);
+
+        deployMotorCfg.MotionMagic.MotionMagicCruiseVelocity = motionMagicVelocity.get();
+        deployMotorCfg.MotionMagic.MotionMagicAcceleration = motionMagicAcceleration.get();
+            
         deployMotor.getConfigurator().apply(deployMotorCfg);
     }
 
@@ -114,7 +126,7 @@ public class Intake extends SubsystemBase {
         return Commands.defer(
             () -> {
                 return Commands.run(() -> 
-                    deployMotor.setControl(deployPositionControl.withSlot(0).withPosition(deployedPosition.get()))
+                    deployMotor.setControl(deployMotionMagicControl.withSlot(0).withPosition(deployedPosition.get()))
                 );
             },
             Collections.emptySet()
@@ -125,7 +137,7 @@ public class Intake extends SubsystemBase {
         return Commands.defer(
             () -> {
                 return Commands.run(() -> 
-                    deployMotor.setControl(deployPositionControl.withSlot(1).withPosition(raisedPosition.get()))
+                    deployMotor.setControl(deployMotionMagicControl.withSlot(1).withPosition(raisedPosition.get()))
                 );
             },
             Collections.emptySet()
