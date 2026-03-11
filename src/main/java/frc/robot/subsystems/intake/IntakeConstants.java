@@ -22,7 +22,7 @@ public class IntakeConstants {
     public static double RETRACT_G = 4.0;
 
     public static double DEPLOYED_POSITION = 0.0; // in mechanism rotations
-    public static double RAISED_POSITION = 0.27; // in mechanism rotations
+    public static double RAISED_POSITION = 0.32; // in mechanism rotations
 
     public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";
     public static final String NT_RESET_INTAKE_ENCODER_BUTTON = "Tuning/Intake/ResetDeployEncoder";
