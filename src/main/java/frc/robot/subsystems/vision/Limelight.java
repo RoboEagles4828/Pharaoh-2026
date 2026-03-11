@@ -100,6 +100,9 @@ public class Limelight {
 
     // Retrieves the tag with the lowest ambiguity from the pose estimate
     private static RawFiducial getBestTag(PoseEstimate pose) {
+        if (pose == null)
+            return null;
+
         return Arrays.stream(pose.rawFiducials)
                 .min(Comparator.comparingDouble(f -> f.ambiguity))
                 .orElse(null);
