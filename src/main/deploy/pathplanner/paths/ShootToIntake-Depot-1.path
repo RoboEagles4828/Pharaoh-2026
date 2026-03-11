@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.534,
-        "y": 3.912082738944366
+        "x": 3.6022094055013305,
+        "y": 7.467435669920142
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.8236808941608427,
-        "y": 3.8985879752412655
+        "x": 5.332511091393079,
+        "y": 7.483531499556344
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.2,
-        "y": 3.912082738944366
+        "x": 6.87,
+        "y": 6.992
       },
       "prevControl": {
-        "x": 2.9500906097318444,
-        "y": 3.918813017972652
+        "x": 6.298260869565217,
+        "y": 7.451339840283939
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Shoot to Intake Depot Midpoint"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.42445328031809143,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 1.5,
+    "rotation": -71.434
   },
   "reversed": false,
-  "folder": "Testing Paths",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -89.845133278153
   },
   "useDefaultConstraints": true
 }

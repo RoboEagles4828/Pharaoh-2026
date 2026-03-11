@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.554,
-        "y": 7.473
+        "x": 5.824593437945791,
+        "y": 0.6386019971469341
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.803639694011801,
-        "y": 7.486417271469797
+        "x": 6.184749817905699,
+        "y": 0.6395558854296391
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Intake to Shoot HP Midpoint"
     },
     {
       "anchor": {
-        "x": 0.4785421686746987,
-        "y": 0.7020481927710842
+        "x": 3.6022094055013305,
+        "y": 0.6386019971469341
       },
       "prevControl": {
-        "x": 0.7283101126273989,
-        "y": 1.484467309200228
+        "x": 3.1421853809531086,
+        "y": 0.6376577702657495
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

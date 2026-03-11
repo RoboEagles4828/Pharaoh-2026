@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.390714285714285,
-        "y": 7.042655999999999
+        "x": 6.87,
+        "y": 1.077
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.739514978601996,
-        "y": 6.460998573466477
+        "x": 7.465545696539486,
+        "y": 1.7208331854480932
       },
       "isLocked": false,
-      "linkedName": "starting intake top"
+      "linkedName": "Shoot to Intake HP Midpoint"
     },
     {
       "anchor": {
         "x": 7.636192771084337,
-        "y": 4.57
+        "y": 3.430333333333333
       },
       "prevControl": {
-        "x": 7.483933333333333,
-        "y": 5.104244000000001
+        "x": 7.5256138743555665,
+        "y": 3.128924703446729
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "farthest intake point top"
+      "linkedName": "HP Intake End Point"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -67.31837307947434
+    "rotation": 71.41204250930689
   },
   "reversed": false,
-  "folder": "Testing Paths",
+  "folder": null,
   "idealStartingState": {
-    "velocity": 3.0,
-    "rotation": -64.3893923736657
+    "velocity": 5.0,
+    "rotation": 71.434
   },
   "useDefaultConstraints": false
 }

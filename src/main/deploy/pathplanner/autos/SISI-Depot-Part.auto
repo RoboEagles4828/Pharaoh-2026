@@ -11,65 +11,53 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "ShootToIntake-Depot-1"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "ShootToIntakeBottom"
+                  "pathName": "ShootToIntake-Depot-2"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "StartIntake"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "StopIntake"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "IntakeToShoot-Depot-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopIntakeWheels"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "IntakeToShootBottom"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "ShootToIntakeBottom"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StopIntake"
+            "pathName": "IntakeToShoot-Depot-2"
           }
         }
       ]
