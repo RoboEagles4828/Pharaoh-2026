@@ -32,17 +32,15 @@ public class LaunchCalculator {
 
     private Mode currentMode = Mode.SHOOT_FROM_ANYWHERE;
     private enum Mode {
-        HUB_SHOT_ONLY,      //hardcoded for close range hub shots
-        FAR_SHOT_ONLY,      //hardcoded for far range corner shots
-        SHOOT_FROM_ANYWHERE //dynamically adjust based on distance
+        /** Hardcoded for close range hub shots */
+        HUB_SHOT_ONLY,
+        /** Hardcoded for far range corner shots */
+        FAR_SHOT_ONLY,
+        /** Dynamically adjust launch calculations based on distance */
+        SHOOT_FROM_ANYWHERE
     }
 
-    public void toggleHubShotMode() {
-        if (currentMode == Mode.HUB_SHOT_ONLY)
-            enterShootFromAnywhereMode();
-        else
-            enterHubShotMode();
-    }
+    /** Returns the current mode of the launch calculator */
     public String getMode() {
         if (currentMode == Mode.HUB_SHOT_ONLY) {
             return "Hub Shot Only";
@@ -53,6 +51,12 @@ public class LaunchCalculator {
         return "Shoot From Anywhere";
     }
 
+    public void toggleHubShotMode() {
+        if (currentMode == Mode.HUB_SHOT_ONLY)
+            enterShootFromAnywhereMode();
+        else
+            enterHubShotMode();
+    }
     public void toggleFarShotMode() {
         if (currentMode == Mode.FAR_SHOT_ONLY)
             enterShootFromAnywhereMode();
@@ -64,32 +68,26 @@ public class LaunchCalculator {
         currentMode = Mode.HUB_SHOT_ONLY;
         SmartDashboard.putString("Shot Mode", "Hub");
     }
-
     public void enterShootFromAnywhereMode() {
         currentMode = Mode.SHOOT_FROM_ANYWHERE;
         SmartDashboard.putString("Shot Mode", "Anywhere");
     }
-
     public void enterFarShotMode() {
         currentMode = Mode.FAR_SHOT_ONLY;
         SmartDashboard.putString("Shot Mode", "Far");
     }
 
+    /** Returns the shooter hood position and launch velocity based on the distance from the target position */
     public LaunchParameters getParameters() {
         Pose2d robotPose = poseSupplier.getPose();
 
         // Are we scoring or passing? If we're in our alliance zone, we're trying to score.
         boolean isScoring = poseSupplier.getZone() == Zone.SCORING_ZONE;
 
-        // Get the target position. This will either be the hub center for our alliance,
-        // or the top/bottom pass position. It depends on the robot's pose.
-        // If we are in our alliance zone - it will be our hub.
-        // If we are not - it will be a passing position. Top pass if we are above 
-        // the field midpoint, otherwise the bottom pass.
         Translation2d targetPos = Util4828.getLockOnTargetPosition(robotPose);
         
         // Calculating parameters to shoot from anywhere.
-        double distanceToTargetInches = Units.metersToInches(robotPose.getTranslation().getDistance(targetPos)) - 5.0;
+        double distanceToTargetInches = Units.metersToInches(robotPose.getTranslation().getDistance(targetPos)) - 2.0;
         if (currentMode == Mode.HUB_SHOT_ONLY && isScoring) // if we're in hub shot mode, use distance to hub specifically
             distanceToTargetInches = 39.851142;
         else if (currentMode == Mode.FAR_SHOT_ONLY && isScoring)

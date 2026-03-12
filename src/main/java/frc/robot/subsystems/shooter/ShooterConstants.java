@@ -13,13 +13,13 @@ public class ShooterConstants {
     public static double SHOOTER_GEAR_RATIO = 1.0;
     public static double WHEEL_DIAMETER = Units.inchesToMeters(4);
     public static int DEFAULT_SPEED_MPS = 15;
+    public static final double SHOOTER_SPEED_TOLERANCE = 0.05; // in m/s
 
     static class PID_CONFIG {
-        static final double GRAVITY = 0.0;
         static final double STATIC = 0.0;
         static final double VELOCITY = 0.123;
         static final double ACCELERATION = 0.0;        
-        static final double PROPORTIONAL = 0.35;
+        static final double PROPORTIONAL = 0.50;
         static final double INTEGRAL = 0.0;
         static final double DERIVATIVE = 0.0;
     }
@@ -30,6 +30,8 @@ public class ShooterConstants {
     public static double HOOD_TARGET_POSITION = -0.4;
     public static double HOOD_MAX_POSITION = -1.542236328125;
     public static double HOOD_MIN_POSITION = 0.0;
+    public static final double HOOD_POSITION_TOLERANCE = 0.01;
+    
     static class HOOD_PID_CONFIG {
         static final double PROPORTIONAL = 100.0;
         static final double DERIVATIVE = 0.5;
@@ -41,28 +43,20 @@ public class ShooterConstants {
 
     static {
         // distance from the front bumper of the robot to the hub in inches, velocity in m/s
-        SHOOT_VELOCITY_MAP.put(205.851142, 21.0);
-        SHOOT_VELOCITY_MAP.put(193.851142, 20.57);
-        SHOOT_VELOCITY_MAP.put(181.851142, 20.13);
-        SHOOT_VELOCITY_MAP.put(169.851142, 19.7);
-        SHOOT_VELOCITY_MAP.put(157.851142, 19.27);
-        SHOOT_VELOCITY_MAP.put(145.851142, 18.83);
-        SHOOT_VELOCITY_MAP.put(133.851142, 18.4);
-        SHOOT_VELOCITY_MAP.put(109.851142, 17.43);
-        SHOOT_VELOCITY_MAP.put(85.851142, 16.64);
-        SHOOT_VELOCITY_MAP.put(39.851142, 15.0);
+        SHOOT_VELOCITY_MAP.put(36.257, 14.75);
+        SHOOT_VELOCITY_MAP.put(78.0, 15.8);
+        SHOOT_VELOCITY_MAP.put(156.67, 19.116);
+        SHOOT_VELOCITY_MAP.put(128.65, 17.85);
+        SHOOT_VELOCITY_MAP.put(90.0, 16.517);
+        SHOOT_VELOCITY_MAP.put(55.0, 15.0);
         
-        // distance to the hub in feet, position in mechanism rotations
-        SHOOT_HOOD_POSITION_MAP.put(205.851142, -1.25);
-        SHOOT_HOOD_POSITION_MAP.put(193.851142, -1.181);
-        SHOOT_HOOD_POSITION_MAP.put(181.851142, -1.112);
-        SHOOT_HOOD_POSITION_MAP.put(169.851142, -1.104);
-        SHOOT_HOOD_POSITION_MAP.put(157.851142, -0.99);
-        SHOOT_HOOD_POSITION_MAP.put(145.851142, -0.92);
-        SHOOT_HOOD_POSITION_MAP.put(133.851142, -0.85);
-        SHOOT_HOOD_POSITION_MAP.put(109.851142, -0.711);
-        SHOOT_HOOD_POSITION_MAP.put(85.851142, -0.53);
-        SHOOT_HOOD_POSITION_MAP.put(39.851142, -0.3);
+        // distance to the hub in inches, position in mechanism rotations
+        SHOOT_HOOD_POSITION_MAP.put(36.257, -0.375);
+        SHOOT_HOOD_POSITION_MAP.put(78.0, -0.644);
+        SHOOT_HOOD_POSITION_MAP.put(156.67, -1.152);
+        SHOOT_HOOD_POSITION_MAP.put(128.65, -0.985);
+        SHOOT_HOOD_POSITION_MAP.put(90.0, -0.725);
+        SHOOT_HOOD_POSITION_MAP.put(55.0, -0.49);
     }
 
     public static final InterpolatingDoubleTreeMap PASS_VELOCITY_MAP = new InterpolatingDoubleTreeMap();

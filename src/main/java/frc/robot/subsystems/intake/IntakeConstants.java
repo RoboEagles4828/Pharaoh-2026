@@ -21,8 +21,11 @@ public class IntakeConstants {
     public static double RETRACT_D = 0.2;
     public static double RETRACT_G = 0.0;
 
+    public static final double MOTION_MAGIC_VELOCITY = 3.0; // in mechanism rotations per second
+    public static final double MOTION_MAGIC_ACCELERATION = 15.0; // in mechanism rotations per second squared
+
     public static double DEPLOYED_POSITION = 0.0; // in mechanism rotations
-    public static double RAISED_POSITION = 0.28; // in mechanism rotations
+    public static double RAISED_POSITION = 0.21; // in mechanism rotations
 
     public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";
     public static final String NT_RESET_INTAKE_ENCODER_BUTTON = "Tuning/Intake/ResetDeployEncoder";
