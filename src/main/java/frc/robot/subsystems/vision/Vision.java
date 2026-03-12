@@ -1,5 +1,8 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,6 +20,8 @@ public class Vision extends SubsystemBase {
     private final Limelight limelightBack;
 
     private CommandSwerveDrivetrain drivetrain;
+
+    private final Spark rgb = new Spark(0);
 
     public Vision(CommandSwerveDrivetrain drivetrain, PoseSupplier poseSupplier) {
         limelightForward = new Limelight(VisionConstants.LIMELIGHT_FORWARD_NAME, poseSupplier);
@@ -49,6 +54,13 @@ public class Vision extends SubsystemBase {
         processLimelight(limelightForward);
         processLimelight(limelightSide);
         processLimelight(limelightBack);
-    }
 
+        if (limelightForward.isPoseEstimateGood() || limelightBack.isPoseEstimateGood() || limelightSide.isPoseEstimateGood()) {
+            rgb.set(0.71);
+        }
+        else {
+            rgb.set(0.61);
+        }
+
+}
 }
