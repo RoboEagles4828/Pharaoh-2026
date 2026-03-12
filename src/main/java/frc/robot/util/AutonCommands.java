@@ -14,6 +14,7 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.kicker.Kicker;
+import frc.robot.subsystems.shooter.LaunchCalculator;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.Constants;
 
@@ -26,12 +27,13 @@ public class AutonCommands {
         CommandXboxController driverController,
         Shooter shooter,
         Hopper hopper,
-        Kicker kicker
+        Kicker kicker,
+        LaunchCalculator launchCalculator
     ) {
         return 
         Commands.sequence(
             new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Locking on Hub")),
-            (new LockOnDriveCommand(drivetrain, driverController, true)).withTimeout(1.0),
+            (new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator)).withTimeout(1.0),
             
             new ParallelDeadlineGroup(
                 Commands.waitSeconds(3.0),

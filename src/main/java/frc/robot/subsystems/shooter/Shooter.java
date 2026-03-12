@@ -152,7 +152,7 @@ public class Shooter extends SubsystemBase {
     public Command raiseHood() {
         return Commands.defer(
             () -> {
-                return Commands.runOnce(
+                return Commands.run(
                     () -> {
                         hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
                             MathUtil.clamp(targetHoodPosition, ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION)));

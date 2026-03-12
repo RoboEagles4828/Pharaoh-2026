@@ -41,22 +41,52 @@ public class ShooterConstants {
     public static final InterpolatingDoubleTreeMap SHOOT_VELOCITY_MAP = new InterpolatingDoubleTreeMap(); // map of distance (in) -> velocity (m/s)
     public static final InterpolatingDoubleTreeMap SHOOT_HOOD_POSITION_MAP = new InterpolatingDoubleTreeMap(); // map of distance (in) -> hood rotations (0.0 - -1.5)
 
+    public static final double HUB_SHOT_VELOCITY = 14.15;
+    public static final double HUB_SHOT_HOOD = -0.375;
+
     static {
-        // distance from the front bumper of the robot to the hub in inches, velocity in m/s
-        SHOOT_VELOCITY_MAP.put(36.257, 14.75);
-        SHOOT_VELOCITY_MAP.put(78.0, 15.8);
-        SHOOT_VELOCITY_MAP.put(156.67, 19.116);
-        SHOOT_VELOCITY_MAP.put(128.65, 17.85);
-        SHOOT_VELOCITY_MAP.put(90.0, 16.517);
-        SHOOT_VELOCITY_MAP.put(55.0, 15.0);
+        // // distance from the front bumper of the robot to the hub in inches, velocity in m/s
+        // SHOOT_VELOCITY_MAP.put(36.257, 14.75);
+        // SHOOT_VELOCITY_MAP.put(78.0, 15.8);
+        // SHOOT_VELOCITY_MAP.put(156.67, 19.116);
+        // SHOOT_VELOCITY_MAP.put(128.65, 17.85);
+        // SHOOT_VELOCITY_MAP.put(90.0, 16.517);
+        // SHOOT_VELOCITY_MAP.put(55.0, 15.0);
+        // SHOOT_VELOCITY_MAP.put(200.0, 20.594);
         
-        // distance to the hub in inches, position in mechanism rotations
-        SHOOT_HOOD_POSITION_MAP.put(36.257, -0.375);
-        SHOOT_HOOD_POSITION_MAP.put(78.0, -0.644);
-        SHOOT_HOOD_POSITION_MAP.put(156.67, -1.152);
-        SHOOT_HOOD_POSITION_MAP.put(128.65, -0.985);
-        SHOOT_HOOD_POSITION_MAP.put(90.0, -0.725);
-        SHOOT_HOOD_POSITION_MAP.put(55.0, -0.49);
+        // // distance to the hub in inches, position in mechanism rotations
+        // SHOOT_HOOD_POSITION_MAP.put(36.257, -0.355);
+        // SHOOT_HOOD_POSITION_MAP.put(78.0, -0.644);
+        // SHOOT_HOOD_POSITION_MAP.put(156.67, -1.152);
+        // SHOOT_HOOD_POSITION_MAP.put(128.65, -0.985);
+        // SHOOT_HOOD_POSITION_MAP.put(90.0, -0.725);
+        // SHOOT_HOOD_POSITION_MAP.put(55.0, -0.49);
+        // SHOOT_HOOD_POSITION_MAP.put(200.0, -1.4496);
+        
+        // distance from the front bumper of the robot to the hub in inches, velocity in m/s
+        SHOOT_VELOCITY_MAP.put(208.0, 21.0);
+        SHOOT_VELOCITY_MAP.put(42.0, 15.0);
+        SHOOT_VELOCITY_MAP.put(196.0, 20.57);
+        SHOOT_VELOCITY_MAP.put(184.0, 20.13);
+        SHOOT_VELOCITY_MAP.put(172.0, 19.7);
+        SHOOT_VELOCITY_MAP.put(160.0, 19.27);
+        SHOOT_VELOCITY_MAP.put(148.0, 18.83);
+        SHOOT_VELOCITY_MAP.put(136.0, 18.4);
+        SHOOT_VELOCITY_MAP.put(112.0, 17.43);
+        SHOOT_VELOCITY_MAP.put(88.0, 16.64);
+        
+        // distance to the hub in feet, position in mechanism rotations
+        SHOOT_HOOD_POSITION_MAP.put(208.0, -1.25);
+        SHOOT_HOOD_POSITION_MAP.put(42.0, -0.3);
+        SHOOT_HOOD_POSITION_MAP.put(196.0, -1.181);
+        SHOOT_HOOD_POSITION_MAP.put(184.0, -1.112);
+        SHOOT_HOOD_POSITION_MAP.put(172.0, -1.104);
+        SHOOT_HOOD_POSITION_MAP.put(160.0, -0.99);
+        SHOOT_HOOD_POSITION_MAP.put(148.0, -0.92);
+        SHOOT_HOOD_POSITION_MAP.put(136.0, -0.85);
+        SHOOT_HOOD_POSITION_MAP.put(112.0, -0.711);
+        SHOOT_HOOD_POSITION_MAP.put(88.0, -0.53);
+
     }
 
     public static final InterpolatingDoubleTreeMap PASS_VELOCITY_MAP = new InterpolatingDoubleTreeMap();

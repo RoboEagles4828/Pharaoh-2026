@@ -8,7 +8,7 @@ public class ClimberConstants {
     public static double DEFAULT_DUTY_CYCLE = 0.2;
 
     // we seed the starting position to this, so 0.0 is 'fully down' in match cases.
-    public static double START_POSITION = 0.0;
+    public static double START_POSITION = 0.2;
     public static double CLIMB_POSITION = -1.5;
     public static double PEAK_POSITION = -3.802490234375;
 

@@ -186,7 +186,7 @@ public class RobotContainer {
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
     /** PATHPLANNER **/
-    NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController, shooter, hopper, kicker), Collections.emptySet()));
+    NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController, shooter, hopper, kicker, launchCalculator), Collections.emptySet()));
     NamedCommands.registerCommand("ClimbRight", Commands.defer(() -> AutonCommands.climbRight(drivetrain, climber), Collections.emptySet()));
     NamedCommands.registerCommand("ClimbLeft", Commands.defer(() -> AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
 		NamedCommands.registerCommand("StartIntake", intake.intake());
@@ -246,7 +246,7 @@ public class RobotContainer {
     /*** Aim/lockon **/
     driverController.leftBumper().whileTrue(
       Commands.defer(() -> {
-        return new LockOnDriveCommand(drivetrain, driverController,false);
+        return new LockOnDriveCommand(drivetrain, driverController,false, launchCalculator);
         }, Collections.emptySet()
       )
     );

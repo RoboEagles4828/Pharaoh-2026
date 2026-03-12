@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
@@ -112,7 +114,7 @@ public class Climber extends SubsystemBase {
     /** Retracts the climber back to the starting position */
     public Command retractForClimb() {
         return this.runOnce(
-            () -> climbMotor.setControl(positionControl.withPosition(ClimberConstants.CLIMB_POSITION))
+            () -> climbMotor.setControl(positionControl.withPosition(0.0))
         );
     }
 
@@ -129,7 +131,7 @@ public class Climber extends SubsystemBase {
 
     /** Resets the climber encoder position to the starting */
     public Command resetClimberEncoder() {
-        return Commands.runOnce(() -> climbMotor.setPosition(ClimberConstants.START_POSITION));
+        return new InstantCommand(() -> climbMotor.setPosition(ClimberConstants.START_POSITION));
     }
 
     @Override

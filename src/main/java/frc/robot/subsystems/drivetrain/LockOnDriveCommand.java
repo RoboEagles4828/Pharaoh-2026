@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.subsystems.drivetrain.DrivetrainConstants.LockOnDriveConstraints;
+import frc.robot.subsystems.shooter.LaunchCalculator;
 import frc.robot.util.TunableNumber;
 import frc.robot.util.Util4828;
 
@@ -31,8 +32,11 @@ public class LockOnDriveCommand extends Command {
 	/** Target position to lock on to */
 	private final Translation2d targetPosition;
 
+	private final LaunchCalculator launchCalculator;
+
 	/** Profiled PID Controller for rotation */
 	private ProfiledPIDController headingPID;
+
 
 	/**
 	 * If the command should end (isFinished -> true) when we are within the aim tolerance.
@@ -53,10 +57,12 @@ public class LockOnDriveCommand extends Command {
 	public LockOnDriveCommand(
 		CommandSwerveDrivetrain drivetrain,
 		CommandXboxController controller,
-		boolean shouldAutomaticallyEnd
+		boolean shouldAutomaticallyEnd,
+		LaunchCalculator launchCalculator
 	) {
 		this.drivetrain = drivetrain;
 		this.controller = controller;
+		this.launchCalculator = launchCalculator;
 
 		Pose2d robotPose = drivetrain.getState().Pose;
 		this.targetPosition = Util4828.getLockOnTargetPosition(robotPose);
@@ -120,12 +126,26 @@ public class LockOnDriveCommand extends Command {
 		}
 
 		// Apply CTRE request
-		drivetrain.setControl(
-			driveRequest
-				.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
-				.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
-				.withRotationalRate(omega)
-		);
+		// If this mode should lock on, take control of rotational rate, but keep x/y movement free
+		if (launchCalculator.doesModeLockOn()) {
+			drivetrain.setControl(
+				driveRequest
+					.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
+					.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
+					.withRotationalRate(omega));
+		}
+		// Otherwise just let the driver control everything
+		else {
+			drivetrain.setControl(
+				driveRequest
+					.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
+					.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
+					.withRotationalRate(-controller.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) );
+
+		}
+		
+
+		
 	}
 
 	@Override
