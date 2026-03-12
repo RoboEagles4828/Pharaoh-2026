@@ -9,12 +9,15 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.FlippingUtil;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -188,6 +191,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ClimbLeft", Commands.defer(() -> AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
 		NamedCommands.registerCommand("StartIntake", intake.intake());
 		NamedCommands.registerCommand("StopIntake", intake.stopAndRetract().withTimeout(1.0));
+    NamedCommands.registerCommand("StopIntakeWheels", intake.stopIntake());
 
 		// Create and populate a SendableChooser with the autonomous routines from PathPlanner, and add it to dashboard.
 		autonomousChooser = AutoBuilder.buildAutoChooser();
@@ -249,6 +253,18 @@ public class RobotContainer {
     driverController.leftBumper().whileTrue(shooter.start());
     driverController.leftBumper().whileTrue(shooter.raiseHood());
     driverController.leftBumper().onFalse(shooter.lowerHood()); //< this is sort a $hack$ but it's ok for now...
+
+    Trigger readyToShoot = new Trigger(() -> 
+      shooter.isAtTargetParams() && driverController.leftBumper().getAsBoolean());
+
+    readyToShoot.onTrue(
+      Commands.sequence(
+        new InstantCommand(() -> driverController.setRumble(RumbleType.kBothRumble, 0.5)),
+        Commands.waitSeconds(0.5),
+        new InstantCommand(() -> driverController.setRumble(RumbleType.kBothRumble, 0))
+      )
+    );
+
 
     /*** Shooting */
     driverController.rightTrigger().whileTrue(hopper.startConveyor());

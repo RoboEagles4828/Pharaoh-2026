@@ -20,6 +20,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.subsystems.drivetrain.DrivetrainConstants.LockOnDriveConstraints;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants.PathPlannerConstraints;
 import frc.robot.util.Util4828;
 
@@ -451,6 +453,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         double distanceToTarget = getState().Pose.minus(step1Target).getTranslation().getNorm();
 
         return distanceToTarget;
+    }
+
+    /** Returns a boolean indicating whether or not the robot is facing the target position */
+    public boolean isLockedOn() {
+        Translation2d targetPos = Util4828.getLockOnTargetPosition(getState().Pose);
+        Translation2d targetVector = targetPos.minus(getState().Pose.getTranslation());
+
+        Rotation2d desiredHeading = targetVector.getAngle();
+        Rotation2d currentHeading = getState().Pose.getRotation();
+
+        return Math.abs(desiredHeading.minus(currentHeading).getRadians()) < Math.toRadians(LockOnDriveConstraints.AIM_TOLERANCE_DEGREES);
     }
 
     /* Returns a command which moves us to the alignment staging position. */

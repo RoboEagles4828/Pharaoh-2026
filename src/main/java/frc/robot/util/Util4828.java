@@ -53,6 +53,11 @@ public class Util4828 {
         return robotPose.getY() > Constants.FieldConstants.FIELD_MIDPOINT_Y;
     }
 
+    /** Get the target position. This will either be the hub center for our alliance, 
+     * or the top/bottom pass position. It depends on the robot's pose.
+     * If we are in our alliance zone - it will be our hub.
+     * If we are not - it will be a passing position. Top pass if we are above 
+     * the field midpoint, otherwise the bottom pass. */
     public static Translation2d getLockOnTargetPosition(Pose2d robotPose) {
         // If we're on our half of the field, lock to hub
         if (isInAllianceZone(robotPose)) {

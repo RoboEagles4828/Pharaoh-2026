@@ -88,13 +88,12 @@ public class LockOnDriveCommand extends Command {
 
 	/** Returns if the robot is within tolerance of the angle */
 	private boolean isWithinTolerance() {
-		/** Current robot pose */
+		// Current robot pose
 		Pose2d robotPose = drivetrain.getState().Pose;
 
-		// === Vector from robot to target ===
+		// Vector from robot to target
 		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
 
-		/** Desired heading */
 		Rotation2d desiredHeading = toTarget.getAngle();
 		Rotation2d currentHeading = robotPose.getRotation();
 
@@ -103,17 +102,16 @@ public class LockOnDriveCommand extends Command {
 
 	@Override
 	public void execute() {
-		/** Current robot pose */
+		// Current robot pose 
 		Pose2d robotPose = drivetrain.getState().Pose;
 
-		// === Vector from robot to target ===
+		// Vector from robot to target
 		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
 
-		/** Desired heading */
 		Rotation2d desiredHeading = toTarget.getAngle();
 		Rotation2d currentHeading = robotPose.getRotation();
 
-		/** Calculated rotational velocity */
+		// Calculated rotational velocity
 		double omega = headingPID.calculate(currentHeading.getRadians(), desiredHeading.getRadians());
 
 		// Optional aim deadband (prevents jitter when lined up)

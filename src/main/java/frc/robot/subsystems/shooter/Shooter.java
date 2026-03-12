@@ -4,10 +4,10 @@ import java.util.Collections;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -174,15 +174,30 @@ public class Shooter extends SubsystemBase {
         return Commands.runOnce(() -> hoodMotor.setPosition(ShooterConstants.HOOD_MIN_POSITION));
     }
 
+    /** Sets the target parameters of the shooter */
     private void setTargetParams(double targetLaunchVelocity, double targetHoodPosition) {
         this.targetLaunchVelocity = targetLaunchVelocity;
         this.targetHoodPosition = targetHoodPosition;
+    }
+
+    /** Returns a boolean indicating if the shooter is at the target parameters and ready to score */
+    public boolean isAtTargetParams(){
+        double actualMPS_ONE = shooterMotorOne.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
+        double actualMPS_TWO = shooterMotorTwo.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
+        double actualMPS_THREE = shooterMotorThree.getVelocity().getValueAsDouble() * Math.PI * ShooterConstants.WHEEL_DIAMETER;
+
+        boolean hoodReady = Math.abs(hoodMotor.getPosition().getValueAsDouble() - targetHoodPosition) < ShooterConstants.HOOD_POSITION_TOLERANCE;
+        boolean shooterOneReady = Math.abs(actualMPS_ONE - targetLaunchVelocity) < ShooterConstants.SHOOTER_SPEED_TOLERANCE;
+        boolean shooterTwoReady = Math.abs(actualMPS_TWO - targetLaunchVelocity) < ShooterConstants.SHOOTER_SPEED_TOLERANCE;
+        boolean shooterThreeReady = Math.abs(actualMPS_THREE - targetLaunchVelocity) < ShooterConstants.SHOOTER_SPEED_TOLERANCE;
+        return hoodReady && (shooterOneReady || shooterTwoReady || shooterThreeReady);
     }
 
     @Override
     public void periodic() {
         var launchParams = launchCalculator.getParameters();
         setTargetParams(launchParams.velocityMPS(), launchParams.hoodPosition());
+        // setTargetParams(shootingSpeedMPS.get(), hoodPosition.get());
 
         // apply new PID configs 
         if (SmartDashboard.getBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false)) {
