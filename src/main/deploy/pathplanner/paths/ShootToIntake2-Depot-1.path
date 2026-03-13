@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.824593437945791,
+        "x": 3.586113575865128,
         "y": 7.43
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.184749817905699,
-        "y": 7.430953888282705
+        "x": 4.6740416340425535,
+        "y": 7.340102288353338
       },
       "isLocked": false,
-      "linkedName": "Intake to Shoot Depot Midpoint"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.586113575865128,
-        "y": 7.43
+        "x": 6.587985803016859,
+        "y": 6.919
       },
       "prevControl": {
-        "x": 3.1260895513169062,
-        "y": 7.429055773118815
+        "x": 6.684560504962623,
+        "y": 7.51454574127533
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SIS Depot Endpoint"
+      "linkedName": "Shoot to Intake 2 Depot Midpoint"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.15506958250496994,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 3.0,
+    "rotation": -85.073
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 3.0,
-    "rotation": 0.0
+    "velocity": 0,
+    "rotation": -72.978
   },
   "useDefaultConstraints": false
 }
