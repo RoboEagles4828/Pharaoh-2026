@@ -15,7 +15,7 @@ public class VisionConstants {
     final static double STD_MAX_XY = 2.0; // meters
     final static double STD_MIN_THETA = Math.toRadians(5); // radians
     final static double STD_MAX_THETA = Math.toRadians(45); // radians
-    final static double VISION_TRUST_SCALAR = 0.3; // lower = more trusted
+    final static double VISION_TRUST_SCALAR = 0.5; // lower = more trusted
 
     public static final String NT_USE_VISION_TOGGLE = "LL Use Vision";
 }

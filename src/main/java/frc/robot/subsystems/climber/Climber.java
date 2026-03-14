@@ -24,8 +24,8 @@ public class Climber extends SubsystemBase {
     /** PID control to specific positions; default position is the starting position */
     private final PositionVoltage positionControl;
     /** Hall effect sensor limitting the retraction of the climber */
-    private final DigitalInput climberHallEffect;
-    private final Trigger climberLimitSensor;
+    // private final DigitalInput climberHallEffect;
+    // private final Trigger climberLimitSensor;
 
     // Tunable numbers for duty cycle speeds
     private static TunableNumber climbUpDutyCycle = new TunableNumber("Tuning/Climber/ClimbUpDutyCycle", -ClimberConstants.DEFAULT_DUTY_CYCLE);
@@ -67,10 +67,10 @@ public class Climber extends SubsystemBase {
                                 .withOverrideBrakeDurNeutral(true)
                                 .withSlot(0);
         
-        climberHallEffect = new DigitalInput(Constants.DigitalIDS.CLIMBER_HALL_EFFECT);
+        // climberHallEffect = new DigitalInput(Constants.DigitalIDS.CLIMBER_HALL_EFFECT);
         
-        climberLimitSensor = new Trigger(() -> !climberHallEffect.get());
-        climberLimitSensor.onTrue(resetClimberEncoder());
+        // climberLimitSensor = new Trigger(() -> !climberHallEffect.get());
+        // climberLimitSensor.onTrue(resetClimberEncoder());
 
 
         // Putting buttons on smart dashboard to zero the encoder and apply PID changes
@@ -151,7 +151,9 @@ public class Climber extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putBoolean("Tuning/Climber/HallEffect", !climberHallEffect.get());
-        SmartDashboard.putBoolean("Tuning/Climber/LimitSensor", climberLimitSensor.getAsBoolean());
+        // SmartDashboard.putBoolean("Tuning/Climber/HallEffect", !climberHallEffect.get());
+        // SmartDashboard.putBoolean("Tuning/Climber/LimitSensor", climberLimitSensor.getAsBoolean());
     }
 }
+
+

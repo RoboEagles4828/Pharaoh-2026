@@ -40,7 +40,7 @@ public class Vision extends SubsystemBase {
             if (limelight.isPoseEstimateGood()) {
                 PoseEstimate estimate = limelight.getPoseEstimate();
                 drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds, limelight.getPoseStandardDeviation().times(VisionConstants.VISION_TRUST_SCALAR));
-                drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds, limelight.getPoseStandardDeviation().times(VisionConstants.VISION_TRUST_SCALAR));
+                // drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds, limelight.getPoseStandardDeviation().times(VisionConstants.VISION_TRUST_SCALAR));
             }
         }
     }

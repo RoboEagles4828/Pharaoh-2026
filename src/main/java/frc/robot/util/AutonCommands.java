@@ -13,6 +13,7 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.shooter.LaunchCalculator;
 import frc.robot.subsystems.shooter.Shooter;
@@ -36,7 +37,7 @@ public class AutonCommands {
             (new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator)).withTimeout(1.0),
             
             new ParallelDeadlineGroup(
-                Commands.waitSeconds(2.5),
+                Commands.waitSeconds(3.0),
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Shoot")),
                 shooter.raiseHood(),
                 shooter.start(),
@@ -55,6 +56,14 @@ public class AutonCommands {
                 hopper.stopConveyor(),
                 shooter.lowerHood()
             )
+        );
+    }
+
+    public static Command stopIntaking(Intake intake) {
+        return 
+        Commands.parallel(
+            intake.stopIntake(),
+            intake.stopNinjaStarMotor()
         );
     }
 

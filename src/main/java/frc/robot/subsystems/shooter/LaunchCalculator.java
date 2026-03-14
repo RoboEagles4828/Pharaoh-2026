@@ -97,12 +97,14 @@ public class LaunchCalculator {
         double targetVelocity = isScoring ? launchVelocityMap.get(distanceToTargetInches) : passVelocityMap.get(distanceToTargetInches);
         double targetHoodPosition = isScoring ? launchHoodPositionMap.get(distanceToTargetInches) : ShooterConstants.HOOD_MAX_POSITION;
 
-        if (currentMode == Mode.HUB_SHOT_ONLY && isScoring) { // if we're in hub shot mode, use distance to hub specifically
+        if (currentMode == Mode.HUB_SHOT_ONLY) { // if we're in hub shot mode, use distance to hub specifically
             targetVelocity = ShooterConstants.HUB_SHOT_VELOCITY;
             targetHoodPosition = ShooterConstants.HUB_SHOT_HOOD;
         }
-        else if (currentMode == Mode.FAR_SHOT_ONLY && isScoring)
-            distanceToTargetInches = 200.0; 
+        else if (currentMode == Mode.FAR_SHOT_ONLY){
+            targetVelocity = 20.57;
+            targetHoodPosition = -1.181;
+        }
 
         // debugging - publish info
         SmartDashboard.putNumber("Tuning/Launch/DistanceToTarget", distanceToTargetInches);

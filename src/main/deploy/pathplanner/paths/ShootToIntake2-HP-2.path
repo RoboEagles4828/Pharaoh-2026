@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.587985803016859,
-        "y": 1.149822537710736
+        "x": 6.316,
+        "y": 1.2337803138373749
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.722098181910439,
-        "y": 1.4181543427990113
+        "x": 6.316592044362274,
+        "y": 1.483779612803338
       },
       "isLocked": false,
       "linkedName": "Shoot to Intake 2 HP Midpoint"
     },
     {
       "anchor": {
-        "x": 6.805279503105591,
-        "y": 3.6124844720496894
+        "x": 6.9502567760342355,
+        "y": 3.692125534950071
       },
       "prevControl": {
-        "x": 6.709057805736277,
-        "y": 3.381743524328293
+        "x": 6.949173018885473,
+        "y": 3.442127884020222
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,8 +47,8 @@
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 3.0,
-    "rotation": 85.073
+    "velocity": 2.0,
+    "rotation": 90.0
   },
   "useDefaultConstraints": false
 }

@@ -191,7 +191,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ClimbLeft", Commands.defer(() -> AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
 		NamedCommands.registerCommand("StartIntake", intake.intake());
 		NamedCommands.registerCommand("StopIntake", intake.stopAndRetract().withTimeout(1.0));
-    NamedCommands.registerCommand("StopIntakeWheels", intake.stopIntake());
+    NamedCommands.registerCommand("StopIntakeWheels", AutonCommands.stopIntaking(intake));
 
 		// Create and populate a SendableChooser with the autonomous routines from PathPlanner, and add it to dashboard.
 		autonomousChooser = AutoBuilder.buildAutoChooser();
@@ -223,14 +223,14 @@ public class RobotContainer {
     driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // Use dpad for basic movement in the 4 cardinal directions
-    driverController.povUp().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED).withVelocityY(0.0).withRotationalRate(0.0)));
-    driverController.povDown().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED).withVelocityY(0.0).withRotationalRate(0.0)));
-    driverController.povRight().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.0).withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED).withRotationalRate(0)));
-    driverController.povLeft().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.0).withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED).withRotationalRate(0)));
+    // driverController.povUp().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED).withVelocityY(0.0).withRotationalRate(0.0)));
+    // driverController.povDown().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED).withVelocityY(0.0).withRotationalRate(0.0)));
+    // driverController.povRight().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.0).withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED).withRotationalRate(0)));
+    // driverController.povLeft().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.0).withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED).withRotationalRate(0)));
 
     // Reset the field-centric heading
     // driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-    // driverController.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    driverController.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     /*** Intaking */
     driverController.leftTrigger().whileTrue(intake.intake());

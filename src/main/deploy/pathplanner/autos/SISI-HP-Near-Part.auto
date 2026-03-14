@@ -36,6 +36,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "StopIntakeWheels"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -43,6 +49,25 @@
                 "type": "path",
                 "data": {
                   "pathName": "IntakeToShoot-HP-1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IntakeToShoot-HP-2"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
                 }
               },
               {
@@ -57,31 +82,13 @@
         {
           "type": "named",
           "data": {
-            "name": "StopIntakeWheels"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "IntakeToShoot-HP-2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "StopIntake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "ShootToIntake2-HP-1"
+            "pathName": "Copy of ShootToIntake2-HP-1"
           }
         },
         {
@@ -91,7 +98,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "ShootToIntake2-HP-2"
+                  "pathName": "Copy of ShootToIntake2-HP-2"
                 }
               },
               {
