@@ -8,19 +8,19 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.690587240834804,
-        "y": 4.169465495697869
+        "x": 7.6905903750351525,
+        "y": 4.169438423911457
       },
       "isLocked": false,
       "linkedName": "Depot Intake Endpoint"
     },
     {
       "anchor": {
-        "x": 5.824593437945791,
+        "x": 5.825,
         "y": 7.43
       },
       "prevControl": {
-        "x": 6.07085485326477,
+        "x": 6.071261415318979,
         "y": 7.473073371415449
       },
       "nextControl": null,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 1.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

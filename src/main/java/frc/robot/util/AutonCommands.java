@@ -36,7 +36,7 @@ public class AutonCommands {
             (new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator)).withTimeout(1.0),
             
             new ParallelDeadlineGroup(
-                Commands.waitSeconds(3.0),
+                Commands.waitSeconds(2.5),
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Shoot")),
                 shooter.raiseHood(),
                 shooter.start(),

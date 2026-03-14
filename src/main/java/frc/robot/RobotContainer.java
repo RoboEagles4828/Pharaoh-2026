@@ -229,8 +229,8 @@ public class RobotContainer {
     driverController.povLeft().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.0).withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED).withRotationalRate(0)));
 
     // Reset the field-centric heading
-    driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-    driverController.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    // driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    // driverController.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     /*** Intaking */
     driverController.leftTrigger().whileTrue(intake.intake());
@@ -281,9 +281,8 @@ public class RobotContainer {
     driverController.y().onTrue(climber.extendToPeak());
     driverController.a().onTrue(climber.retractToBottom());
 
-
-    // driverController.rightBumper().whileTrue(climber.climbDownDutyCycle());
-    // driverController.rightBumper().onFalse(climber.stop());
+    //driverController.rightBumper().whileTrue(climber.climbDownDutyCycle());
+    //driverController.rightBumper().onFalse(climber.stop());
   }
 
   public void setDefaultCommands() {

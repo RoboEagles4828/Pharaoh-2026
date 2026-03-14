@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.824593437945791,
-        "y": 0.6386019971469341
+        "x": 6.025,
+        "y": 0.639
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.184749817905699,
-        "y": 0.6395558854296391
+        "x": 6.385156379959908,
+        "y": 0.639953888282705
       },
       "isLocked": false,
       "linkedName": "Intake to Shoot HP Midpoint"

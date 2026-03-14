@@ -40,6 +40,9 @@ public class Limelight {
     public Limelight(String limelightName, PoseSupplier poseSupplier) {
         name = limelightName;
         this.poseSupplier = poseSupplier;
+
+        // Turn off the LED to save power
+        LimelightHelpers.setLEDMode_ForceOff(name);
     }
 
     /** Updates the robot's pose estimate */
