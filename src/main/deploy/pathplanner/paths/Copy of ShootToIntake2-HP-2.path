@@ -16,6 +16,22 @@
     },
     {
       "anchor": {
+        "x": 7.574633333333333,
+        "y": 2.4124777777777773
+      },
+      "prevControl": {
+        "x": 7.552466401406778,
+        "y": 1.9395832300112725
+      },
+      "nextControl": {
+        "x": 7.604866666666666,
+        "y": 3.057455555555555
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
         "x": 5.928102710413694,
         "y": 3.5886162624821685
       },
@@ -25,10 +41,19 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Near Hub"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4140350877192999,
+      "rotationDegrees": 39.42331849588791
+    },
+    {
+      "waypointRelativePos": 1.4105263157894812,
+      "rotationDegrees": 151.8535068197419
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
