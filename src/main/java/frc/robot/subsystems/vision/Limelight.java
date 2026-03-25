@@ -68,25 +68,25 @@ public class Limelight {
                 isMostRecentPoseEstimateGood ? mostRecentPoseEstimate.pose
                         : new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
 
-        SmartDashboard.putNumber(String.format("%s/%s", name, NT_TX), LimelightHelpers.getTX(name));
-        SmartDashboard.putNumber(String.format("%s/%s", name, NT_TY), LimelightHelpers.getTY(name));
+        // SmartDashboard.putNumber(String.format("%s/%s", name, NT_TX), LimelightHelpers.getTX(name));
+        // SmartDashboard.putNumber(String.format("%s/%s", name, NT_TY), LimelightHelpers.getTY(name));
         SmartDashboard.putNumber(String.format("%s/%s", name, NT_TAG_ID), LimelightHelpers.getFiducialID(name));
         SmartDashboard.putString(String.format("%s/%s", name, NT_POSE_MT2),
                 mostRecentPoseEstimate == null ? "NULL" : Util4828.formatPose(mostRecentPoseEstimate.pose));
         SmartDashboard.putBoolean(String.format("%s/%s", name, NT_IS_ESTIMATE_GOOD), isMostRecentPoseEstimateGood);
-        SmartDashboard.putString(String.format("%s/%s", name, NT_STANDARD_DEVIATION),
-                mostRecentPoseEstimate == null ? "NULL" : Util4828.formatMatrix3x1(mostRecentPoseStandardDeviation));
-        SmartDashboard.putNumber(String.format("%s/%s", name, NT_TIMESTAMP),
-                mostRecentPoseEstimate == null ? -1 : mostRecentPoseEstimate.timestampSeconds);
+        // SmartDashboard.putString(String.format("%s/%s", name, NT_STANDARD_DEVIATION),
+        //         mostRecentPoseEstimate == null ? "NULL" : Util4828.formatMatrix3x1(mostRecentPoseStandardDeviation));
+        // SmartDashboard.putNumber(String.format("%s/%s", name, NT_TIMESTAMP),
+        //         mostRecentPoseEstimate == null ? -1 : mostRecentPoseEstimate.timestampSeconds);
 
-        RawFiducial bestTag = getBestTag(mostRecentPoseEstimate);
-        SmartDashboard.putNumber(String.format("%s%s", name, NT_AMBIGUITY),
-            bestTag == null ?-1 : bestTag.ambiguity);
-        SmartDashboard.putNumber(String.format("%s%s", name, NT_DISTANCE),
-            bestTag == null ?-1 : bestTag.distToCamera);
+        // RawFiducial bestTag = getBestTag(mostRecentPoseEstimate);
+        // SmartDashboard.putNumber(String.format("%s%s", name, NT_AMBIGUITY),
+        //     bestTag == null ?-1 : bestTag.ambiguity);
+        // SmartDashboard.putNumber(String.format("%s%s", name, NT_DISTANCE),
+        //     bestTag == null ?-1 : bestTag.distToCamera);
 
-        double[] std_devs = NetworkTableInstance.getDefault().getTable("limelight").getEntry("stddevs").getDoubleArray(new double[6]);
-        SmartDashboard.putNumberArray("LL Standard Deviations", std_devs);
+        // double[] std_devs = NetworkTableInstance.getDefault().getTable("limelight").getEntry("stddevs").getDoubleArray(new double[6]);
+        // SmartDashboard.putNumberArray("LL Standard Deviations", std_devs);
     }
 
     public PoseEstimate getPoseEstimate() {

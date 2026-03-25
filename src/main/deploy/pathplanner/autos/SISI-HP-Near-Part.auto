@@ -69,12 +69,6 @@
                 "data": {
                   "name": "Shoot"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StartIntake"
-                }
               }
             ]
           }

@@ -27,6 +27,11 @@ public class Hopper extends SubsystemBase {
         hopperMotorConfig.CurrentLimits = (new CurrentLimitsConfigs())
             .withSupplyCurrentLimit(40);
         conveyorMotor.getConfigurator().apply(hopperMotorConfig);
+
+        // Try to reduce can% by reducing update frequency...
+        conveyorMotor.getPosition().setUpdateFrequency(20);
+        conveyorMotor.getVelocity().setUpdateFrequency(20);
+        conveyorMotor.getAcceleration().setUpdateFrequency(20);
     }
 
     /** Returns a command that runs the conveyer motors */

@@ -238,8 +238,8 @@ public class RobotContainer {
     //Ben - At Raza's request, make it possible to intake and shoot at the same time.
     //This shouldn't actually change our ball capacity. kicker.startIntake and shooter.startIntake both
     //don't really achieve anything (shooter spins backwards and kicker doesn't spin at all).
-    //driverController.leftTrigger().whileTrue(shooter.startIntake());
-    //driverController.leftTrigger().whileTrue(kicker.startIntake());
+    driverController.leftTrigger().whileTrue(shooter.startIntake());
+    driverController.leftTrigger().whileTrue(kicker.startIntake());
 
     driverController.b().whileTrue(intake.outtake());
 

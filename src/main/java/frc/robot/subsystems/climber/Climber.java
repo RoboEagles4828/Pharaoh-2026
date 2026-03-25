@@ -72,6 +72,9 @@ public class Climber extends SubsystemBase {
         // climberLimitSensor = new Trigger(() -> !climberHallEffect.get());
         // climberLimitSensor.onTrue(resetClimberEncoder());
 
+        // Try to reduce can% utilization
+        climbMotor.getVelocity().setUpdateFrequency(50);
+        climbMotor.getAcceleration().setUpdateFrequency(50);
 
         // Putting buttons on smart dashboard to zero the encoder and apply PID changes
         SmartDashboard.putBoolean("Tuning/Climber/ApplyPIDButton", false);

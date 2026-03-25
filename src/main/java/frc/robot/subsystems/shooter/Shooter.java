@@ -132,10 +132,10 @@ public class Shooter extends SubsystemBase {
     public Command startIntake() {
         return Commands.run(() -> {
             // convert from target meters per second to wheel rotations per second
-            double intakeWheelRPS = Util4828.metersPerSecondToWheelRPS(intakeSpeedMPS.get(), ShooterConstants.WHEEL_DIAMETER);
-            shooterMotorOne.setControl(shooterVelocityVoltageRequest.withVelocity(-intakeWheelRPS));
-            shooterMotorTwo.setControl(shooterVelocityVoltageRequest.withVelocity(intakeWheelRPS));
-            shooterMotorThree.setControl(shooterVelocityVoltageRequest.withVelocity(intakeWheelRPS));
+            //double intakeWheelRPS = Util4828.metersPerSecondToWheelRPS(intakeSpeedMPS.get(), ShooterConstants.WHEEL_DIAMETER);
+            //shooterMotorOne.setControl(shooterVelocityVoltageRequest.withVelocity(-intakeWheelRPS));
+            //shooterMotorTwo.setControl(shooterVelocityVoltageRequest.withVelocity(intakeWheelRPS));
+            //shooterMotorThree.setControl(shooterVelocityVoltageRequest.withVelocity(intakeWheelRPS));
         }, this);
     }
     
@@ -214,9 +214,9 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Tuning/Shooter/ActualShooterSpeedMPSThree", actualMPS_THREE);
 
         // output actual hood position
-        SmartDashboard.putNumber("Tuning/Shooter/ActualHoodPosition", hoodMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitch", !hoodLimitSwitch.get());
-        SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitchTrigger", limitSwitch.getAsBoolean());
+        // SmartDashboard.putNumber("Tuning/Shooter/ActualHoodPosition", hoodMotor.getPosition().getValueAsDouble());
+        // SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitch", !hoodLimitSwitch.get());
+        // SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitchTrigger", limitSwitch.getAsBoolean());
 
         SmartDashboard.putString("Tuning/Shooter/ShootingMode", launchCalculator.getMode());
     }

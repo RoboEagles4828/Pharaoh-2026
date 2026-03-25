@@ -119,6 +119,17 @@ public class Intake extends SubsystemBase {
         deployMotorCfg.MotionMagic.MotionMagicAcceleration = motionMagicAcceleration.get();
             
         deployMotor.getConfigurator().apply(deployMotorCfg);
+
+        // Reduce update frequency to reduce can% utilization...
+        deployMotor.getPosition().setUpdateFrequency(50);
+        deployMotor.getVelocity().setUpdateFrequency(50);
+        deployMotor.getAcceleration().setUpdateFrequency(20);
+        ninjaStarMotor.getPosition().setUpdateFrequency(20);
+        ninjaStarMotor.getVelocity().setUpdateFrequency(20);
+        ninjaStarMotor.getAcceleration().setUpdateFrequency(20);
+        intakeMotor.getPosition().setUpdateFrequency(20);
+        intakeMotor.getVelocity().setUpdateFrequency(20);
+        intakeMotor.getAcceleration().setUpdateFrequency(20);
     }
 
     /** Returns a command that deploys the intake */

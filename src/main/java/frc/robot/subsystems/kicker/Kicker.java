@@ -41,6 +41,11 @@ public class Kicker extends SubsystemBase {
         // Applying the configuration
         kickerMotor.getConfigurator().apply(kickerMotorCfg);
 
+        // Reduce update frequency to try to reduce can%
+        kickerMotor.getPosition().setUpdateFrequency(20);
+        kickerMotor.getVelocity().setUpdateFrequency(20);
+        kickerMotor.getAcceleration().setUpdateFrequency(20);
+
         SmartDashboard.putBoolean("Tuning/Kicker/SpinDuringIntake", true);
     }
 
@@ -59,8 +64,8 @@ public class Kicker extends SubsystemBase {
         return Commands.run(() -> {
             if (SmartDashboard.getBoolean("Tuning/Kicker/SpinDuringIntake", false)) {
                 // convert from target meters per second to wheel rotations per second
-                double kickerWheelRPS = Util4828.metersPerSecondToWheelRPS(intakeSpeedMPS.get(), KickerConstants.KICKER_WHEEL_DIAMETER);
-                kickerMotor.setControl(kickerVelocityVoltageRequest.withVelocity(-kickerWheelRPS));
+                //double kickerWheelRPS = Util4828.metersPerSecondToWheelRPS(intakeSpeedMPS.get(), KickerConstants.KICKER_WHEEL_DIAMETER);
+                //kickerMotor.setControl(kickerVelocityVoltageRequest.withVelocity(-kickerWheelRPS));
             }
         }, this);
     }
@@ -74,7 +79,7 @@ public class Kicker extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double actualKickerMPS = kickerMotor.getVelocity().getValueAsDouble() * Math.PI * KickerConstants.KICKER_WHEEL_DIAMETER;
-        SmartDashboard.putNumber("Tuning/Kicker/ActualKickerSpeedMPS", actualKickerMPS);
+        // double actualKickerMPS = kickerMotor.getVelocity().getValueAsDouble() * Math.PI * KickerConstants.KICKER_WHEEL_DIAMETER;
+        // SmartDashboard.putNumber("Tuning/Kicker/ActualKickerSpeedMPS", actualKickerMPS);
     }
 }
