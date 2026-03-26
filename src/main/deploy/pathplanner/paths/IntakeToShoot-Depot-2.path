@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 3.586113575865128,
+        "x": 3.0295555555505156,
         "y": 7.43
       },
       "prevControl": {
-        "x": 3.1260895513169062,
-        "y": 7.429055773118815
+        "x": 3.3520444444394055,
+        "y": 7.421133333333334
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SIS Depot Endpoint"
+      "linkedName": "Shooting position depot"
     }
   ],
   "rotationTargets": [],

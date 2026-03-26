@@ -3,57 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.928102710413694,
-        "y": 1.1949643366619125
+        "x": 5.700166666666666,
+        "y": 1.0620555555555564
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.928694754775968,
-        "y": 1.4449636356278759
+        "x": 5.700166666666666,
+        "y": 1.3120555555555564
       },
       "isLocked": false,
       "linkedName": "Shoot to Intake 2 HP Near Midpoint"
     },
     {
       "anchor": {
-        "x": 7.574633333333333,
-        "y": 2.4124777777777773
+        "x": 5.700166666666666,
+        "y": 4.024922222222221
       },
       "prevControl": {
-        "x": 7.552466401406778,
-        "y": 1.9395832300112725
-      },
-      "nextControl": {
-        "x": 7.604866666666666,
-        "y": 3.057455555555555
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.928102710413694,
-        "y": 3.5886162624821685
-      },
-      "prevControl": {
-        "x": 5.927018953264931,
-        "y": 3.3386186115523198
+        "x": 5.700166666666666,
+        "y": 3.774922222222221
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Near Hub"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.4140350877192999,
-      "rotationDegrees": 39.42331849588791
-    },
-    {
-      "waypointRelativePos": 1.4105263157894812,
-      "rotationDegrees": 151.8535068197419
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -66,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 85.073
+    "velocity": 2.0,
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": null,

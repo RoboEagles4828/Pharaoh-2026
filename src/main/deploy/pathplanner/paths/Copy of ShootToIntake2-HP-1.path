@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6022094055013305,
-        "y": 0.6386019971469341
+        "x": 2.626444444444445,
+        "y": 0.8101111111111106
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.750684736091298,
-        "y": 0.6774179743223976
+        "x": 3.7450777777777775,
+        "y": 0.6287111111111108
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Shooting position HP"
     },
     {
       "anchor": {
-        "x": 5.928102710413694,
-        "y": 1.1949643366619125
+        "x": 5.700166666666666,
+        "y": 1.0620555555555564
       },
       "prevControl": {
-        "x": 5.902225392296718,
-        "y": 0.15987161198288158
+        "x": 5.700166666666666,
+        "y": 0.026639414925912153
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.21172962226640185,
+      "waypointRelativePos": 0.257894736842103,
       "rotationDegrees": 90.0
     }
   ],
@@ -53,7 +53,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 72.97401383615251
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }

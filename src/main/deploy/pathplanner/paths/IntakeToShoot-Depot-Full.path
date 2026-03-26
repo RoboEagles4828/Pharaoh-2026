@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.636192771084337,
-        "y": 4.6393
+        "x": 7.776188888888889,
+        "y": 3.9644555555555554
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.839927781374925,
-        "y": 4.043058682396693
+        "x": 7.979923899179477,
+        "y": 3.368214237952248
       },
       "isLocked": false,
       "linkedName": "Depot Intake Endpoint"
@@ -76,7 +76,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -71.412
+    "rotation": -132.43622978853497
   },
   "useDefaultConstraints": true
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.636192771084337,
-        "y": 3.430333333333333
+        "x": 7.7258,
+        "y": 4.035
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.010581530235019,
-        "y": 3.3946400108211785
+        "x": 8.100188759150681,
+        "y": 3.999306677487845
       },
       "isLocked": false,
       "linkedName": "HP Intake End Point"
     },
     {
       "anchor": {
-        "x": 6.025,
-        "y": 0.639
+        "x": 6.214133333333333,
+        "y": 0.689177777777777
       },
       "prevControl": {
-        "x": 6.266403603955419,
-        "y": 0.703994615141065
+        "x": 6.455536937288752,
+        "y": 0.754172392918842
       },
       "nextControl": {
-        "x": 4.858427060175116,
-        "y": 0.32491620831020696
+        "x": 5.047560393508449,
+        "y": 0.37509398608798394
       },
       "isLocked": false,
       "linkedName": "Intake to Shoot HP Midpoint"
@@ -76,7 +76,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 71.41204250930689
+    "rotation": 137.4195092166562
   },
   "useDefaultConstraints": true
 }
