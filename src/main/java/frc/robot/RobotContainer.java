@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
@@ -35,6 +36,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AutonCommands;
 import frc.robot.util.PoseSupplier;
+import frc.robot.util.TunableNumber;
 
 import java.util.Collections;
 
@@ -92,6 +94,9 @@ public class RobotContainer {
 
   /*** PATHPLANNER WIDGET ***/
   private final SendableChooser<Command> autonomousChooser;
+
+
+  private static final TunableNumber autonDelay = new TunableNumber("Tuning/Auton/AutonDelay", Constants.AUTON_DELAY);
 
   /*** more complex commands that require multiple subsystems */
   // public Command aimAndShoot() {
@@ -265,7 +270,6 @@ public class RobotContainer {
       )
     );
 
-
     /*** Shooting */
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
@@ -294,6 +298,14 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autonomousChooser.getSelected();
+    return Commands.defer(
+      () -> {
+        return Commands.sequence(
+          Commands.waitSeconds(autonDelay.get()),
+          autonomousChooser.getSelected()
+        );
+      },
+      Collections.emptySet()
+    );
   }
 }

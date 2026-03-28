@@ -82,4 +82,5 @@ public final class Constants {
   }
 
   public static final boolean debugMode = true;
+  public static final double AUTON_DELAY = 0;
 }
