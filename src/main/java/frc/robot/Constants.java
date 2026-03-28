@@ -73,6 +73,7 @@ public final class Constants {
   public static final CANBus CANIVORE_CAN_BUS = new CANBus("canivore");
   public static class CANivoreBusCANIds {
     // NOTE - 1 to 12 are reserved for the swerve drivetrain.
+    // NOTE - Pidgeon is on 30
   }
 
   public static class RobotConstants {
