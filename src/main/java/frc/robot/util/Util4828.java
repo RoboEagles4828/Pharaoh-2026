@@ -18,9 +18,15 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Robot;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.robot.util.TunableNumber;
 
 public class Util4828 {
 
+    public static final TunableNumber FLIGHT_TIME_SEC = new TunableNumber("Tuning/Motion/FlightTimeSec", 0.4);
+    public static final TunableNumber INDEXING_DELAY = new TunableNumber("Tuning/Motion/IndexingDelay", 0.3);
+    
     /*** Game specific utility functions ***/
     public static Translation2d getHubLocation() {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
@@ -69,6 +75,19 @@ public class Util4828 {
         
         // Otherwise, we're passing, lock to passing position
         return getPassLocation(robotPose);
+
+    }
+
+    public static Translation2d getMovingLockOnPosition(
+            Pose2d robotPose,
+            ChassisSpeeds fieldRelativeSpeeds,
+            double flightTimeSec) {
+        
+        Translation2d staticTarget = getLockOnTargetPosition(robotPose);
+        double XOffset = fieldRelativeSpeeds.vxMetersPerSecond * flightTimeSec;
+        double YOffset = fieldRelativeSpeeds.vyMetersPerSecond * flightTimeSec;
+        Translation2d offsetTotal = new Translation2d(XOffset, YOffset);
+        return staticTarget.minus(offsetTotal);
 
     }
 

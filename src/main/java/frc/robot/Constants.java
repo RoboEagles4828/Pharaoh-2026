@@ -80,6 +80,7 @@ public final class Constants {
     public static double DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS = 0.3556;
     public static double ROBOT_BUMPER_SIZE_METERS = 0.0889;
     public static double DISTANCE_BUMPER_EDGE_TO_CENTER_METERS = DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS + ROBOT_BUMPER_SIZE_METERS;
+    public static double FLYWHEEL_RADIUS_METERS = 0.0508;
   }
 
   public static final boolean debugMode = true;

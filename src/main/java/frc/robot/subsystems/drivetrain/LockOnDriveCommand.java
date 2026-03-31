@@ -7,7 +7,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.Kinematics;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,7 +32,7 @@ public class LockOnDriveCommand extends Command {
 	/** Driver translation input (field-relative) */
 	private final CommandXboxController controller;
 	/** Target position to lock on to */
-	private final Translation2d targetPosition;
+	private Translation2d targetPosition;
 
 	private final LaunchCalculator launchCalculator;
 
@@ -66,14 +66,6 @@ public class LockOnDriveCommand extends Command {
 		this.controller = controller;
 		this.launchCalculator = launchCalculator;
 
-		final double movingXOffest = drivetrain.getState().Speeds.vxMetersPerSecond;
-    	final double movingYOffest = drivetrain.getState().Speeds.vyMetersPerSecond;
-
-		Translation2d offset = new Translation2d(movingXOffest, movingYOffest);
-
-		Pose2d robotPose = drivetrain.getState().Pose;
-		this.targetPosition = Util4828.getLockOnTargetPosition(robotPose).plus(offset);
-
 
 		this.shouldAutomaticallyEnd = shouldAutomaticallyEnd;
 
@@ -98,6 +90,10 @@ public class LockOnDriveCommand extends Command {
 
         Pose2d robotPose = drivetrain.getState().Pose;
         headingPID.reset(robotPose.getRotation().getRadians());
+
+		//Seed motion-compensated target so isWithinTolerance() is safe before execute()
+		ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, robotPose.getRotation());
+		targetPosition = Util4828.getMovingLockOnPosition(robotPose, fieldSpeeds, Util4828.FLIGHT_TIME_SEC.get());
     }
 
 	/** Returns if the robot is within tolerance of the angle */
@@ -119,9 +115,12 @@ public class LockOnDriveCommand extends Command {
 		// Current robot pose 
 		Pose2d robotPose = drivetrain.getState().Pose;
 
+		//Recompute motion-compensated target every cycle
+		ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, robotPose.getRotation());
+		targetPosition = Util4828.getMovingLockOnPosition(robotPose, fieldSpeeds, Util4828.FLIGHT_TIME_SEC.get());
+
 		// Vector from robot to target
 		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
-
 		Rotation2d desiredHeading = toTarget.getAngle();
 		Rotation2d currentHeading = robotPose.getRotation();
 
