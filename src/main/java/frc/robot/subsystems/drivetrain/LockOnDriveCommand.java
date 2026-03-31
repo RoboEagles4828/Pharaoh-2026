@@ -66,8 +66,14 @@ public class LockOnDriveCommand extends Command {
 		this.controller = controller;
 		this.launchCalculator = launchCalculator;
 
+		final double movingXOffest = drivetrain.getState().Speeds.vxMetersPerSecond;
+    	final double movingYOffest = drivetrain.getState().Speeds.vyMetersPerSecond;
+
+		Translation2d offset = new Translation2d(movingXOffest, movingYOffest);
+
 		Pose2d robotPose = drivetrain.getState().Pose;
-		this.targetPosition = Util4828.getLockOnTargetPosition(robotPose);
+		this.targetPosition = Util4828.getLockOnTargetPosition(robotPose).plus(offset);
+
 
 		this.shouldAutomaticallyEnd = shouldAutomaticallyEnd;
 
@@ -136,7 +142,6 @@ public class LockOnDriveCommand extends Command {
 				driveRequest
 					.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
 					.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
-
 					.withRotationalRate(omega));
 		}
 		// Otherwise just let the driver control everything

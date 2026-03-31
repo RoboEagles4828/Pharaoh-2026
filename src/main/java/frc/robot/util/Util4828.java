@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Util4828 {
@@ -59,14 +59,12 @@ public class Util4828 {
      * If we are not - it will be a passing position. Top pass if we are above 
      * the field midpoint, otherwise the bottom pass. */
 
-    public static final double movingXOffest = 1.0;
-
+   
     public static Translation2d getLockOnTargetPosition(Pose2d robotPose) {
         // If we're on our half of the field, lock to hub
 
         if (isInAllianceZone(robotPose)) {
-            Translation2d offset = new Translation2d(movingXOffest,0);
-            return getHubLocation().plus(offset);
+            return getHubLocation();
         }
         
         // Otherwise, we're passing, lock to passing position
