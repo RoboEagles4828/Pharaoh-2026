@@ -58,10 +58,15 @@ public class Util4828 {
      * If we are in our alliance zone - it will be our hub.
      * If we are not - it will be a passing position. Top pass if we are above 
      * the field midpoint, otherwise the bottom pass. */
+
+    public static final double movingXOffest = 1.0;
+
     public static Translation2d getLockOnTargetPosition(Pose2d robotPose) {
         // If we're on our half of the field, lock to hub
+
         if (isInAllianceZone(robotPose)) {
-            return getHubLocation();
+            Translation2d offset = new Translation2d(movingXOffest,0);
+            return getHubLocation().plus(offset);
         }
         
         // Otherwise, we're passing, lock to passing position

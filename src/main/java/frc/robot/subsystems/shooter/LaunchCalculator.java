@@ -100,6 +100,7 @@ public class LaunchCalculator {
         if (currentMode == Mode.HUB_SHOT_ONLY) { // if we're in hub shot mode, use distance to hub specifically
             targetVelocity = ShooterConstants.HUB_SHOT_VELOCITY;
             targetHoodPosition = ShooterConstants.HUB_SHOT_HOOD;
+            
         }
         else if (currentMode == Mode.FAR_SHOT_ONLY){
             targetVelocity = 20.57;

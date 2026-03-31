@@ -7,7 +7,9 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -125,6 +127,8 @@ public class LockOnDriveCommand extends Command {
 			omega = 0.0;
 		}
 
+
+
 		// Apply CTRE request
 		// If this mode should lock on, take control of rotational rate, but keep x/y movement free
 		if (launchCalculator.doesModeLockOn()) {
@@ -132,6 +136,7 @@ public class LockOnDriveCommand extends Command {
 				driveRequest
 					.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
 					.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
+
 					.withRotationalRate(omega));
 		}
 		// Otherwise just let the driver control everything
