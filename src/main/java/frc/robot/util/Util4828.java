@@ -87,13 +87,16 @@ public class Util4828 {
 
         double indexDelay = SmartDashboard.getNumber("Tuning/Motion/IndexingDelay", 0.0);
 
-        double cosAngle = Math.cos(Math.toRadians(((26 * hood) + 85)));
+        double cosAngle = Math.cos(Math.toRadians(((25.974025974 * hood) + 85)));
 
-        double t = distance / (vel * cosAngle);
+        double timeToHub = distance / (vel * cosAngle);
         
         Translation2d staticTarget = getLockOnTargetPosition(robotPose);
-        double XOffset = fieldRelativeSpeeds.vxMetersPerSecond * t + indexDelay;
-        double YOffset = fieldRelativeSpeeds.vyMetersPerSecond * t + indexDelay;
+        double vX = fieldRelativeSpeeds.vxMetersPerSecond;
+        double vY = fieldRelativeSpeeds.vyMetersPerSecond;
+
+        double XOffset = vX + vX * (timeToHub + indexDelay);
+        double YOffset = vY + vY * (timeToHub + indexDelay);
         Translation2d offsetTotal = new Translation2d(XOffset, YOffset);
         return staticTarget.minus(offsetTotal);
 

@@ -175,7 +175,7 @@ public class RobotContainer {
     drivetrain = TunerConstants.createDrivetrain();
     poseSupplier = new PoseSupplier(drivetrain);
 
-    launchCalculator = new LaunchCalculator(poseSupplier);
+    launchCalculator = new LaunchCalculator(poseSupplier, drivetrain);
     shooter = new Shooter(launchCalculator);
     
     kicker = new Kicker();

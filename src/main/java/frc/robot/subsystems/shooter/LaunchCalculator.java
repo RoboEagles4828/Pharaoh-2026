@@ -3,20 +3,24 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PoseSupplier;
 import frc.robot.util.Util4828;
 import frc.robot.util.PoseSupplier.Zone;
+import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
 
 public class LaunchCalculator {
 
     /** PoseSupplier to get the robot pose */
     private final PoseSupplier poseSupplier;
+    private final CommandSwerveDrivetrain drivetrain;
 
-    public LaunchCalculator(PoseSupplier poseSupplier) {
+    public LaunchCalculator(PoseSupplier poseSupplier, CommandSwerveDrivetrain drivetrain) {
         this.poseSupplier = poseSupplier;
+        this.drivetrain = drivetrain;
 
         SmartDashboard.putString("Shot Mode", "Anywhere");
     }
@@ -90,7 +94,8 @@ public class LaunchCalculator {
         // Are we scoring or passing? If we're in our alliance zone, we're trying to score.
         boolean isScoring = poseSupplier.getZone() == Zone.SCORING_ZONE;
 
-        Translation2d targetPos = Util4828.getLockOnTargetPosition(robotPose);
+        ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, robotPose.getRotation());
+        Translation2d targetPos = Util4828.getMovingLockOnPosition(robotPose, fieldSpeeds);
         
         // Calculating parameters to shoot from anywhere.
         double distanceToTargetInches = Units.metersToInches(robotPose.getTranslation().getDistance(targetPos)) - 2.0;
