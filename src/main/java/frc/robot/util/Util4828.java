@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
@@ -18,9 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.Robot;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.util.TunableNumber;
 
 public class Util4828 {
 
@@ -84,8 +82,8 @@ public class Util4828 {
             double flightTimeSec) {
         
         Translation2d staticTarget = getLockOnTargetPosition(robotPose);
-        double XOffset = fieldRelativeSpeeds.vxMetersPerSecond * flightTimeSec;
-        double YOffset = fieldRelativeSpeeds.vyMetersPerSecond * flightTimeSec;
+        double XOffset = fieldRelativeSpeeds.vxMetersPerSecond * (SmartDashboard.getNumber("Tuning/Launch/DistanceToTarget", 0.0) / (SmartDashboard.getNumber("Tuning/Launch/TargetVelocity", 0.0) / 2));
+        double YOffset = fieldRelativeSpeeds.vyMetersPerSecond * (SmartDashboard.getNumber("Tuning/Launch/DistanceToTarget", 0.0) / (SmartDashboard.getNumber("Tuning/Launch/TargetVelocity", 0.0) / 2));
         Translation2d offsetTotal = new Translation2d(XOffset, YOffset);
         return staticTarget.minus(offsetTotal);
 
