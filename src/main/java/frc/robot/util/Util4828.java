@@ -13,6 +13,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -22,8 +24,7 @@ import frc.robot.Constants;
 
 public class Util4828 {
 
-    public static final TunableNumber FLIGHT_TIME_SEC = new TunableNumber("Tuning/Motion/FlightTimeSec", 0.4);
-    public static final TunableNumber INDEXING_DELAY = new TunableNumber("Tuning/Motion/IndexingDelay", 0.3);
+    public static final TunableNumber INDEXING_DELAY = new TunableNumber("Tuning/Motion/IndexingDelay", 0.0);
     
     /*** Game specific utility functions ***/
     public static Translation2d getHubLocation() {
@@ -78,12 +79,21 @@ public class Util4828 {
 
     public static Translation2d getMovingLockOnPosition(
             Pose2d robotPose,
-            ChassisSpeeds fieldRelativeSpeeds,
-            double flightTimeSec) {
+            ChassisSpeeds fieldRelativeSpeeds) {
+
+        double distance = SmartDashboard.getNumber("Tuning/Launch/DistanceToTarget", 0.0);
+        double vel = SmartDashboard.getNumber("Tuning/Launch/TargetVelocity", 0.0);
+        double hood = SmartDashboard.getNumber("Tuning/Launch/TargetHood", 0.0);
+
+        double indexDelay = SmartDashboard.getNumber("Tuning/Motion/IndexingDelay", 0.0);
+
+        double cosAngle = Math.cos(Math.toRadians(((26 * hood) + 85)));
+
+        double t = distance / (vel * cosAngle);
         
         Translation2d staticTarget = getLockOnTargetPosition(robotPose);
-        double XOffset = fieldRelativeSpeeds.vxMetersPerSecond * (SmartDashboard.getNumber("Tuning/Launch/DistanceToTarget", 0.0) / (SmartDashboard.getNumber("Tuning/Launch/TargetVelocity", 0.0) / 2));
-        double YOffset = fieldRelativeSpeeds.vyMetersPerSecond * (SmartDashboard.getNumber("Tuning/Launch/DistanceToTarget", 0.0) / (SmartDashboard.getNumber("Tuning/Launch/TargetVelocity", 0.0) / 2));
+        double XOffset = fieldRelativeSpeeds.vxMetersPerSecond * t + indexDelay;
+        double YOffset = fieldRelativeSpeeds.vyMetersPerSecond * t + indexDelay;
         Translation2d offsetTotal = new Translation2d(XOffset, YOffset);
         return staticTarget.minus(offsetTotal);
 

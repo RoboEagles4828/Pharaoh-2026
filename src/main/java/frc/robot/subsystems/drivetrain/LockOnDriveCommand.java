@@ -93,7 +93,7 @@ public class LockOnDriveCommand extends Command {
 
 		//Seed motion-compensated target so isWithinTolerance() is safe before execute()
 		ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, robotPose.getRotation());
-		targetPosition = Util4828.getMovingLockOnPosition(robotPose, fieldSpeeds, Util4828.FLIGHT_TIME_SEC.get());
+		targetPosition = Util4828.getMovingLockOnPosition(robotPose, fieldSpeeds);
     }
 
 	/** Returns if the robot is within tolerance of the angle */
@@ -117,7 +117,7 @@ public class LockOnDriveCommand extends Command {
 
 		//Recompute motion-compensated target every cycle
 		ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, robotPose.getRotation());
-		targetPosition = Util4828.getMovingLockOnPosition(robotPose, fieldSpeeds, Util4828.FLIGHT_TIME_SEC.get());
+		targetPosition = Util4828.getMovingLockOnPosition(robotPose, fieldSpeeds);
 
 		// Vector from robot to target
 		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
