@@ -72,14 +72,16 @@ public class Kicker extends SubsystemBase {
 
     /** Returns a command that stops the kicker motors */
     public Command stop() {
-        return Commands.runOnce(() -> {
-            kickerMotor.stopMotor();
-        }, this);
+        return Commands.runOnce(() -> kickerMotor.stopMotor(), this);
+    }
+
+    public double getKickerMPS() {
+        double actualKickerMPS = kickerMotor.getVelocity().getValueAsDouble() * Math.PI * KickerConstants.KICKER_WHEEL_DIAMETER;
+        return actualKickerMPS;
     }
 
     @Override
     public void periodic() {
-        // double actualKickerMPS = kickerMotor.getVelocity().getValueAsDouble() * Math.PI * KickerConstants.KICKER_WHEEL_DIAMETER;
-        // SmartDashboard.putNumber("Tuning/Kicker/ActualKickerSpeedMPS", actualKickerMPS);
+        SmartDashboard.putNumber("Tuning/Kicker/ActualKickerSpeedMPS", getKickerMPS());
     }
 }

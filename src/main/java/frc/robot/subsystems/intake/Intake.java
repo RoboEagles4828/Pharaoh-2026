@@ -82,7 +82,8 @@ public class Intake extends SubsystemBase {
         // limitSwitch = new Trigger(() -> !intakeLimitSwitch.get());
         //limitSwitch.onTrue(resetDeployEncoder());
 
-        SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
+        if (Constants.debugMode)
+            SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
         SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
     }
 
@@ -196,10 +197,13 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (SmartDashboard.getBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false)) {
-            updatePID();
-            SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
+        if (Constants.debugMode){
+            if (SmartDashboard.getBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false)) {
+                updatePID();
+                SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
+            }
         }
+        
 
         if (SmartDashboard.getBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false)) {
             deployMotor.setPosition(raisedPosition.get()); // also reset encoder for testing

@@ -10,10 +10,13 @@ public class ShooterConstants {
     /* FLYWHEEL CONSTANTS */
     /* ================== */
     
-    public static double SHOOTER_GEAR_RATIO = 1.0;
-    public static double WHEEL_DIAMETER = Units.inchesToMeters(4);
-    public static int DEFAULT_SPEED_MPS = 15;
+    public static final double SHOOTER_GEAR_RATIO = 1.0;
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
+    public static final int DEFAULT_SPEED_MPS = 15;
     public static final double SHOOTER_SPEED_TOLERANCE = 0.05; // in m/s
+
+    public static final double SHOOTER_CURRENT_LIMIT = 40.0;
+    public static final double HOOD_CURRENT_LIMIT = 40.0;
 
     static class PID_CONFIG {
         static final double STATIC = 0.0;
@@ -25,11 +28,9 @@ public class ShooterConstants {
     }
 
     /** HOOD CONSTANTS */
-    public static double HOOD_GEAR_RATIO = 20.0;
-    public static double HOOD_STARTING_POSITION = 0.0;
-    public static double HOOD_TARGET_POSITION = -0.4;
-    public static double HOOD_MAX_POSITION = -1.542236328125;
-    public static double HOOD_MIN_POSITION = 0.0;
+    public static final double HOOD_GEAR_RATIO = 20.0;
+    public static final double HOOD_MAX_POSITION = -1.542236328125;
+    public static final double HOOD_MIN_POSITION = 0.0;
     public static final double HOOD_POSITION_TOLERANCE = 0.01;
     
     static class HOOD_PID_CONFIG {
@@ -92,6 +93,7 @@ public class ShooterConstants {
     public static final InterpolatingDoubleTreeMap PASS_VELOCITY_MAP = new InterpolatingDoubleTreeMap();
 
     static {
+        // TODO make sure data is enough for the entire field
         PASS_VELOCITY_MAP.put(345.851142, 25.0);
         PASS_VELOCITY_MAP.put(181.851142, 15.96);
         PASS_VELOCITY_MAP.put(109.851142, 12.0);

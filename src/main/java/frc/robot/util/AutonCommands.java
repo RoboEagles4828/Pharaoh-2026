@@ -80,7 +80,7 @@ public class AutonCommands {
                 drivetrain.stageToTower(Constants.FieldConstants.TowerSide.LEFT),
 
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Raising Climber")),
-                climber.extendToPeak(),
+                climber.extend(),
                 Commands.waitSeconds(0.8),
 
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Aligning to Tower")),
@@ -88,7 +88,7 @@ public class AutonCommands {
                 Commands.waitSeconds(1.0),
 
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Climbing Up")),
-                climber.retractForClimb(),
+                climber.retract(),
                 
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Climb Completed"))
             ),
@@ -109,7 +109,7 @@ public class AutonCommands {
                 drivetrain.stageToTower(Constants.FieldConstants.TowerSide.RIGHT),
 
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Raising Climber")),
-                climber.extendToPeak(),
+                climber.extend(),
                 Commands.waitSeconds(0.8),
 
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Aligning to Tower")),
@@ -117,7 +117,7 @@ public class AutonCommands {
                 Commands.waitSeconds(1.0),
 
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Climbing Up")),
-                climber.retractForClimb(),
+                climber.retract(),
                 
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Climb Completed"))
             ),

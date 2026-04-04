@@ -25,6 +25,7 @@ public class Climber extends SubsystemBase {
     private final PositionVoltage positionControl;
     /** Hall effect sensor limitting the retraction of the climber */
     // private final DigitalInput climberHallEffect;
+    /** Trigger that is activated when the limit switch is pressed */
     // private final Trigger climberLimitSensor;
 
     // Tunable numbers for duty cycle speeds
@@ -37,26 +38,13 @@ public class Climber extends SubsystemBase {
     private static TunableNumber dValue = new TunableNumber("Tuning/Climber/ClimberD", ClimberConstants.kD);
     
     /** Tunable number for the peak (tallest) position of the climber */
-    private TunableNumber climbPeakPosition = new TunableNumber("Tuning/Climber/TallestPosition", ClimberConstants.PEAK_POSITION);
-    /** Tunable number for the final position of the climber where it will hang*/
-    // TODO might be unnecessary if the robot will pull itself up all the way but I thought that was unnecessary and this is safer
-    private TunableNumber climbFinalPosition = new TunableNumber("Tuning/Climber/FinalPosition", ClimberConstants.CLIMB_POSITION);
-
+    private TunableNumber climbPosition = new TunableNumber("Tuning/Climber/TallestPosition", ClimberConstants.CLIMB_POSITION);
+    
     /** Constructs a climber subsystem */
     public Climber() {
         climbMotor = new TalonFX(Constants.RioBusCANIds.CLIMBER_MOTOR_ID, Constants.RIO_CAN_BUS);
         
-        // Configuring the motor
-        final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
-        motorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        motorCfg.Feedback.SensorToMechanismRatio = ClimberConstants.GEAR_RATIO;
-        motorCfg.Slot0.kP = pValue.get();
-        motorCfg.Slot0.kI = iValue.get();
-        motorCfg.Slot0.kD = dValue.get();
-        motorCfg.CurrentLimits = (new CurrentLimitsConfigs())
-            .withSupplyCurrentLimit(40);
-        // Applying the configuration
-        climbMotor.getConfigurator().apply(motorCfg);
+        updatePIDConfigs();
 
         // assume we start in the lowered position; seed encoder to 0!
         climbMotor.setPosition(ClimberConstants.START_POSITION);
@@ -68,19 +56,16 @@ public class Climber extends SubsystemBase {
                                 .withSlot(0);
         
         // climberHallEffect = new DigitalInput(Constants.DigitalIDS.CLIMBER_HALL_EFFECT);
-        
         // climberLimitSensor = new Trigger(() -> !climberHallEffect.get());
         // climberLimitSensor.onTrue(resetClimberEncoder());
 
-        // Try to reduce can% utilization
-        climbMotor.getVelocity().setUpdateFrequency(50);
-        climbMotor.getAcceleration().setUpdateFrequency(50);
-
+        if (Constants.debugMode)
         // Putting buttons on smart dashboard to zero the encoder and apply PID changes
-        SmartDashboard.putBoolean("Tuning/Climber/ApplyPIDButton", false);
+            SmartDashboard.putBoolean("Tuning/Climber/ApplyPIDButton", false);
         SmartDashboard.putBoolean("Tuning/Climber/ZeroEncoderBtn", false);
     }
 
+    /** Updates PID constants of the climber motor */
     private void updatePIDConfigs() {
         final TalonFXConfiguration motorCfg = new TalonFXConfiguration();
         motorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -88,6 +73,8 @@ public class Climber extends SubsystemBase {
         motorCfg.Slot0.kP = pValue.get();
         motorCfg.Slot0.kI = iValue.get();
         motorCfg.Slot0.kD = dValue.get();
+        motorCfg.CurrentLimits = (new CurrentLimitsConfigs())
+            .withSupplyCurrentLimit(ClimberConstants.CURRENT_LIMIT);
         climbMotor.getConfigurator().apply(motorCfg);
     }
 
@@ -108,23 +95,16 @@ public class Climber extends SubsystemBase {
 
     // Moving via position control
     /** Climbs to the peak position */
-    public Command extendToPeak() {
+    public Command extend() {
         return this.runOnce(() -> {
-            climbMotor.setControl(positionControl.withPosition(climbPeakPosition.get()));
+            climbMotor.setControl(positionControl.withPosition(climbPosition.get()));
         });
     }
-
     /** Retracts the climber back to the starting position */
-    public Command retractForClimb() {
-        return this.runOnce(
-            () -> climbMotor.setControl(positionControl.withPosition(0.0))
-        );
-    }
-
-    public Command retractToBottom() {
+        public Command retract() {
         return this.runOnce(
             () -> climbMotor.setControl(positionControl.withPosition(ClimberConstants.START_POSITION))
-        ); 
+        );
     }
 
     /** Gets the current position of the climber */

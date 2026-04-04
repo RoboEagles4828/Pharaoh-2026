@@ -34,35 +34,35 @@ public class Shooter extends SubsystemBase {
     private static final TunableNumber shooterVValue = new TunableNumber("Tuning/Shooter/ShooterVValue", ShooterConstants.PID_CONFIG.VELOCITY);
     
     /** Tunable number for the position of the hood */
-    private static final TunableNumber hoodPosition = new TunableNumber("Tuning/Shooter/TargetHoodPosition", ShooterConstants.HOOD_TARGET_POSITION);
+    private static final TunableNumber hoodPosition = new TunableNumber("Tuning/Shooter/TargetHoodPosition", ShooterConstants.HOOD_MIN_POSITION);
     // Hood motor PID constants
     private static final TunableNumber hoodPValue = new TunableNumber("Tuning/Shooter/HoodPValue", ShooterConstants.HOOD_PID_CONFIG.PROPORTIONAL);
     private static final TunableNumber hoodDValue = new TunableNumber("Tuning/Shooter/HoodDValue", ShooterConstants.HOOD_PID_CONFIG.DERIVATIVE);
 
     /** Motor controlling the launching wheels */
-    // one
+    // one (right w/ intake as front)
     private final TalonFX shooterMotorOne;
     // two
     private final TalonFX shooterMotorTwo;
-    // three
+    // three (left w/ intake as front)
     private final TalonFX shooterMotorThree;
 
     /** Motor controlling the hood */
     private final TalonFX hoodMotor;
 
     /** Limit switch limitting the minimum hood movement */
-    private final DigitalInput hoodLimitSwitch;
-    private final Trigger limitSwitch;
+    // private final DigitalInput hoodLimitSwitch;
+    // private final Trigger limitSwitch;
 
     /** Launch calculator for calculating shooter parameters */
     private final LaunchCalculator launchCalculator;
 
-    private double targetHoodPosition = 0.5;
+    private double targetHoodPosition = 0.0;
     private double targetLaunchVelocity = 0.0;
 
     /** Request for controlling the motor in MPS */
     private final VelocityVoltage shooterVelocityVoltageRequest = new VelocityVoltage(0);
-    private final PositionVoltage hoodPositionVoltageRequest = new PositionVoltage(ShooterConstants.HOOD_STARTING_POSITION)
+    private final PositionVoltage hoodPositionVoltageRequest = new PositionVoltage(ShooterConstants.HOOD_MIN_POSITION)
                                         .withEnableFOC(true)
                                         .withOverrideBrakeDurNeutral(true)
                                         .withSlot(0);
@@ -72,7 +72,7 @@ public class Shooter extends SubsystemBase {
         shooterMotorTwo = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_TWO_ID, Constants.RIO_CAN_BUS);
         shooterMotorThree = new TalonFX(RioBusCANIds.SHOOTER_MOTOR_THREE_ID, Constants.RIO_CAN_BUS);
         hoodMotor = new TalonFX(RioBusCANIds.HOOD_MOTOR_ID, Constants.RIO_CAN_BUS);
-        hoodLimitSwitch = new DigitalInput(DigitalIDS.HOOD_LIMIT_SWITCH);
+        // hoodLimitSwitch = new DigitalInput(DigitalIDS.HOOD_LIMIT_SWITCH);
 
         this.launchCalculator = launchCalculator;
 
@@ -82,10 +82,11 @@ public class Shooter extends SubsystemBase {
         // The hood should always start in the lowest possible possition
         hoodMotor.setPosition(ShooterConstants.HOOD_MIN_POSITION);
 
-        limitSwitch = new Trigger(() -> !hoodLimitSwitch.get());
-        limitSwitch.onTrue(resetHoodEncoder());
+        // limitSwitch = new Trigger(() -> !hoodLimitSwitch.get());
+        // limitSwitch.onTrue(resetHoodEncoder());
 
-        SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false);
+        if (Constants.debugMode)
+            SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false);
     }
 
     /** Used to configure motors and PID slots */
@@ -99,7 +100,7 @@ public class Shooter extends SubsystemBase {
         shooterMotorCfg.Slot0.kI = ShooterConstants.PID_CONFIG.INTEGRAL;
         shooterMotorCfg.Slot0.kD = ShooterConstants.PID_CONFIG.DERIVATIVE;
         shooterMotorCfg.CurrentLimits = (new CurrentLimitsConfigs())
-            .withSupplyCurrentLimit(40);
+            .withSupplyCurrentLimit(ShooterConstants.SHOOTER_CURRENT_LIMIT);
         
         final TalonFXConfiguration hoodMotorCfg = new TalonFXConfiguration();
         hoodMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -107,7 +108,7 @@ public class Shooter extends SubsystemBase {
         hoodMotorCfg.Slot0.kP = hoodPValue.get();
         hoodMotorCfg.Slot0.kD = hoodDValue.get();
         hoodMotorCfg.CurrentLimits = (new CurrentLimitsConfigs())
-            .withSupplyCurrentLimit(40);
+            .withSupplyCurrentLimit(ShooterConstants.HOOD_CURRENT_LIMIT);
 
         // Applying the configuration
         shooterMotorOne.getConfigurator().apply(shooterMotorCfg);
@@ -165,8 +166,8 @@ public class Shooter extends SubsystemBase {
 
     /** Returns a command that lowers the hood to the minimum position */
     public Command lowerHood() {
-        return Commands.runOnce(() -> hoodMotor.setControl(hoodPositionVoltageRequest.withPosition(
-            MathUtil.clamp(0.0, ShooterConstants.HOOD_MAX_POSITION, ShooterConstants.HOOD_MIN_POSITION))));
+        return Commands.runOnce(() -> hoodMotor.setControl(
+            hoodPositionVoltageRequest.withPosition(ShooterConstants.HOOD_MIN_POSITION)));
     }
 
     /** Resets the encoder of the hood motor */
@@ -199,10 +200,12 @@ public class Shooter extends SubsystemBase {
         setTargetParams(launchParams.velocityMPS(), launchParams.hoodPosition());
         // setTargetParams(shootingSpeedMPS.get(), hoodPosition.get());
 
-        // apply new PID configs 
-        if (SmartDashboard.getBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false)) {
-            updatePIDConfigs();
-            SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false); // reset btn
+        if (Constants.debugMode){
+            // apply new PID configs 
+            if (SmartDashboard.getBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false)) {
+                updatePIDConfigs();
+                SmartDashboard.putBoolean(ShooterConstants.NT_APPLY_PID_BUTTON, false); // reset btn
+            }
         }
 
         // output the current measured speed of the flywheel, for verification/tuning
@@ -214,7 +217,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Tuning/Shooter/ActualShooterSpeedMPSThree", actualMPS_THREE);
 
         // output actual hood position
-        // SmartDashboard.putNumber("Tuning/Shooter/ActualHoodPosition", hoodMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Tuning/Shooter/ActualHoodPosition", hoodMotor.getPosition().getValueAsDouble());
         // SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitch", !hoodLimitSwitch.get());
         // SmartDashboard.putBoolean("Tuning/Shooter/LimitSwitchTrigger", limitSwitch.getAsBoolean());
 

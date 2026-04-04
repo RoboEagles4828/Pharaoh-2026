@@ -44,6 +44,7 @@ public class LockOnDriveCommand extends Command {
 	 * the driver can hold and drive while locked on, but in auto we just want to lock on and then
 	 * move to the next part of the auto sequence.
 	 */
+	// TODO check if actually working as intended in auto
 	private final boolean shouldAutomaticallyEnd;
 
 	/** CTRE swerve drive request with appropriate deadbands and control type for lock-on driving */
@@ -143,8 +144,6 @@ public class LockOnDriveCommand extends Command {
 					.withRotationalRate(-controller.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) );
 
 		}
-		
-
 		
 	}
 

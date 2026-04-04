@@ -25,13 +25,8 @@ public class Hopper extends SubsystemBase {
         conveyorMotor = new TalonFX(Constants.RioBusCANIds.HOPPER_CONVEYOR_MOTOR_ID, Constants.RIO_CAN_BUS);
         final TalonFXConfiguration hopperMotorConfig = new TalonFXConfiguration();
         hopperMotorConfig.CurrentLimits = (new CurrentLimitsConfigs())
-            .withSupplyCurrentLimit(40);
+            .withSupplyCurrentLimit(HopperConstants.CURRENT_LIMIT);
         conveyorMotor.getConfigurator().apply(hopperMotorConfig);
-
-        // Try to reduce can% by reducing update frequency...
-        conveyorMotor.getPosition().setUpdateFrequency(20);
-        conveyorMotor.getVelocity().setUpdateFrequency(20);
-        conveyorMotor.getAcceleration().setUpdateFrequency(20);
     }
 
     /** Returns a command that runs the conveyer motors */
@@ -44,7 +39,6 @@ public class Hopper extends SubsystemBase {
                 },
                 Set.of(this));
     }
-
     /** Returns a command that stops the conveyer motor */
     public Command stopConveyor() {
         return Commands.defer(
