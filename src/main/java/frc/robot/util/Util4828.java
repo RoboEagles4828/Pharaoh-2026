@@ -82,21 +82,21 @@ public class Util4828 {
             ChassisSpeeds fieldRelativeSpeeds) {
 
         double distance = SmartDashboard.getNumber("Tuning/Launch/DistanceToTarget", 0.0);
-        double vel = SmartDashboard.getNumber("Tuning/Launch/TargetVelocity", 0.0);
+        double flywheelSpeed = SmartDashboard.getNumber("Tuning/Launch/TargetVelocity", 0.0);
         double hood = SmartDashboard.getNumber("Tuning/Launch/TargetHood", 0.0);
 
         double indexDelay = SmartDashboard.getNumber("Tuning/Motion/IndexingDelay", 0.0);
 
         double cosAngle = Math.cos(Math.toRadians(((25.974025974 * hood) + 85)));
 
-        double timeToHub = distance / (vel * cosAngle);
+        double timeToHub = distance / (flywheelSpeed * cosAngle);
         
         Translation2d staticTarget = getLockOnTargetPosition(robotPose);
         double vX = fieldRelativeSpeeds.vxMetersPerSecond;
         double vY = fieldRelativeSpeeds.vyMetersPerSecond;
 
-        double XOffset = vX + vX * (timeToHub + indexDelay);
-        double YOffset = vY + vY * (timeToHub + indexDelay);
+        double XOffset = /*** vX + ***/ vX * (timeToHub + indexDelay);
+        double YOffset = /*** vY + ***/ vY * (timeToHub + indexDelay);
         Translation2d offsetTotal = new Translation2d(XOffset, YOffset);
         return staticTarget.minus(offsetTotal);
 
