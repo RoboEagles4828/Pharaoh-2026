@@ -28,7 +28,7 @@ public class Intake extends SubsystemBase {
     /** Motor that controls the ground pickup of the fuel */
     private final TalonFX intakeMotor;
     /** Motor that controls the transfer of fuel from the intake to the hopper */
-    private final TalonFX ninjaStarMotor;
+    // private final TalonFX ninjaStarMotor;
     /** Limit switch that limits the retraction of the intake */
     // private final DigitalInput intakeLimitSwitch;
 
@@ -56,13 +56,13 @@ public class Intake extends SubsystemBase {
 
     // Duty Cycle Speeds
     private static final TunableNumber intakeDutyCycle = new TunableNumber("Tuning/Intake/IntakeDutyCycle", IntakeConstants.INTAKE_DUTY_CYCLE); 
-    private static final TunableNumber ninjaStarDutyCycle = new TunableNumber("Tuning/Intake/NinjaStarDutyCycle", IntakeConstants.NINJA_STAR_DUTY_CYCLE);
+    // private static final TunableNumber ninjaStarDutyCycle = new TunableNumber("Tuning/Intake/NinjaStarDutyCycle", IntakeConstants.NINJA_STAR_DUTY_CYCLE);
 
     public Intake() {
         // Creating the motors on the rio can bus
         deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID, Constants.RIO_CAN_BUS);
         intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID, Constants.RIO_CAN_BUS);
-        ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID, Constants.RIO_CAN_BUS);
+        // ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID, Constants.RIO_CAN_BUS);
         // intakeLimitSwitch = new DigitalInput(DigitalIDS.INTAKE_LIMIT_SWITCH);
 
         // Configuring deploy motor (done separately because it has PID values that change)
@@ -76,11 +76,11 @@ public class Intake extends SubsystemBase {
             .withSupplyCurrentLimit(40);
 
         // Configuring ninja star (hopper) motor
-        final TalonFXConfiguration ninjaStarCfg = new TalonFXConfiguration();
-        ninjaStarCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        ninjaStarCfg.Feedback.SensorToMechanismRatio = IntakeConstants.NINJA_STAR_GEAR_RATIO;
-        ninjaStarCfg.CurrentLimits = (new CurrentLimitsConfigs())
-            .withSupplyCurrentLimit(40);
+        // final TalonFXConfiguration ninjaStarCfg = new TalonFXConfiguration();
+        //ninjaStarCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        //ninjaStarCfg.Feedback.SensorToMechanismRatio = IntakeConstants.NINJA_STAR_GEAR_RATIO;
+        //ninjaStarCfg.CurrentLimits = (new CurrentLimitsConfigs())
+        //    .withSupplyCurrentLimit(40);
 
         // We start in the up position. Set the encoder so that 0.0 is the retracted position.
         deployMotor.setPosition(IntakeConstants.RAISED_POSITION);
@@ -124,9 +124,9 @@ public class Intake extends SubsystemBase {
         deployMotor.getPosition().setUpdateFrequency(50);
         deployMotor.getVelocity().setUpdateFrequency(50);
         deployMotor.getAcceleration().setUpdateFrequency(20);
-        ninjaStarMotor.getPosition().setUpdateFrequency(20);
-        ninjaStarMotor.getVelocity().setUpdateFrequency(20);
-        ninjaStarMotor.getAcceleration().setUpdateFrequency(20);
+        //ninjaStarMotor.getPosition().setUpdateFrequency(20);
+        //ninjaStarMotor.getVelocity().setUpdateFrequency(20);
+        //ninjaStarMotor.getAcceleration().setUpdateFrequency(20);
         intakeMotor.getPosition().setUpdateFrequency(20);
         intakeMotor.getVelocity().setUpdateFrequency(20);
         intakeMotor.getAcceleration().setUpdateFrequency(20);
@@ -164,13 +164,13 @@ public class Intake extends SubsystemBase {
             Collections.emptySet());
     }    
     /** Returns a command that runs the ninja star motor */
-    public Command startNinjaStarMotor() {
-        return Commands.defer(
-            () -> Commands.run(() -> {
-            ninjaStarMotor.set(ninjaStarDutyCycle.get());
-            }),
-            Collections.emptySet());
-    }
+//    public Command startNinjaStarMotor() {
+  //      return Commands.defer(
+    //        () -> Commands.run(() -> {
+      //      ninjaStarMotor.set(ninjaStarDutyCycle.get());
+        //    }),
+          //  Collections.emptySet());
+    //}
 
     public Command outtakeIntake() {
         return Commands.defer(
@@ -179,30 +179,30 @@ public class Intake extends SubsystemBase {
             }),
             Collections.emptySet());
     }
-    public Command outtakeNinja() {
-        return Commands.defer(
-            () -> Commands.run(() -> {
-            ninjaStarMotor.set(-ninjaStarDutyCycle.get());
-            }),
-            Collections.emptySet());
-    }
+ //   public Command outtakeNinja() {
+   //     return Commands.defer(
+     //       () -> Commands.run(() -> {
+       //     ninjaStarMotor.set(-ninjaStarDutyCycle.get());
+         //   }),
+           // Collections.emptySet());
+    //}
 
     /** Returns a command that stops the intake motor */
     public Command stopIntake() {
         return Commands.runOnce(() -> intakeMotor.stopMotor());
     }
     /** Returns a command that stops the ninja star motors */
-    public Command stopNinjaStarMotor() {
-        return Commands.runOnce(() -> ninjaStarMotor.stopMotor());
-    }
+ //   public Command stopNinjaStarMotor() {
+   //     return Commands.runOnce(() -> ninjaStarMotor.stopMotor());
+    //}
 
     /** Returns a command that performs the full retraction process: retracting, stopping intake and ninja stars */
     public Command stopAndRetract() {
         return Commands.defer(
             () -> Commands.parallel(
                 stopIntake(),
-                retractIntake(),
-                stopNinjaStarMotor()),
+                retractIntake()),
+  //              stopNinjaStarMotor()),
             Set.of(this));
     }
 
@@ -214,8 +214,8 @@ public class Intake extends SubsystemBase {
                 Commands.sequence(
                     Commands.waitSeconds(IntakeConstants.DELAY_BEFORE_START_SPINNING_SECONDS),
                     Commands.parallel(
-                        startIntake(),
-                        startNinjaStarMotor())
+                        startIntake())
+                        //startNinjaStarMotor())
                 )
             ),
             Set.of(this));
@@ -228,8 +228,8 @@ public class Intake extends SubsystemBase {
                 Commands.sequence(
                     Commands.waitSeconds(IntakeConstants.DELAY_BEFORE_START_SPINNING_SECONDS),
                     Commands.parallel(
-                        outtakeIntake(),
-                        outtakeNinja())
+                        outtakeIntake())
+                        //outtakeNinja())
                 )
             ),
             Set.of(this));

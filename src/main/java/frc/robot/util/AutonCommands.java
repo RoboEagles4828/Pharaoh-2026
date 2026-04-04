@@ -62,8 +62,8 @@ public class AutonCommands {
     public static Command stopIntaking(Intake intake) {
         return 
         Commands.parallel(
-            intake.stopIntake(),
-            intake.stopNinjaStarMotor()
+            intake.stopIntake()
+            //intake.stopNinjaStarMotor()
         );
     }
 
