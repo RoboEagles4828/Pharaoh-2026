@@ -27,15 +27,12 @@ public class Intake extends SubsystemBase {
     private final TalonFX deployMotor;
     /** Motor that controls the ground pickup of the fuel */
     private final TalonFX intakeMotor;
-    /** Motor that controls the transfer of fuel from the intake to the hopper */
-    // private final TalonFX ninjaStarMotor;
-    /** Limit switch that limits the retraction of the intake */
+    // /** Limit switch that limits the retraction of the intake */
     // private final DigitalInput intakeLimitSwitch;
-
+    // /** Trigger that is activated when the limit switch is pressed */
     // private final Trigger limitSwitch;
 
     /** Position control for the deployment of the intake */
-    private final PositionVoltage deployPositionControl;
     private final MotionMagicVoltage deployMotionMagicControl;
 
     // PID constants for deploying the intake
@@ -51,21 +48,20 @@ public class Intake extends SubsystemBase {
     private static final TunableNumber deployedPosition = new TunableNumber("Tuning/Intake/DeployPosition", IntakeConstants.DEPLOYED_POSITION);
     private static final TunableNumber raisedPosition = new TunableNumber("Tuning/Intake/RaisedPosition", IntakeConstants.RAISED_POSITION);
     
+    // Motion Magic constants
     private static final TunableNumber motionMagicVelocity = new TunableNumber("Tuning/Intake/MotionMagicVelocity",IntakeConstants.MOTION_MAGIC_VELOCITY);
     private static final TunableNumber motionMagicAcceleration = new TunableNumber("Tuning/Intake/MotionMagicAcceleration",IntakeConstants.MOTION_MAGIC_ACCELERATION);
 
     // Duty Cycle Speeds
     private static final TunableNumber intakeDutyCycle = new TunableNumber("Tuning/Intake/IntakeDutyCycle", IntakeConstants.INTAKE_DUTY_CYCLE); 
-    // private static final TunableNumber ninjaStarDutyCycle = new TunableNumber("Tuning/Intake/NinjaStarDutyCycle", IntakeConstants.NINJA_STAR_DUTY_CYCLE);
 
     public Intake() {
         // Creating the motors on the rio can bus
         deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID, Constants.RIO_CAN_BUS);
         intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID, Constants.RIO_CAN_BUS);
-        // ninjaStarMotor = new TalonFX(RioBusCANIds.NINJA_STAR_MOTOR_ID, Constants.RIO_CAN_BUS);
         // intakeLimitSwitch = new DigitalInput(DigitalIDS.INTAKE_LIMIT_SWITCH);
 
-        // Configuring deploy motor (done separately because it has PID values that change)
+        // Configuring deploy motor (done separately because it has tunable PID values)
         updatePID();
 
         // Configuring intake motor
@@ -73,22 +69,11 @@ public class Intake extends SubsystemBase {
         intakeMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         intakeMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.INTAKE_GEAR_RATIO;
         intakeMotorCfg.CurrentLimits = (new CurrentLimitsConfigs())
-            .withSupplyCurrentLimit(40);
-
-        // Configuring ninja star (hopper) motor
-        // final TalonFXConfiguration ninjaStarCfg = new TalonFXConfiguration();
-        //ninjaStarCfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        //ninjaStarCfg.Feedback.SensorToMechanismRatio = IntakeConstants.NINJA_STAR_GEAR_RATIO;
-        //ninjaStarCfg.CurrentLimits = (new CurrentLimitsConfigs())
-        //    .withSupplyCurrentLimit(40);
+            .withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT);
 
         // We start in the up position. Set the encoder so that 0.0 is the retracted position.
         deployMotor.setPosition(IntakeConstants.RAISED_POSITION);
 
-        deployPositionControl = new PositionVoltage(0.0)
-                                    .withEnableFOC(true)
-                                    .withOverrideBrakeDurNeutral(true)
-                                    .withSlot(0);
         deployMotionMagicControl = new MotionMagicVoltage(0.0)
                                     .withEnableFOC(true)
                                     .withOverrideBrakeDurNeutral(true)
@@ -101,35 +86,28 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
     }
 
+    /** Updates the PID constants of the deploy motor */
     public void updatePID() {
         // Configuring deploy motor
         final TalonFXConfiguration deployMotorCfg = new TalonFXConfiguration();
         deployMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         deployMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.DEPLOY_GEAR_RATIO;
-        // Use slot 0 for deployment PID values, slot 1 for retraction PID values
+        // Slot 0 for deployment PID values
         deployMotorCfg.Slot0.kP = deployPValue.get();
         deployMotorCfg.Slot0.kD = deployDValue.get();
+        // Slot 1 for retraction PID values
         deployMotorCfg.Slot1.kG = retractGValue.get();
         deployMotorCfg.Slot1.kP = retractPValue.get();
         deployMotorCfg.Slot1.kD = retractDValue.get();
+        // Current limits for deploy motor
         deployMotorCfg.CurrentLimits = (new CurrentLimitsConfigs())
-            .withSupplyCurrentLimit(40);
+            .withSupplyCurrentLimit(IntakeConstants.DEPLOY_CURRENT_LIMIT);
 
+        // Configuring motion magic parameters
         deployMotorCfg.MotionMagic.MotionMagicCruiseVelocity = motionMagicVelocity.get();
         deployMotorCfg.MotionMagic.MotionMagicAcceleration = motionMagicAcceleration.get();
-            
+        
         deployMotor.getConfigurator().apply(deployMotorCfg);
-
-        // Reduce update frequency to reduce can% utilization...
-        deployMotor.getPosition().setUpdateFrequency(50);
-        deployMotor.getVelocity().setUpdateFrequency(50);
-        deployMotor.getAcceleration().setUpdateFrequency(20);
-        //ninjaStarMotor.getPosition().setUpdateFrequency(20);
-        //ninjaStarMotor.getVelocity().setUpdateFrequency(20);
-        //ninjaStarMotor.getAcceleration().setUpdateFrequency(20);
-        intakeMotor.getPosition().setUpdateFrequency(20);
-        intakeMotor.getVelocity().setUpdateFrequency(20);
-        intakeMotor.getAcceleration().setUpdateFrequency(20);
     }
 
     /** Returns a command that deploys the intake */
@@ -159,42 +137,22 @@ public class Intake extends SubsystemBase {
     public Command startIntake() {
         return Commands.defer(
             () -> Commands.run(() -> {
-            intakeMotor.set(intakeDutyCycle.get());
-            }),
-            Collections.emptySet());
-    }    
-    /** Returns a command that runs the ninja star motor */
-//    public Command startNinjaStarMotor() {
-  //      return Commands.defer(
-    //        () -> Commands.run(() -> {
-      //      ninjaStarMotor.set(ninjaStarDutyCycle.get());
-        //    }),
-          //  Collections.emptySet());
-    //}
-
-    public Command outtakeIntake() {
-        return Commands.defer(
-            () -> Commands.run(() -> {
-            intakeMotor.set(-intakeDutyCycle.get());
+                intakeMotor.set(intakeDutyCycle.get());
             }),
             Collections.emptySet());
     }
- //   public Command outtakeNinja() {
-   //     return Commands.defer(
-     //       () -> Commands.run(() -> {
-       //     ninjaStarMotor.set(-ninjaStarDutyCycle.get());
-         //   }),
-           // Collections.emptySet());
-    //}
-
+    /** Returns a command that runs the intake motor in reverse to outtake fuel */
+    public Command outtakeIntake() {
+        return Commands.defer(
+            () -> Commands.run(() -> {
+                intakeMotor.set(-intakeDutyCycle.get());
+            }),
+            Collections.emptySet());
+    }
     /** Returns a command that stops the intake motor */
     public Command stopIntake() {
         return Commands.runOnce(() -> intakeMotor.stopMotor());
     }
-    /** Returns a command that stops the ninja star motors */
- //   public Command stopNinjaStarMotor() {
-   //     return Commands.runOnce(() -> ninjaStarMotor.stopMotor());
-    //}
 
     /** Returns a command that performs the full retraction process: retracting, stopping intake and ninja stars */
     public Command stopAndRetract() {
@@ -202,34 +160,30 @@ public class Intake extends SubsystemBase {
             () -> Commands.parallel(
                 stopIntake(),
                 retractIntake()),
-  //              stopNinjaStarMotor()),
             Set.of(this));
     }
 
-    /** Returns a command that performs the full intake process: deploying, running intake and ninja stars */
+    /** Returns a command that performs the full intake process: deploying and running intake */
     public Command intake() {
         return Commands.defer(
-            () -> Commands.parallel(        
+            () -> Commands.parallel(
                 deployIntake(),
                 Commands.sequence(
                     Commands.waitSeconds(IntakeConstants.DELAY_BEFORE_START_SPINNING_SECONDS),
-                    Commands.parallel(
-                        startIntake())
-                        //startNinjaStarMotor())
+                    startIntake()
                 )
             ),
             Set.of(this));
     }
 
+    /** Returns a command that performs the full outtake process: deploying and running intake */
     public Command outtake() {
         return Commands.defer(
             () -> Commands.parallel(        
                 deployIntake(),
                 Commands.sequence(
                     Commands.waitSeconds(IntakeConstants.DELAY_BEFORE_START_SPINNING_SECONDS),
-                    Commands.parallel(
-                        outtakeIntake())
-                        //outtakeNinja())
+                    outtakeIntake()
                 )
             ),
             Set.of(this));
@@ -253,6 +207,7 @@ public class Intake extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("Tuning/Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());
+        
         // SmartDashboard.putBoolean("Tuning/Intake/LimitSwitch", !intakeLimitSwitch.get());
         // SmartDashboard.putBoolean("Tuning/Intake/LimitTrigger", limitSwitch.getAsBoolean());
     }

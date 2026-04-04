@@ -4,15 +4,16 @@ import edu.wpi.first.math.util.Units;
 
 public class IntakeConstants {
     public static double DEPLOY_GEAR_RATIO = 20.0; 
-    public static double INTAKE_GEAR_RATIO = 4.0; 
-    public static double NINJA_STAR_GEAR_RATIO = 5.0;
+    public static double INTAKE_GEAR_RATIO = 3.0;
     
     public static double DELAY_BEFORE_START_SPINNING_SECONDS = 0.33;
 
     public static double WHEEL_DIAMETER = Units.inchesToMeters(2.25);
 
     public static double INTAKE_DUTY_CYCLE = 0.8;
-    public static double NINJA_STAR_DUTY_CYCLE = -0.8;
+
+    public static double INTAKE_CURRENT_LIMIT = 40.0;
+    public static double DEPLOY_CURRENT_LIMIT = 40.0;
 
     public static double DEPLOY_P = 20.0;
     public static double DEPLOY_D = 0.1;
