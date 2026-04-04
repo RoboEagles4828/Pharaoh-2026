@@ -164,6 +164,19 @@ public class Intake extends SubsystemBase {
             Set.of(this));
     }
 
+    /** Returns a command that agitates the fuel within the hopper */
+    public Command agitate() {
+        return Commands.defer(
+            () -> {
+                return Commands.sequence(
+                    retractIntake(),
+                    Commands.waitSeconds(IntakeConstants.AGITATION_DELAY_SECONDS),
+                    deployIntake()
+                );
+            },
+            Collections.emptySet());
+    }
+
     /** Returns a command that performs the full intake process: deploying and running intake */
     public Command intake() {
         return Commands.defer(

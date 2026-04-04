@@ -269,6 +269,7 @@ public class RobotContainer {
     /*** Shooting */
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
+    driverController.rightTrigger().whileTrue(intake.agitate());
 
     driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
     driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
