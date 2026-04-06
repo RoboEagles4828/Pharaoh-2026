@@ -93,70 +93,6 @@ public class RobotContainer {
   /*** PATHPLANNER WIDGET ***/
   private final SendableChooser<Command> autonomousChooser;
 
-  /*** more complex commands that require multiple subsystems */
-  // public Command aimAndShoot() {
-  //   return Commands.sequence(
-  //     Commands.print("Start aim and shoot"),
-  //     (new LockOnDriveCommand(drivetrain, driverController, true)).withTimeout(1.0),
-
-  //     new ParallelDeadlineGroup(
-  //       Commands.waitSeconds(3.0),
-  //       Commands.print("Aim and shoot"),
-  //       shooter.raiseHood(),
-  //       shooter.start(),
-  //       Commands.sequence(
-  //         Commands.waitSeconds(1.0),
-  //         Commands.parallel(
-  //           hopper.startConveyor().withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withTimeout(2.0),
-  //           kicker.start().withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withTimeout(2.0)
-  //         )
-  //       )
-  //     )
-  //   ).andThen(
-  //     Commands.parallel(
-  //       shooter.stop(),
-  //       kicker.stop(),
-  //       hopper.stopConveyor(),
-  //       shooter.lowerHood()
-  //     )
-  //   );
-
-  // }
-
-  // public Command climbLeft() {
-  //   return Commands.defer(() -> 
-  //     Commands.sequence(
-  //       Commands.print("Staging to tower LEFT."),
-  //       drivetrain.stageToTower(Constants.FieldConstants.TowerSide.LEFT),
-  //       Commands.print("Raising climber."),
-  //       climber.extendToPeak(),
-  //       Commands.waitSeconds(0.8),
-  //       Commands.print("Aligning to tower."),
-  //       drivetrain.alignToTower(),
-  //       Commands.waitSeconds(1.0),
-  //       Commands.print("Climbing up."),
-  //       climber.retractForClimb(),
-  //       Commands.print("Climb completed.")
-  //       ), Collections.emptySet());
-  // }
-
-  // public Command climbRight() {
-  //   return Commands.defer(() -> 
-  //     Commands.sequence(
-  //       Commands.print("Staging to tower RIGHT."),
-  //       drivetrain.stageToTower(Constants.FieldConstants.TowerSide.RIGHT),
-  //       Commands.print("Raising climber."),
-  //       climber.extendToPeak(),
-  //       Commands.waitSeconds(0.5),
-  //       Commands.print("Aligning to tower."),
-  //       drivetrain.alignToTower(),
-  //       Commands.waitSeconds(1.0),
-  //       Commands.print("Climbing up."),
-  //       //climber.retractForClimb(),
-  //       Commands.print("Climb completed.")
-  //       ), Collections.emptySet());
-  // }
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -270,6 +206,7 @@ public class RobotContainer {
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
     driverController.rightTrigger().whileTrue(intake.agitate());
+    driverController.rightTrigger().whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
 
     driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
     driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
