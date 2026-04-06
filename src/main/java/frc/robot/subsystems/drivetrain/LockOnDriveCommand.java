@@ -128,7 +128,7 @@ public class LockOnDriveCommand extends Command {
 
 		// Apply CTRE request
 		// If this mode should lock on, take control of rotational rate, but keep x/y movement free
-		if (launchCalculator.doesModeLockOn()) {
+		if (launchCalculator.doesModeLockOn() && controller.getRightX() < DrivetrainConstants.ROTATIONAL_DEADBAND) {
 			drivetrain.setControl(
 				driveRequest
 					.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)

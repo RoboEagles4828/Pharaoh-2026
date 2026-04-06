@@ -76,6 +76,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "ShootIntakeShootIntake",
+  "folder": null,
   "choreoAuto": false
 }
