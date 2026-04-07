@@ -116,7 +116,10 @@ public class Intake extends SubsystemBase {
         return Commands.defer(
             () -> {
                 return Commands.run(() -> 
-                    deployMotor.setControl(deployMotionMagicControl.withSlot(0).withPosition(deployedPosition.get()))
+                    {
+                        deployMotor.setControl(deployMotionMagicControl.withSlot(0).withPosition(deployedPosition.get()));
+                        SmartDashboard.putNumber("Tuning/Intake/Target Position", deployedPosition.get());
+                    }
                 );
             },
             Collections.emptySet()
@@ -127,7 +130,10 @@ public class Intake extends SubsystemBase {
         return Commands.defer(
             () -> {
                 return Commands.run(() -> 
-                    deployMotor.setControl(deployMotionMagicControl.withSlot(1).withPosition(raisedPosition.get()))
+                    {
+                        deployMotor.setControl(deployMotionMagicControl.withSlot(1).withPosition(raisedPosition.get()));
+                        SmartDashboard.putNumber("Tuning/Intake/Target Position", raisedPosition.get());
+                    }
                 );
             },
             Collections.emptySet()
