@@ -93,6 +93,8 @@ public class RobotContainer {
   /*** PATHPLANNER WIDGET ***/
   private final SendableChooser<Command> autonomousChooser;
 
+  public Trigger readyToShoot;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -122,12 +124,12 @@ public class RobotContainer {
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
     /** PATHPLANNER **/
-    NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController, shooter, hopper, kicker, launchCalculator), Collections.emptySet()));
-    NamedCommands.registerCommand("ClimbRight", Commands.defer(() -> AutonCommands.climbRight(drivetrain, climber), Collections.emptySet()));
-    NamedCommands.registerCommand("ClimbLeft", Commands.defer(() -> AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
-		NamedCommands.registerCommand("StartIntake", intake.intake());
+    // NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController, shooter, hopper, kicker, launchCalculator), Collections.emptySet()));
+    // NamedCommands.registerCommand("ClimbRight", Commands.defer(() -> AutonCommands.climbRight(drivetrain, climber), Collections.emptySet()));
+    // NamedCommands.registerCommand("ClimbLeft", Commands.defer(() -> AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
+		NamedCommands.registerCommand("StartIntake", intake.startIntake());
 		NamedCommands.registerCommand("StopIntake", intake.stopAndRetract().withTimeout(1.0));
-    NamedCommands.registerCommand("StopIntakeWheels", AutonCommands.stopIntaking(intake));
+    NamedCommands.registerCommand("StopIntakeWheels", intake.stopIntake());
 
 		// Create and populate a SendableChooser with the autonomous routines from PathPlanner, and add it to dashboard.
 		autonomousChooser = AutoBuilder.buildAutoChooser();
@@ -190,7 +192,7 @@ public class RobotContainer {
     driverController.leftBumper().whileTrue(shooter.raiseHood());
     driverController.leftBumper().onFalse(shooter.lowerHood()); //< this is sort a $hack$ but it's ok for now...
 
-    Trigger readyToShoot = new Trigger(() -> 
+    readyToShoot = new Trigger(() -> 
       shooter.isAtTargetParams() && driverController.leftBumper().getAsBoolean());
 
     readyToShoot.onTrue(

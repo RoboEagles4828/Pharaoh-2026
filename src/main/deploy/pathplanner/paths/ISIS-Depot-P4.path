@@ -1,0 +1,63 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.0236607142857146,
+        "y": 7.486
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.165587069709844,
+        "y": 7.3098122464203605
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.064449404761905,
+        "y": 6.586
+      },
+      "prevControl": {
+        "x": 6.103597667501685,
+        "y": 7.969363194940431
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ISIS-Depot-P4-Endpoint"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.19921875,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.50390625,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "ISIS Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -65.149
+  },
+  "useDefaultConstraints": false
+}

@@ -2,8 +2,11 @@
   "robotWidth": 0.8509,
   "robotLength": 0.8382,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "ISIS Paths"
+  ],
   "autoFolders": [
+    "ISIS",
     "ShootClimb",
     "ShootIntakeShootIntake"
   ],

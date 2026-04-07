@@ -1,0 +1,89 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.953519345238095,
+        "y": 3.956
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.005734387631129,
+        "y": 6.9837378769109115
+      },
+      "isLocked": false,
+      "linkedName": "ISIS-Depot-P5-Endpoint"
+    },
+    {
+      "anchor": {
+        "x": 5.4323111979166665,
+        "y": 7.395
+      },
+      "prevControl": {
+        "x": 6.034142517101642,
+        "y": 7.370817436353175
+      },
+      "nextControl": {
+        "x": 3.017134690426727,
+        "y": 7.492045729839695
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9779836309523806,
+        "y": 7.453
+      },
+      "prevControl": {
+        "x": 5.418444437518629,
+        "y": 7.394251424467703
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.25,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.5357967667436486,
+      "maxWaypointRelativePos": 0.9769053117782919,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "ISIS Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": false
+}

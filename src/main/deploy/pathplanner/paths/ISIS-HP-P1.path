@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.413549107142857,
+        "y": 0.6092187499999999
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.413549107142857,
+        "y": 0.6092187499999999
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.761026785714286,
+        "y": 1.2617485119047627
+      },
+      "prevControl": {
+        "x": 7.19985119047619,
+        "y": 0.3090550595238106
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ISIS-HP-P1-Endpoint"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": 82.972
+  },
+  "reversed": false,
+  "folder": "ISIS Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": false
+}

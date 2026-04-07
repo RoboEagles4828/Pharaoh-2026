@@ -1,0 +1,89 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.953519345238095,
+        "y": 4.113303571428571
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.005721726190476,
+        "y": 1.0855654761904772
+      },
+      "isLocked": false,
+      "linkedName": "ISIS-HP-P5-Endpoint"
+    },
+    {
+      "anchor": {
+        "x": 5.4323111979166665,
+        "y": 0.673656063988096
+      },
+      "prevControl": {
+        "x": 6.03414233613187,
+        "y": 0.6978431310085652
+      },
+      "nextControl": {
+        "x": 3.017135416666666,
+        "y": 0.5765922619047624
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9779836309523806,
+        "y": 0.6157440476190481
+      },
+      "prevControl": {
+        "x": 5.41844494047619,
+        "y": 0.6744717261904771
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.25,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.5357967667436486,
+      "maxWaypointRelativePos": 0.9769053117782919,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "ISIS Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": false
+}
