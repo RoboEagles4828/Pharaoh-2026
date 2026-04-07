@@ -161,10 +161,10 @@ public class RobotContainer {
     driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // Use dpad for basic movement in the 4 cardinal directions
-    // driverController.povUp().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.1 * DrivetrainConstants.MAX_SPEED).withVelocityY(0.0).withRotationalRate(0.0)));
-    // driverController.povDown().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(-0.1 * DrivetrainConstants.MAX_SPEED).withVelocityY(0.0).withRotationalRate(0.0)));
-    // driverController.povRight().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.0).withVelocityY(-0.1 * DrivetrainConstants.MAX_SPEED).withRotationalRate(0)));
-    // driverController.povLeft().whileTrue(drivetrain.applyRequest(() -> driveRequestRobotCentric.withVelocityX(0.0).withVelocityY(0.1 * DrivetrainConstants.MAX_SPEED).withRotationalRate(0)));
+    driverController.povUp().whileTrue(drivetrain.povUp(driveRequestRobotCentric));
+    driverController.povDown().whileTrue(drivetrain.povDown(driveRequestRobotCentric));
+    driverController.povRight().whileTrue(drivetrain.povRight(driveRequestRobotCentric));
+    driverController.povLeft().whileTrue(drivetrain.povLeft(driveRequestRobotCentric));
 
     // Reset the field-centric heading
     // driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -172,7 +172,7 @@ public class RobotContainer {
 
     /*** Intaking */
     driverController.leftTrigger().whileTrue(intake.intake());
-    driverController.leftTrigger().whileTrue(hopper.startConveyor());
+    // driverController.leftTrigger().whileTrue(hopper.startConveyor());
     //Ben - At Raza's request, make it possible to intake and shoot at the same time.
     //This shouldn't actually change our ball capacity. kicker.startIntake and shooter.startIntake both
     //don't really achieve anything (shooter spins backwards and kicker doesn't spin at all).

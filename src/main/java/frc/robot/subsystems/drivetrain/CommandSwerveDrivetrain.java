@@ -11,6 +11,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -30,12 +31,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants.LockOnDriveConstraints;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants.PathPlannerConstraints;
+import frc.robot.util.TunableNumber;
 import frc.robot.util.Util4828;
 
 /**
@@ -53,6 +56,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
 
+
+    private TunableNumber dPadSpeed = new TunableNumber("DPad Velocity MPS", 0.5);
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
@@ -507,5 +512,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                             applyRequest(() -> strafeRight).withTimeout(DrivetrainConstants.TOWER_ALIGN_STRAFE_LEFT_TIMEOUT_SEC),
                             applyRequest(() -> strafeUp).withTimeout(DrivetrainConstants.TOWER_ALIGN_STRAFE_UP_TIMEOUT_SEC),
                             applyRequest(() -> stop).withTimeout(0.05));
+    }
+
+    public Command povUp(RobotCentric driveRequest) {
+        return applyRequest(() -> driveRequest.withVelocityX(dPadSpeed.get()).withVelocityY(0.0).withRotationalRate(0.0));
+    }
+    public Command povDown(RobotCentric driveRequest) {
+        return applyRequest(() -> driveRequest.withVelocityX(-dPadSpeed.get()).withVelocityY(0.0).withRotationalRate(0.0));
+    }
+    public Command povLeft(RobotCentric driveRequest) {
+        return applyRequest(() -> driveRequest.withVelocityX(0.0).withVelocityY(-dPadSpeed.get()).withRotationalRate(0));
+    }
+    public Command povRight(RobotCentric driveRequest) {
+        return applyRequest(() -> driveRequest.withVelocityX(0.0).withVelocityY(dPadSpeed.get()).withRotationalRate(0));
     }
 }
