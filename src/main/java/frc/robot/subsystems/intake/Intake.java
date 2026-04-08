@@ -28,7 +28,7 @@ public class Intake extends SubsystemBase {
     /** Motor that controls the deployment of the intake */
     private final TalonFX deployMotor;
     /** Absolute encoder for the intake deployment */
-    private final CANcoder deployEncoder;
+    // private final CANcoder deployEncoder;
     /** Motor that controls the ground pickup of the fuel */
     private final TalonFX intakeMotor;
     // /** Limit switch that limits the retraction of the intake */
@@ -62,7 +62,7 @@ public class Intake extends SubsystemBase {
     public Intake() {
         // Creating the motors on the rio can bus
         deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID, Constants.RIO_CAN_BUS);
-        deployEncoder = new CANcoder(RioBusCANIds.INTAKE_DEPLOY_ENCODER_ID, Constants.RIO_CAN_BUS);
+        // deployEncoder = new CANcoder(RioBusCANIds.INTAKE_DEPLOY_ENCODER_ID, Constants.RIO_CAN_BUS);
         intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID, Constants.RIO_CAN_BUS);
         // intakeLimitSwitch = new DigitalInput(DigitalIDS.INTAKE_LIMIT_SWITCH);
 
@@ -77,7 +77,7 @@ public class Intake extends SubsystemBase {
             .withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT);
 
         // We start in the up position. Set the encoder so that 0.0 is the retracted position.
-        deployEncoder.setPosition(IntakeConstants.RAISED_POSITION);
+        // deployEncoder.setPosition(IntakeConstants.RAISED_POSITION);
         deployMotor.setPosition(IntakeConstants.RAISED_POSITION);
 
         deployMotionMagicControl = new MotionMagicVoltage(0.0)
@@ -98,9 +98,10 @@ public class Intake extends SubsystemBase {
         // Configuring deploy motor
         final TalonFXConfiguration deployMotorCfg = new TalonFXConfiguration();
         deployMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        deployMotorCfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
-        deployMotorCfg.Feedback.FeedbackRemoteSensorID = RioBusCANIds.INTAKE_DEPLOY_ENCODER_ID;
-        deployMotorCfg.Feedback.RotorToSensorRatio = IntakeConstants.INTAKE_GEAR_RATIO;
+        // deployMotorCfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+        // deployMotorCfg.Feedback.FeedbackRemoteSensorID = RioBusCANIds.INTAKE_DEPLOY_ENCODER_ID;
+        // deployMotorCfg.Feedback.RotorToSensorRatio = IntakeConstants.INTAKE_GEAR_RATIO;
+        deployMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.DEPLOY_GEAR_RATIO;
         // Slot 0 for deployment PID values
         deployMotorCfg.Slot0.kP = deployPValue.get();
         deployMotorCfg.Slot0.kD = deployDValue.get();
@@ -221,14 +222,14 @@ public class Intake extends SubsystemBase {
     public Command resetDeployEncoder() {
         return Commands.runOnce(() -> {
             deployMotor.setPosition(raisedPosition.get());
-            deployEncoder.setPosition(raisedPosition.get());
+            // deployEncoder.setPosition(raisedPosition.get());
         });
     }
 
     /** Returns the absolute position of the intake deployment encoder in mechanism rotations */
-    public double getDeployEncoderPosition() {
-        return deployEncoder.getAbsolutePosition().getValueAsDouble();
-    }
+    // public double getDeployEncoderPosition() {
+    //     return deployEncoder.getAbsolutePosition().getValueAsDouble();
+    // }
 
     @Override
     public void periodic() {
@@ -246,7 +247,7 @@ public class Intake extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("Tuning/Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Tuning/Intake/DeployEncoderPosition", getDeployEncoderPosition());
+        // SmartDashboard.putNumber("Tuning/Intake/DeployEncoderPosition", getDeployEncoderPosition());
         // SmartDashboard.putBoolean("Tuning/Intake/LimitSwitch", !intakeLimitSwitch.get());
         // SmartDashboard.putBoolean("Tuning/Intake/LimitTrigger", limitSwitch.getAsBoolean());
     }
