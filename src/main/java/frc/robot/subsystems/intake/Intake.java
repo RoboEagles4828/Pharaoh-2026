@@ -219,7 +219,10 @@ public class Intake extends SubsystemBase {
 
     /** Resets the encoder of the deploy motor */
     public Command resetDeployEncoder() {
-        return Commands.runOnce(() -> deployMotor.setPosition(raisedPosition.get()));
+        return Commands.runOnce(() -> {
+            deployMotor.setPosition(raisedPosition.get());
+            deployEncoder.setPosition(raisedPosition.get());
+        });
     }
 
     /** Returns the absolute position of the intake deployment encoder in mechanism rotations */
