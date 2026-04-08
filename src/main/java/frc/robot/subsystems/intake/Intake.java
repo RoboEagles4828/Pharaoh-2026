@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -92,7 +93,8 @@ public class Intake extends SubsystemBase {
         // Configuring deploy motor
         final TalonFXConfiguration deployMotorCfg = new TalonFXConfiguration();
         deployMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        deployMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.DEPLOY_GEAR_RATIO;
+        deployMotorCfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+        deployMotorCfg.Feedback.FeedbackRemoteSensorID = RioBusCANIds.INTAKE_DEPLOY_ENCODER_ID;
         // Slot 0 for deployment PID values
         deployMotorCfg.Slot0.kP = deployPValue.get();
         deployMotorCfg.Slot0.kD = deployDValue.get();

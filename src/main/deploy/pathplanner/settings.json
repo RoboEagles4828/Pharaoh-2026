@@ -3,15 +3,16 @@
   "robotLength": 0.8382,
   "holonomicMode": true,
   "pathFolders": [
-    "ISIS Paths"
+    "ISIS Paths OG",
+    "ISIS Paths Updated Swipe"
   ],
   "autoFolders": [
     "ISIS",
     "ShootClimb",
     "ShootIntakeShootIntake"
   ],
-  "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 3.0,
+  "defaultMaxVel": 5.0,
+  "defaultMaxAccel": 12.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
