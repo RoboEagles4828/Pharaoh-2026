@@ -95,6 +95,7 @@ public class Intake extends SubsystemBase {
         deployMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         deployMotorCfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
         deployMotorCfg.Feedback.FeedbackRemoteSensorID = RioBusCANIds.INTAKE_DEPLOY_ENCODER_ID;
+        deployMotorCfg.Feedback.RotorToSensorRatio = IntakeConstants.INTAKE_GEAR_RATIO;
         // Slot 0 for deployment PID values
         deployMotorCfg.Slot0.kP = deployPValue.get();
         deployMotorCfg.Slot0.kD = deployDValue.get();
