@@ -127,7 +127,7 @@ public class RobotContainer {
     // NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController, shooter, hopper, kicker, launchCalculator), Collections.emptySet()));
     // NamedCommands.registerCommand("ClimbRight", Commands.defer(() -> AutonCommands.climbRight(drivetrain, climber), Collections.emptySet()));
     // NamedCommands.registerCommand("ClimbLeft", Commands.defer(() -> AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
-		NamedCommands.registerCommand("StartIntake", intake.startIntake());
+		NamedCommands.registerCommand("StartIntake", intake.intake());
 		NamedCommands.registerCommand("StopIntake", intake.stopAndRetract().withTimeout(1.0));
     NamedCommands.registerCommand("StopIntakeWheels", intake.stopIntake());
 
