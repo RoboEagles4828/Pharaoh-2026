@@ -207,8 +207,16 @@ public class RobotContainer {
     /*** Shooting */
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
-    driverController.rightTrigger().whileTrue(intake.agitate());
-    driverController.rightTrigger().whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
+    // driverController.rightTrigger().whileTrue(intake.agitate());
+    Trigger brakeTrigger = new Trigger(() -> 
+        Math.abs(driverController.getLeftX()) < DrivetrainConstants.DEADBAND &&
+        Math.abs(driverController.getLeftY()) < DrivetrainConstants.DEADBAND &&
+        Math.abs(driverController.getRightX()) < DrivetrainConstants.ROTATIONAL_DEADBAND &&
+        driverController.rightTrigger().getAsBoolean()
+    );
+    brakeTrigger.whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
+
+
 
     driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
     driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
@@ -220,9 +228,6 @@ public class RobotContainer {
     //driverController.x().onTrue(climbLeft());
     driverController.y().onTrue(climber.extend());
     driverController.a().onTrue(climber.retract());
-
-    //driverController.rightBumper().whileTrue(climber.climbDownDutyCycle());
-    //driverController.rightBumper().onFalse(climber.stop());
   }
 
   public void setDefaultCommands() {

@@ -114,7 +114,7 @@
     {
       "name": "Intaking Zone",
       "minWaypointRelativePos": 0.9662337662337634,
-      "maxWaypointRelativePos": 2.7844155844155813,
+      "maxWaypointRelativePos": 3.5896103896103835,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 12.0,
