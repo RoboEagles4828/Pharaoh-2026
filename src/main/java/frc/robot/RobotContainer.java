@@ -234,7 +234,7 @@ public class RobotContainer {
     // Set defaults after the autonomous performs so it doesn't interfere with the command
     shooter.setDefaultCommand(shooter.stop());
     kicker.setDefaultCommand(kicker.stop());
-    intake.setDefaultCommand(intake.stopAndRetract());
+    intake.setDefaultCommand(intake.stopIntake());
     hopper.setDefaultCommand(hopper.stopConveyor());
   }
 
