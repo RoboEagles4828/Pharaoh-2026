@@ -94,6 +94,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autonomousChooser;
 
   public Trigger readyToShoot;
+  public Trigger brakeTrigger;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -161,10 +162,10 @@ public class RobotContainer {
     driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // Use dpad for basic movement in the 4 cardinal directions
-    driverController.povUp().whileTrue(drivetrain.povUp(driveRequestRobotCentric));
-    driverController.povDown().whileTrue(drivetrain.povDown(driveRequestRobotCentric));
-    driverController.povRight().whileTrue(drivetrain.povRight(driveRequestRobotCentric));
-    driverController.povLeft().whileTrue(drivetrain.povLeft(driveRequestRobotCentric));
+    // driverController.povUp().whileTrue(drivetrain.povUp(driveRequestRobotCentric));
+    // driverController.povDown().whileTrue(drivetrain.povDown(driveRequestRobotCentric));
+    // driverController.povRight().whileTrue(drivetrain.povRight(driveRequestRobotCentric));
+    // driverController.povLeft().whileTrue(drivetrain.povLeft(driveRequestRobotCentric));
 
     // Reset the field-centric heading
     // driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -178,8 +179,11 @@ public class RobotContainer {
     //don't really achieve anything (shooter spins backwards and kicker doesn't spin at all).
     driverController.leftTrigger().whileTrue(shooter.startIntake());
     driverController.leftTrigger().whileTrue(kicker.startIntake());
+    driverController.leftTrigger().onFalse(intake.stopIntake());
+    driverController.rightBumper().onTrue(intake.stopAndRetract());
 
     driverController.b().whileTrue(intake.outtake());
+    driverController.b().whileTrue(hopper.startConveyorOuttake());
 
     /*** Aim/lockon **/
     driverController.leftBumper().whileTrue(
@@ -208,7 +212,7 @@ public class RobotContainer {
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
     // driverController.rightTrigger().whileTrue(intake.agitate());
-    Trigger brakeTrigger = new Trigger(() -> 
+    brakeTrigger = new Trigger(() -> 
         Math.abs(driverController.getLeftX()) < DrivetrainConstants.DEADBAND &&
         Math.abs(driverController.getLeftY()) < DrivetrainConstants.DEADBAND &&
         Math.abs(driverController.getRightX()) < DrivetrainConstants.ROTATIONAL_DEADBAND &&
@@ -216,12 +220,10 @@ public class RobotContainer {
     );
     brakeTrigger.whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
 
-
-
     driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
     driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
-    driverController.rightBumper().onTrue(Commands.runOnce(() -> launchCalculator.enterFarShotMode()));
-    driverController.rightBumper().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    driverController.povUp().onTrue(Commands.runOnce(() -> launchCalculator.enterFarShotMode()));
+    driverController.povUp().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
 
     /*** Climbing ***/
     //driverController.b().onTrue(climbRight());
@@ -234,7 +236,7 @@ public class RobotContainer {
     // Set defaults after the autonomous performs so it doesn't interfere with the command
     shooter.setDefaultCommand(shooter.stop());
     kicker.setDefaultCommand(kicker.stop());
-    intake.setDefaultCommand(intake.stopIntake());
+    // intake.setDefaultCommand(intake.stopAndRetract());
     hopper.setDefaultCommand(hopper.stopConveyor());
   }
 

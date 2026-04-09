@@ -39,6 +39,16 @@ public class Hopper extends SubsystemBase {
                 },
                 Set.of(this));
     }
+    /** Returns a command that runs the conveyor motor in the opposite direction */
+    public Command startConveyorOuttake() {
+        return Commands.defer(
+                () -> {
+                    return Commands.run(() -> {
+                        conveyorMotor.set(-hopperDutyCycle.get());
+                    });
+                },
+                Set.of(this));
+    }
     /** Returns a command that stops the conveyer motor */
     public Command stopConveyor() {
         return Commands.defer(

@@ -15,11 +15,11 @@ public class IntakeConstants {
     public static final double INTAKE_CURRENT_LIMIT = 40.0;
     public static final double DEPLOY_CURRENT_LIMIT = 40.0;
 
-    public static final double DEPLOY_P = 24.0;
-    public static final double DEPLOY_D = 0.5;
+    public static final double DEPLOY_P = 512.0;
+    public static final double DEPLOY_D = 2.0;
 
-    public static final double RETRACT_P = 24.0;
-    public static final double RETRACT_D = 1;
+    public static final double RETRACT_P = 17.5;
+    public static final double RETRACT_D = 1.0;
     public static final double RETRACT_G = 0;
 
     public static final double MOTION_MAGIC_VELOCITY = 3.0; // in mechanism rotations per second

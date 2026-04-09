@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import java.util.Collections;
 import java.util.Set;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -28,7 +29,7 @@ public class Intake extends SubsystemBase {
     /** Motor that controls the deployment of the intake */
     private final TalonFX deployMotor;
     /** Absolute encoder for the intake deployment */
-    // private final CANcoder deployEncoder;
+    private final CANcoder deployEncoder;
     /** Motor that controls the ground pickup of the fuel */
     private final TalonFX intakeMotor;
     // /** Limit switch that limits the retraction of the intake */
@@ -62,7 +63,7 @@ public class Intake extends SubsystemBase {
     public Intake() {
         // Creating the motors on the rio can bus
         deployMotor = new TalonFX(RioBusCANIds.INTAKE_DEPLOY_MOTOR_ID, Constants.RIO_CAN_BUS);
-        // deployEncoder = new CANcoder(RioBusCANIds.INTAKE_DEPLOY_ENCODER_ID, Constants.RIO_CAN_BUS);
+        deployEncoder = new CANcoder(RioBusCANIds.INTAKE_DEPLOY_ENCODER_ID, Constants.RIO_CAN_BUS);
         intakeMotor = new TalonFX(RioBusCANIds.INTAKE_MOTOR_ID, Constants.RIO_CAN_BUS);
         // intakeLimitSwitch = new DigitalInput(DigitalIDS.INTAKE_LIMIT_SWITCH);
 
@@ -98,9 +99,9 @@ public class Intake extends SubsystemBase {
         // Configuring deploy motor
         final TalonFXConfiguration deployMotorCfg = new TalonFXConfiguration();
         deployMotorCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        // deployMotorCfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+        // deployMotorCfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         // deployMotorCfg.Feedback.FeedbackRemoteSensorID = RioBusCANIds.INTAKE_DEPLOY_ENCODER_ID;
-        // deployMotorCfg.Feedback.RotorToSensorRatio = IntakeConstants.INTAKE_GEAR_RATIO;
+        // deployMotorCfg.Feedback.RotorToSensorRatio = IntakeConstants.DEPLOY_GEAR_RATIO;
         deployMotorCfg.Feedback.SensorToMechanismRatio = IntakeConstants.DEPLOY_GEAR_RATIO;
         // Slot 0 for deployment PID values
         deployMotorCfg.Slot0.kP = deployPValue.get();
@@ -118,6 +119,7 @@ public class Intake extends SubsystemBase {
         deployMotorCfg.MotionMagic.MotionMagicAcceleration = motionMagicAcceleration.get();
         
         deployMotor.getConfigurator().apply(deployMotorCfg);
+
     }
 
     /** Returns a command that deploys the intake */
@@ -223,14 +225,14 @@ public class Intake extends SubsystemBase {
     public Command resetDeployEncoder() {
         return Commands.runOnce(() -> {
             deployMotor.setPosition(raisedPosition.get());
-            // deployEncoder.setPosition(raisedPosition.get());
+            deployEncoder.setPosition(raisedPosition.get());
         });
     }
 
     /** Returns the absolute position of the intake deployment encoder in mechanism rotations */
-    // public double getDeployEncoderPosition() {
-    //     return deployEncoder.getAbsolutePosition().getValueAsDouble();
-    // }
+    public double getDeployEncoderPosition() {
+        return deployEncoder.getAbsolutePosition().getValueAsDouble();
+    }
 
     @Override
     public void periodic() {
@@ -244,11 +246,12 @@ public class Intake extends SubsystemBase {
 
         if (SmartDashboard.getBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false)) {
             deployMotor.setPosition(raisedPosition.get()); // also reset encoder for testing
+            deployEncoder.setPosition(raisedPosition.get());
             SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
         }
 
         SmartDashboard.putNumber("Tuning/Intake/DeployMotorPosition", deployMotor.getPosition().getValueAsDouble());
-        // SmartDashboard.putNumber("Tuning/Intake/DeployEncoderPosition", getDeployEncoderPosition());
+        SmartDashboard.putNumber("Tuning/Intake/DeployEncoderPosition", getDeployEncoderPosition());
         // SmartDashboard.putBoolean("Tuning/Intake/LimitSwitch", !intakeLimitSwitch.get());
         // SmartDashboard.putBoolean("Tuning/Intake/LimitTrigger", limitSwitch.getAsBoolean());
     }

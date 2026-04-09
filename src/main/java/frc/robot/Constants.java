@@ -64,8 +64,8 @@ public final class Constants {
     public static final int HOOD_MOTOR_ID = 44; 
     public static final int INTAKE_MOTOR_ID = 36; 
     public static final int INTAKE_DEPLOY_MOTOR_ID = 35; 
-    public static final int INTAKE_DEPLOY_ENCODER_ID = 34;
-    public static final int HOPPER_CONVEYOR_MOTOR_ID = 33; 
+    public static final int INTAKE_DEPLOY_ENCODER_ID = 37;
+    public static final int HOPPER_CONVEYOR_MOTOR_ID = 33;
     public static final int CLIMBER_MOTOR_ID = 22;
   }
 
