@@ -26,6 +26,7 @@ public class IntakeConstants {
     public static final double MOTION_MAGIC_ACCELERATION = 15.0; // in mechanism rotations per second squared
 
     public static final double DEPLOYED_POSITION = 0.333251953125; // in mechanism rotations
+    public static final double AGITATE_POSITION = 0.333251953125 / 2;
     public static final double RAISED_POSITION = 0.0; // in mechanism rotations
 
     public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";

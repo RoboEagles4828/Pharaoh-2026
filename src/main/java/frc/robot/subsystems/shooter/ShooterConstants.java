@@ -42,8 +42,8 @@ public class ShooterConstants {
     public static final InterpolatingDoubleTreeMap SHOOT_VELOCITY_MAP = new InterpolatingDoubleTreeMap(); // map of distance (in) -> velocity (m/s)
     public static final InterpolatingDoubleTreeMap SHOOT_HOOD_POSITION_MAP = new InterpolatingDoubleTreeMap(); // map of distance (in) -> hood rotations (0.0 - -1.5)
 
-    public static final double HUB_SHOT_VELOCITY = 14.15;
-    public static final double HUB_SHOT_HOOD = -0.375;
+    public static final double HUB_SHOT_VELOCITY = 14.92358;
+    public static final double HUB_SHOT_HOOD = -0.44487;
 
     static {
         // // distance from the front bumper of the robot to the hub in inches, velocity in m/s

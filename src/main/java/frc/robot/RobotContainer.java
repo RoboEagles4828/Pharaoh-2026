@@ -125,7 +125,7 @@ public class RobotContainer {
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
     /** PATHPLANNER **/
-    // NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController, shooter, hopper, kicker, launchCalculator), Collections.emptySet()));
+    NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController, shooter, intake, hopper, kicker, launchCalculator), Collections.emptySet()));
     // NamedCommands.registerCommand("ClimbRight", Commands.defer(() -> AutonCommands.climbRight(drivetrain, climber), Collections.emptySet()));
     // NamedCommands.registerCommand("ClimbLeft", Commands.defer(() -> AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
 		NamedCommands.registerCommand("StartIntake", intake.intake());
@@ -211,7 +211,10 @@ public class RobotContainer {
     /*** Shooting */
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
-    // driverController.rightTrigger().whileTrue(intake.agitate());
+    driverController.rightTrigger().whileTrue(intake.agitate());
+    driverController.rightTrigger().whileTrue(intake.startIntake());
+    driverController.rightTrigger().onFalse(intake.deployIntake());
+    driverController.rightTrigger().onFalse(intake.stopIntake());
     brakeTrigger = new Trigger(() -> 
         Math.abs(driverController.getLeftX()) < DrivetrainConstants.DEADBAND &&
         Math.abs(driverController.getLeftY()) < DrivetrainConstants.DEADBAND &&

@@ -27,6 +27,7 @@ public class AutonCommands {
         CommandSwerveDrivetrain drivetrain,
         CommandXboxController driverController,
         Shooter shooter,
+        Intake intake,
         Hopper hopper,
         Kicker kicker,
         LaunchCalculator launchCalculator
@@ -37,15 +38,16 @@ public class AutonCommands {
             (new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator)).withTimeout(1.0),
             
             new ParallelDeadlineGroup(
-                Commands.waitSeconds(3.0),
+                Commands.waitSeconds(4.0),
                 new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Shoot")),
                 shooter.raiseHood(),
                 shooter.start(),
                 Commands.sequence(
                     Commands.waitSeconds(1.0),
                     Commands.parallel(
-                        hopper.startConveyor().withTimeout(2.0),
-                        kicker.start().withTimeout(2.0)
+                        hopper.startConveyor().withTimeout(3.0),
+                        kicker.start().withTimeout(3.0),
+                        intake.agitate().withTimeout(3.0)
                     )
                 )
             )

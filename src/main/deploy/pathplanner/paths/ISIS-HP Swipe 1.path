@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.413549107142857,
-        "y": 0.6026934523809531
+        "x": 4.414279600570612,
+        "y": 0.4315834522111266
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.457651080578805,
-        "y": 0.7929741848239181
+        "x": 5.458381574006561,
+        "y": 0.6218641846540917
       },
       "isLocked": false,
       "linkedName": null
@@ -78,8 +78,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.29296875,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 0.2063174730107934,
+      "rotationDegrees": 90.0
     },
     {
       "waypointRelativePos": 1.04296875,
@@ -139,7 +139,7 @@
   "folder": "ISIS Paths Updated Swipe",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 89.93501162439989
   },
   "useDefaultConstraints": true
 }

@@ -52,7 +52,8 @@ public class Intake extends SubsystemBase {
     // Positions to move the intake mechanism to
     private static final TunableNumber deployedPosition = new TunableNumber("Tuning/Intake/DeployPosition", IntakeConstants.DEPLOYED_POSITION);
     private static final TunableNumber raisedPosition = new TunableNumber("Tuning/Intake/RaisedPosition", IntakeConstants.RAISED_POSITION);
-    
+    private static final TunableNumber agitatePosition = new TunableNumber("Tuning/Intake/AgitatePosition", IntakeConstants.AGITATE_POSITION);
+
     // Motion Magic constants
     private static final TunableNumber motionMagicVelocity = new TunableNumber("Tuning/Intake/MotionMagicVelocity",IntakeConstants.MOTION_MAGIC_VELOCITY);
     private static final TunableNumber motionMagicAcceleration = new TunableNumber("Tuning/Intake/MotionMagicAcceleration",IntakeConstants.MOTION_MAGIC_ACCELERATION);
@@ -150,6 +151,17 @@ public class Intake extends SubsystemBase {
             Collections.emptySet()
         );
     }
+    public Command retractIntakeAgitate() {
+        return Commands.defer(
+            () -> {
+                return Commands.run(() ->
+                {
+                    deployMotor.setControl(deployMotionMagicControl.withSlot(1).withPosition(agitatePosition.get()));
+                    SmartDashboard.putNumber("Tuning/Intake/Target Position", agitatePosition.get());
+                });
+            }, 
+            Collections.emptySet());
+    }
 
     /** Returns a command that runs the intake motor */
     public Command startIntake() {
@@ -186,9 +198,11 @@ public class Intake extends SubsystemBase {
         return Commands.defer(
             () -> 
                 Commands.repeatingSequence(
-                    retractIntake(),
                     Commands.waitSeconds(IntakeConstants.AGITATION_DELAY_SECONDS),
-                    deployIntake()
+                    retractIntakeAgitate(),
+                    Commands.waitSeconds(IntakeConstants.AGITATION_DELAY_SECONDS),
+                    deployIntake(),
+                    Commands.waitSeconds(IntakeConstants.AGITATION_DELAY_SECONDS)
                 )
             ,
             Set.of(this)
