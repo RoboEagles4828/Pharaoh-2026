@@ -42,7 +42,7 @@ public class Kicker extends SubsystemBase {
         kickerMotor.getConfigurator().apply(kickerMotorCfg);
 
         // Reduce update frequency to try to reduce can%
-        kickerMotor.getPosition().setUpdateFrequency(20);
+        kickerMotor.getPosition().setUpdateFrequency(10);
         kickerMotor.getVelocity().setUpdateFrequency(20);
         kickerMotor.getAcceleration().setUpdateFrequency(20);
 

@@ -74,7 +74,7 @@ public class TunerConstants {
         )
         .withClosedLoopRamps(
             new ClosedLoopRampsConfigs()
-                .withVoltageClosedLoopRampPeriod(0.01) // suggested: 0.01
+                .withVoltageClosedLoopRampPeriod(0.05) // suggested: 0.01
         );
     private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
         .withCurrentLimits(

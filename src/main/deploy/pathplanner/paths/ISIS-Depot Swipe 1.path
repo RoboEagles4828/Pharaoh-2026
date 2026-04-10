@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 4.414279600570612,
-        "y": 0.4315834522111266
+        "y": 7.637
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.458381574006561,
-        "y": 0.6218641846540917
+        "x": 5.458383003183478,
+        "y": 7.446727109855054
       },
       "isLocked": false,
       "linkedName": null
@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 8.035089285714285,
-        "y": 0.935483630952382
+        "y": 7.134
       },
       "prevControl": {
-        "x": 8.002462797617184,
-        "y": 0.5765922619094772
+        "x": 8.002465484228102,
+        "y": 7.492891613270122
       },
       "nextControl": {
-        "x": 8.115644775767084,
-        "y": 1.8215940214709305
+        "x": 8.115638142467835,
+        "y": 6.247889006479279
       },
       "isLocked": false,
       "linkedName": null
@@ -33,15 +33,15 @@
     {
       "anchor": {
         "x": 7.9176339285695665,
-        "y": 3.6630580357190006
+        "y": 4.406
       },
       "prevControl": {
-        "x": 8.531387595667152,
-        "y": 3.5397402533877473
+        "x": 8.531387215086417,
+        "y": 4.529319676469721
       },
       "nextControl": {
-        "x": 6.784599601690617,
-        "y": 3.890711715014542
+        "x": 6.784600304270594,
+        "y": 4.178342823985791
       },
       "isLocked": false,
       "linkedName": null
@@ -49,15 +49,15 @@
     {
       "anchor": {
         "x": 5.960044642855281,
-        "y": 0.6026934523809531
+        "y": 7.466
       },
       "prevControl": {
-        "x": 6.73610257578877,
-        "y": 0.6523592340255983
+        "x": 6.736102397178138,
+        "y": 7.416331427534731
       },
       "nextControl": {
-        "x": 5.578818251139397,
-        "y": 0.5782959094596829
+        "x": 5.578818338879093,
+        "y": 7.490398913868504
       },
       "isLocked": false,
       "linkedName": null
@@ -65,37 +65,37 @@
     {
       "anchor": {
         "x": 2.7691741071428573,
-        "y": 0.7527752976190483
+        "y": 7.316
       },
       "prevControl": {
-        "x": 4.755268237763614,
-        "y": 0.6689631472158255
+        "x": 4.755268850201759,
+        "y": 7.399797636215037
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ISIS-HP Swipe 1 Endpoint"
+      "linkedName": "ISIS-Depot Swipe 1 Endpoint"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.2063174730107934,
-      "rotationDegrees": 90.0
+      "rotationDegrees": -90.0
     },
     {
       "waypointRelativePos": 1.04296875,
-      "rotationDegrees": 80.95363517770546
+      "rotationDegrees": -80.954
     },
     {
       "waypointRelativePos": 1.81640625,
-      "rotationDegrees": 123.54126627017695
+      "rotationDegrees": -123.54100000000001
     },
     {
       "waypointRelativePos": 2.26953125,
-      "rotationDegrees": -108.37939928669041
+      "rotationDegrees": 108.379
     },
     {
       "waypointRelativePos": 2.71484375,
-      "rotationDegrees": -127.47244707368444
+      "rotationDegrees": 127.47200000000001
     },
     {
       "waypointRelativePos": 3.25,
@@ -133,13 +133,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 61.17600000000001
+    "rotation": -61.17600000000001
   },
   "reversed": false,
   "folder": "ISIS Paths Updated Swipe",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 89.93501162439989
+    "rotation": -89.935
   },
   "useDefaultConstraints": true
 }

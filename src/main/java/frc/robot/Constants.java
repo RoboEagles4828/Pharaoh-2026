@@ -69,8 +69,8 @@ public final class Constants {
     public static final int CLIMBER_MOTOR_ID = 22;
   }
 
-  public static String CANIVORE_NAME = "canivore";
-  public static final CANBus CANIVORE_CAN_BUS = new CANBus("canivore");
+  public static String CANIVORE_NAME = "rio";
+  public static final CANBus CANIVORE_CAN_BUS = new CANBus("rio");
   public static class CANivoreBusCANIds {
     // NOTE - 1 to 12 are reserved for the swerve drivetrain.
   }
@@ -81,5 +81,5 @@ public final class Constants {
     public static double DISTANCE_BUMPER_EDGE_TO_CENTER_METERS = DISTANCE_FRAME_EDGE_TO_CENTER_NO_BUMPERS_METERS + ROBOT_BUMPER_SIZE_METERS;
   }
 
-  public static final boolean debugMode = true;
+  public static final boolean debugMode = false;
 }

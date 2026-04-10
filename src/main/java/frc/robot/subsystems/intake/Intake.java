@@ -78,6 +78,16 @@ public class Intake extends SubsystemBase {
         intakeMotorCfg.CurrentLimits = (new CurrentLimitsConfigs())
             .withSupplyCurrentLimit(IntakeConstants.INTAKE_CURRENT_LIMIT);
 
+        intakeMotor.getConfigurator().apply(intakeMotorCfg);
+
+        intakeMotor.getPosition().setUpdateFrequency(10);
+        intakeMotor.getVelocity().setUpdateFrequency(10);
+        intakeMotor.getAcceleration().setUpdateFrequency(10);
+
+        deployMotor.getPosition().setUpdateFrequency(100);
+        deployMotor.getVelocity().setUpdateFrequency(75);
+        deployMotor.getAcceleration().setUpdateFrequency(75);
+
         // We start in the up position. Set the encoder so that 0.0 is the retracted position.
         // deployEncoder.setPosition(IntakeConstants.RAISED_POSITION);
         deployMotor.setPosition(IntakeConstants.RAISED_POSITION);
@@ -93,6 +103,8 @@ public class Intake extends SubsystemBase {
         if (Constants.debugMode)
             SmartDashboard.putBoolean(IntakeConstants.NT_UPDATE_INTAKE_PID_BUTTON, false);
         SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
+    
+        SmartDashboard.putBoolean(IntakeConstants.NT_ENABLE_AGITATION, true);
     }
 
     /** Updates the PID constants of the deploy motor */
@@ -195,14 +207,17 @@ public class Intake extends SubsystemBase {
 
     /** Returns a command that agitates the fuel within the hopper */
     public Command agitate() {
+        if (!SmartDashboard.getBoolean(IntakeConstants.NT_ENABLE_AGITATION, true)) {
+            return Commands.none();
+        }
+
         return Commands.defer(
             () -> 
-                Commands.repeatingSequence(
-                    Commands.waitSeconds(IntakeConstants.AGITATION_DELAY_SECONDS),
-                    retractIntakeAgitate(),
-                    Commands.waitSeconds(IntakeConstants.AGITATION_DELAY_SECONDS),
-                    deployIntake(),
-                    Commands.waitSeconds(IntakeConstants.AGITATION_DELAY_SECONDS)
+                Commands.waitSeconds(IntakeConstants.AGITATION_DELAY_SECONDS)
+                    .andThen(Commands.repeatingSequence(
+                        retractIntakeAgitate().withTimeout(IntakeConstants.AGITATION_DELAY_SECONDS),
+                        deployIntake().withTimeout(IntakeConstants.AGITATION_DELAY_SECONDS)
+                    )
                 )
             ,
             Set.of(this)

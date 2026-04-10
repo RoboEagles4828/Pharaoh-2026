@@ -45,8 +45,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     SmartDashboard.putData("Field", Constants.FieldConstants.FIELD);
-    SmartDashboard.putBoolean("Tuning/Shooter/Ready to Shoot", robotContainer.readyToShoot.getAsBoolean());
-    SmartDashboard.putBoolean("Tuning/LockOn/Brake Trigger", robotContainer.brakeTrigger.getAsBoolean());
+    // SmartDashboard.putBoolean("Tuning/Shooter/Ready to Shoot", robotContainer.readyToShoot.getAsBoolean());
+    // SmartDashboard.putBoolean("Tuning/LockOn/Brake Trigger", robotContainer.brakeTrigger.getAsBoolean());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

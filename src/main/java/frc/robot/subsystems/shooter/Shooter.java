@@ -115,6 +115,14 @@ public class Shooter extends SubsystemBase {
         shooterMotorTwo.getConfigurator().apply(shooterMotorCfg);
         shooterMotorThree.getConfigurator().apply(shooterMotorCfg);
         hoodMotor.getConfigurator().apply(hoodMotorCfg);
+
+        hoodMotor.getPosition().setUpdateFrequency(100);
+        hoodMotor.getVelocity().setUpdateFrequency(50);
+        hoodMotor.getAcceleration().setUpdateFrequency(50);
+        
+        shooterMotorOne.getPosition().setUpdateFrequency(10);
+        shooterMotorTwo.getPosition().setUpdateFrequency(10);
+        shooterMotorThree.getPosition().setUpdateFrequency(10);
     }
 
     /** Returns a command to shoot the fuel. */

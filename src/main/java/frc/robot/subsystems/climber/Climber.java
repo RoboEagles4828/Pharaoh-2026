@@ -76,6 +76,10 @@ public class Climber extends SubsystemBase {
         motorCfg.CurrentLimits = (new CurrentLimitsConfigs())
             .withSupplyCurrentLimit(ClimberConstants.CURRENT_LIMIT);
         climbMotor.getConfigurator().apply(motorCfg);
+        
+        climbMotor.getPosition().setUpdateFrequency(30);
+        climbMotor.getVelocity().setUpdateFrequency(10);
+        climbMotor.getAcceleration().setUpdateFrequency(10);
     }
 
     /** Command to stop the climber motor */

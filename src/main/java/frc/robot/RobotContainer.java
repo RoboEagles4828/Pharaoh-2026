@@ -213,16 +213,18 @@ public class RobotContainer {
     driverController.rightTrigger().whileTrue(kicker.start());
     driverController.rightTrigger().whileTrue(intake.agitate());
     driverController.rightTrigger().whileTrue(intake.startIntake());
+    driverController.rightTrigger().whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
+
     driverController.rightTrigger().onFalse(intake.deployIntake());
     driverController.rightTrigger().onFalse(intake.stopIntake());
-    brakeTrigger = new Trigger(() -> 
-        Math.abs(driverController.getLeftX()) < DrivetrainConstants.DEADBAND &&
-        Math.abs(driverController.getLeftY()) < DrivetrainConstants.DEADBAND &&
-        Math.abs(driverController.getRightX()) < DrivetrainConstants.ROTATIONAL_DEADBAND &&
-        driverController.rightTrigger().getAsBoolean()
-    );
-    brakeTrigger.whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
-
+    // brakeTrigger = new Trigger(() -> 
+    //     Math.abs(driverController.getLeftX()) < DrivetrainConstants.DEADBAND &&
+    //     Math.abs(driverController.getLeftY()) < DrivetrainConstants.DEADBAND &&
+    //     Math.abs(driverController.getRightX()) < DrivetrainConstants.ROTATIONAL_DEADBAND &&
+    //     driverController.rightTrigger().getAsBoolean()
+    // );
+    // brakeTrigger.whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
+    
     driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
     driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
     driverController.povUp().onTrue(Commands.runOnce(() -> launchCalculator.enterFarShotMode()));

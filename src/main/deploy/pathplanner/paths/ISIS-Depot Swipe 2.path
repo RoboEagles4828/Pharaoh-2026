@@ -3,61 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.414279600570612,
-        "y": 0.4315834522111266
+        "x": 2.7691741071428573,
+        "y": 7.316
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.458381574006561,
-        "y": 0.6218641846540917
+        "x": 4.772440476194914,
+        "y": 7.178968749994686
+      },
+      "isLocked": false,
+      "linkedName": "ISIS-Depot Swipe 1 Endpoint"
+    },
+    {
+      "anchor": {
+        "x": 7.382559523809524,
+        "y": 4.517
+      },
+      "prevControl": {
+        "x": 8.718787960895586,
+        "y": 8.551475624405548
+      },
+      "nextControl": {
+        "x": 7.043251142513585,
+        "y": 3.4925259239354114
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.035089285714285,
-        "y": 0.935483630952382
+        "x": 5.9078422619047615,
+        "y": 4.047
       },
       "prevControl": {
-        "x": 8.002462797617184,
-        "y": 0.5765922619094772
+        "x": 5.92742172439429,
+        "y": 3.5380269230203742
       },
       "nextControl": {
-        "x": 8.115644775767084,
-        "y": 1.8215940214709305
+        "x": 5.879171575745909,
+        "y": 4.79230173446758
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.9176339285695665,
-        "y": 3.6630580357190006
+        "x": 5.9078422619047615,
+        "y": 7.316
       },
       "prevControl": {
-        "x": 8.531387595667152,
-        "y": 3.5397402533877473
+        "x": 6.223418688155987,
+        "y": 5.508573630379148
       },
       "nextControl": {
-        "x": 6.784599601690617,
-        "y": 3.890711715014542
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.960044642855281,
-        "y": 0.6026934523809531
-      },
-      "prevControl": {
-        "x": 6.73610257578877,
-        "y": 0.6523592340255983
-      },
-      "nextControl": {
-        "x": 5.578818251139397,
-        "y": 0.5782959094596829
+        "x": 5.836065302636833,
+        "y": 7.727093979525509
       },
       "isLocked": false,
       "linkedName": null
@@ -65,52 +65,56 @@
     {
       "anchor": {
         "x": 2.7691741071428573,
-        "y": 0.7527752976190483
+        "y": 7.316
       },
       "prevControl": {
-        "x": 4.755268237763614,
-        "y": 0.6689631472158255
+        "x": 4.576680181649065,
+        "y": 7.603121694466794
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ISIS-HP Swipe 1 Endpoint"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.2063174730107934,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 0.05,
+      "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.04296875,
-      "rotationDegrees": 80.95363517770546
+      "waypointRelativePos": 0.3793103448275862,
+      "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.81640625,
-      "rotationDegrees": 123.54126627017695
+      "waypointRelativePos": 0.6551724137931038,
+      "rotationDegrees": -73.602
     },
     {
-      "waypointRelativePos": 2.26953125,
-      "rotationDegrees": -108.37939928669041
+      "waypointRelativePos": 0.9784482758620667,
+      "rotationDegrees": -109.423
     },
     {
-      "waypointRelativePos": 2.71484375,
-      "rotationDegrees": -127.47244707368444
+      "waypointRelativePos": 1.9181034482758632,
+      "rotationDegrees": 105.487
     },
     {
-      "waypointRelativePos": 3.25,
+      "waypointRelativePos": 2.806034482758619,
+      "rotationDegrees": 97.70100000000001
+    },
+    {
+      "waypointRelativePos": 3.3577586206896544,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 3.76953125,
+      "waypointRelativePos": 3.7887931034482762,
       "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
     {
-      "name": "Intake Zone",
-      "minWaypointRelativePos": 1.1039260969976905,
-      "maxWaypointRelativePos": 3.350649350649343,
+      "name": "Intaking Zone",
+      "minWaypointRelativePos": 0.9662337662337634,
+      "maxWaypointRelativePos": 3.534662867996203,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 12.0,
@@ -133,13 +137,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 61.17600000000001
+    "rotation": -62.24100000000001
   },
   "reversed": false,
   "folder": "ISIS Paths Updated Swipe",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 89.93501162439989
+    "rotation": -61.17600000000001
   },
   "useDefaultConstraints": true
 }

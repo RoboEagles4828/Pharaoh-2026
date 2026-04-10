@@ -31,4 +31,6 @@ public class IntakeConstants {
 
     public static final String NT_UPDATE_INTAKE_PID_BUTTON = "Tuning/Intake/UpdatePIDButton";
     public static final String NT_RESET_INTAKE_ENCODER_BUTTON = "Tuning/Intake/ResetDeployEncoder";
+
+    public static final String NT_ENABLE_AGITATION = "EnableAgitation";
 }
