@@ -34,23 +34,37 @@ public class AutonCommands {
     ) {
         return 
         Commands.sequence(
-            new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Locking on Hub")),
-            (new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator)).withTimeout(1.0),
-            
-            new ParallelDeadlineGroup(
-                Commands.waitSeconds(3.5),
-                new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Shoot")),
+            Commands.deadline(
+                (new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator)).withTimeout(0.3),
+                shooter.raiseHood(),
+                shooter.start()
+            ),
+            Commands.deadline(
+                Commands.waitSeconds(3.0),
                 shooter.raiseHood(),
                 shooter.start(),
-                Commands.sequence(
-                    Commands.waitSeconds(0.5),
-                    Commands.parallel(
-                        hopper.startConveyor().withTimeout(3.0),
-                        kicker.start().withTimeout(3.0),
-                        intake.agitate().withTimeout(3.0)
-                    )
-                )
+
+                hopper.startConveyor(),
+                kicker.start(),
+                intake.agitate()
             )
+            // new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Locking on Hub")),
+            // (new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator)).withTimeout(0.5),
+            
+            // new ParallelDeadlineGroup(
+            //     Commands.waitSeconds(3.5),
+            //     new InstantCommand(() -> SmartDashboard.putString("AutonStage", "Shoot")),
+            //     shooter.raiseHood(),
+            //     shooter.start(),
+            //     Commands.sequence(
+            //         Commands.waitSeconds(0.5),
+            //         Commands.parallel(
+            //             hopper.startConveyor().withTimeout(3.0),
+            //             kicker.start().withTimeout(3.0),
+            //             intake.agitate().withTimeout(3.0)
+            //         )
+            //     )
+            // )
         ).andThen(
             Commands.parallel(
                 shooter.stop(),

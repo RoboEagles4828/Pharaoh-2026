@@ -52,12 +52,12 @@
         "y": 0.7527752976190483
       },
       "prevControl": {
-        "x": 6.223424467683879,
-        "y": 2.5602006581255043
+        "x": 5.863673469387756,
+        "y": 2.5823513753327414
       },
       "nextControl": {
-        "x": 5.836063988099677,
-        "y": 0.3416815476137345
+        "x": 5.917913909294744,
+        "y": 0.33558379027173796
       },
       "isLocked": false,
       "linkedName": null
@@ -114,7 +114,7 @@
     {
       "name": "Intaking Zone",
       "minWaypointRelativePos": 0.9662337662337634,
-      "maxWaypointRelativePos": 3.5896103896103835,
+      "maxWaypointRelativePos": 2.8634920634920653,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 12.0,

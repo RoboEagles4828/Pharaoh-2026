@@ -110,7 +110,7 @@
     {
       "name": "Intake Zone",
       "minWaypointRelativePos": 1.1039260969976905,
-      "maxWaypointRelativePos": 3.350649350649343,
+      "maxWaypointRelativePos": 2.6539682539682543,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 12.0,
