@@ -45,6 +45,12 @@ public class ShooterConstants {
     public static final double HUB_SHOT_VELOCITY = 14.92358;
     public static final double HUB_SHOT_HOOD = -0.44487;
 
+    public static final double TOWER_SHOT_VELOCITY = 17.97375;
+    public static final double TOWER_SHOT_HOOD = -0.98532;
+
+    public static final double FAR_SHOT_VELOCITY = 20.57;
+    public static final double FAR_SHOT_HOOD = -1.181;
+
     static {
         // // distance from the front bumper of the robot to the hub in inches, velocity in m/s
         // SHOOT_VELOCITY_MAP.put(36.257, 14.75);
@@ -91,7 +97,6 @@ public class ShooterConstants {
     }
 
     public static final InterpolatingDoubleTreeMap PASS_VELOCITY_MAP = new InterpolatingDoubleTreeMap();
-
     static {
         // TODO make sure data is enough for the entire field
         PASS_VELOCITY_MAP.put(651.22, 41.82194);

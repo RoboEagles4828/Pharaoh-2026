@@ -34,6 +34,8 @@ public class LaunchCalculator {
     private enum Mode {
         /** Hardcoded for close range hub shots */
         HUB_SHOT_ONLY,
+        /** Hardcoded for mid-range tower shots */
+        TOWER_SHOT_ONLY,
         /** Hardcoded for far range corner shots */
         FAR_SHOT_ONLY,
         /** Dynamically adjust launch calculations based on distance */
@@ -41,7 +43,7 @@ public class LaunchCalculator {
     }
 
     public boolean doesModeLockOn() {
-        if (currentMode == Mode.HUB_SHOT_ONLY)
+        if (currentMode == Mode.HUB_SHOT_ONLY || currentMode == Mode.TOWER_SHOT_ONLY)
             return false;
         return true;
     }
@@ -74,14 +76,19 @@ public class LaunchCalculator {
         currentMode = Mode.HUB_SHOT_ONLY;
         SmartDashboard.putString("Shot Mode", "Hub");
     }
-    public void enterShootFromAnywhereMode() {
-        currentMode = Mode.SHOOT_FROM_ANYWHERE;
-        SmartDashboard.putString("Shot Mode", "Anywhere");
+    public void enterTowerShotMode() {
+        currentMode = Mode.TOWER_SHOT_ONLY;
+        SmartDashboard.putString("Shot Mode", "Tower");
     }
     public void enterFarShotMode() {
         currentMode = Mode.FAR_SHOT_ONLY;
         SmartDashboard.putString("Shot Mode", "Far");
     }
+    public void enterShootFromAnywhereMode() {
+        currentMode = Mode.SHOOT_FROM_ANYWHERE;
+        SmartDashboard.putString("Shot Mode", "Anywhere");
+    }
+    
 
     /** Returns the shooter hood position and launch velocity based on the distance from the target position */
     public LaunchParameters getParameters() {
@@ -101,9 +108,13 @@ public class LaunchCalculator {
             targetVelocity = ShooterConstants.HUB_SHOT_VELOCITY;
             targetHoodPosition = ShooterConstants.HUB_SHOT_HOOD;
         }
+        else if (currentMode == Mode.TOWER_SHOT_ONLY){
+            targetVelocity = ShooterConstants.TOWER_SHOT_VELOCITY;
+            targetHoodPosition = ShooterConstants.TOWER_SHOT_HOOD;
+        }
         else if (currentMode == Mode.FAR_SHOT_ONLY){
-            targetVelocity = 20.57;
-            targetHoodPosition = -1.181;
+            targetVelocity = ShooterConstants.FAR_SHOT_VELOCITY;
+            targetHoodPosition = ShooterConstants.FAR_SHOT_HOOD;
         }
 
         // debugging - publish info

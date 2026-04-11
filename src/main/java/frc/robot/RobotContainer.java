@@ -142,14 +142,15 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    /*** Driving */
+    /*** DRIVETRAIN ***/
     // Default command for drivetrain - drive according to driver controller joystick
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(() -> driveRequest
             .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) 
             .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) 
             .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) 
-        ));
+        )
+    );
 
     // While disabled, idle.
     final var idle = new SwerveRequest.Idle();
@@ -168,24 +169,23 @@ public class RobotContainer {
     // driverController.povLeft().whileTrue(drivetrain.povLeft(driveRequestRobotCentric));
 
     // Reset the field-centric heading
-    // driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     driverController.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    /*** Intaking */
+    /*** INTAKING ***/
+    // Intaking
     driverController.leftTrigger().whileTrue(intake.intake());
     // driverController.leftTrigger().whileTrue(hopper.startConveyor());
-    //Ben - At Raza's request, make it possible to intake and shoot at the same time.
-    //This shouldn't actually change our ball capacity. kicker.startIntake and shooter.startIntake both
-    //don't really achieve anything (shooter spins backwards and kicker doesn't spin at all).
     driverController.leftTrigger().whileTrue(shooter.startIntake());
     driverController.leftTrigger().whileTrue(kicker.startIntake());
     driverController.leftTrigger().onFalse(intake.stopIntake());
     driverController.rightBumper().onTrue(intake.stopAndRetract());
 
+    // Outtaking
     driverController.b().whileTrue(intake.outtake());
     driverController.b().whileTrue(hopper.startConveyorOuttake());
 
-    /*** Aim/lockon **/
+    /*** PREPARING TO SHOOT  ***/
+    // Preparing to shoot
     driverController.leftBumper().whileTrue(
       Commands.defer(() -> {
         return new LockOnDriveCommand(drivetrain, driverController,false, launchCalculator);
@@ -196,9 +196,16 @@ public class RobotContainer {
     driverController.leftBumper().whileTrue(shooter.raiseHood());
     driverController.leftBumper().onFalse(shooter.lowerHood()); //< this is sort a $hack$ but it's ok for now...
 
-    readyToShoot = new Trigger(() -> 
-      shooter.isAtTargetParams() && driverController.leftBumper().getAsBoolean());
+    // Target presets
+    driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
+    driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    driverController.povRight().onTrue(Commands.runOnce(() -> launchCalculator.enterTowerShotMode()));
+    driverController.povRight().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    driverController.povUp().onTrue(Commands.runOnce(() -> launchCalculator.enterFarShotMode()));
+    driverController.povUp().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
 
+    // Rumble the controller when we're ready to shoot (flywheel at speed and hood in position)
+    readyToShoot = new Trigger(() -> shooter.isAtTargetParams() && driverController.leftBumper().getAsBoolean());
     readyToShoot.onTrue(
       Commands.sequence(
         new InstantCommand(() -> driverController.setRumble(RumbleType.kBothRumble, 0.5)),
@@ -208,13 +215,15 @@ public class RobotContainer {
     );
 
 
-    /*** Shooting */
+    /*** SHOOTING ***/
+    // Feeding balls into shooter, agitating fuel in hopper, and braking the drivetrain while shooting
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
     driverController.rightTrigger().whileTrue(intake.agitate());
     driverController.rightTrigger().whileTrue(intake.startIntake());
     driverController.rightTrigger().whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
 
+    // Reset intake to bottom after shooting
     driverController.rightTrigger().onFalse(intake.deployIntake());
     driverController.rightTrigger().onFalse(intake.stopIntake());
     // brakeTrigger = new Trigger(() -> 
@@ -224,15 +233,10 @@ public class RobotContainer {
     //     driverController.rightTrigger().getAsBoolean()
     // );
     // brakeTrigger.whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
-    
-    driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
-    driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
-    driverController.povUp().onTrue(Commands.runOnce(() -> launchCalculator.enterFarShotMode()));
-    driverController.povUp().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
 
-    /*** Climbing ***/
-    //driverController.b().onTrue(climbRight());
-    //driverController.x().onTrue(climbLeft());
+    /*** CLIMBING ***/
+    // driverController.b().onTrue(climbRight());
+    // driverController.x().onTrue(climbLeft());
     driverController.y().onTrue(climber.extend());
     driverController.a().onTrue(climber.retract());
   }

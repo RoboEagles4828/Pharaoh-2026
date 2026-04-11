@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.subsystems.drivetrain.DrivetrainConstants.LockOnDriveConstraints;
@@ -66,7 +67,15 @@ public class LockOnDriveCommand extends Command {
 		this.launchCalculator = launchCalculator;
 
 		Pose2d robotPose = drivetrain.getState().Pose;
-		this.targetPosition = Util4828.getLockOnTargetPosition(robotPose);
+
+		
+		if (launchCalculator.doesModeLockOn()) {
+			this.targetPosition = Util4828.getLockOnTargetPosition(robotPose);
+		}
+		else {
+			this.targetPosition = new Translation2d(robotPose.getX() + 1.0, robotPose.getY());
+		}
+		
 
 		this.shouldAutomaticallyEnd = shouldAutomaticallyEnd;
 
@@ -93,20 +102,6 @@ public class LockOnDriveCommand extends Command {
         headingPID.reset(robotPose.getRotation().getRadians());
     }
 
-	/** Returns if the robot is within tolerance of the angle */
-	private boolean isWithinTolerance() {
-		// Current robot pose
-		Pose2d robotPose = drivetrain.getState().Pose;
-
-		// Vector from robot to target
-		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
-
-		Rotation2d desiredHeading = toTarget.getAngle();
-		Rotation2d currentHeading = robotPose.getRotation();
-
-		return Math.abs(desiredHeading.minus(currentHeading).getRadians()) < Math.toRadians(LockOnDriveConstraints.AIM_TOLERANCE_DEGREES);
-	}
-
 	@Override
 	public void execute() {
 		// Current robot pose 
@@ -128,7 +123,7 @@ public class LockOnDriveCommand extends Command {
 
 		// Apply CTRE request
 		// If this mode should lock on, take control of rotational rate, but keep x/y movement free
-		if (launchCalculator.doesModeLockOn() && controller.getRightX() < DrivetrainConstants.ROTATIONAL_DEADBAND) {
+		if (controller.getRightX() < DrivetrainConstants.ROTATIONAL_DEADBAND) {
 			drivetrain.setControl(
 				driveRequest
 					.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
@@ -136,14 +131,14 @@ public class LockOnDriveCommand extends Command {
 					.withRotationalRate(omega));
 		}
 		// Otherwise just let the driver control everything
-		else {
-			drivetrain.setControl(
-				driveRequest
-					.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
-					.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
-					.withRotationalRate(-controller.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) );
+		// else {
+		// 	drivetrain.setControl(
+		// 		driveRequest
+		// 			.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
+		// 			.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
+		// 			.withRotationalRate(-controller.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) );
 
-		}
+		// }
 		
 	}
 
@@ -167,5 +162,20 @@ public class LockOnDriveCommand extends Command {
 
 		// Runs while button is held so never finishes on its own during teleop
 		return false;
+	}
+
+	/** Returns if the robot is within tolerance of the angle */
+	private boolean isWithinTolerance() {
+		Commands.print("Lock on within tolerance");
+		// Current robot pose
+		Pose2d robotPose = drivetrain.getState().Pose;
+
+		// Vector from robot to target
+		Translation2d toTarget = targetPosition.minus(robotPose.getTranslation());
+
+		Rotation2d desiredHeading = toTarget.getAngle();
+		Rotation2d currentHeading = robotPose.getRotation();
+
+		return Math.abs(desiredHeading.minus(currentHeading).getRadians()) < Math.toRadians(LockOnDriveConstraints.AIM_TOLERANCE_DEGREES);
 	}
 }
