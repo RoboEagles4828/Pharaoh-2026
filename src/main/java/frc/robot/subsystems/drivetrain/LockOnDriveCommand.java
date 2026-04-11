@@ -8,6 +8,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -73,7 +75,10 @@ public class LockOnDriveCommand extends Command {
 			this.targetPosition = Util4828.getLockOnTargetPosition(robotPose);
 		}
 		else {
-			this.targetPosition = new Translation2d(robotPose.getX() + 1.0, robotPose.getY());
+			if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue)
+				this.targetPosition = new Translation2d(robotPose.getX() + 1.0, robotPose.getY());
+			else
+				this.targetPosition = new Translation2d(robotPose.getX() - 1.0, robotPose.getY());
 		}
 		
 
