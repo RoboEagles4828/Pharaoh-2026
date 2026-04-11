@@ -75,10 +75,18 @@ public class LockOnDriveCommand extends Command {
 			this.targetPosition = Util4828.getLockOnTargetPosition(robotPose);
 		}
 		else {
-			if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue)
-				this.targetPosition = new Translation2d(robotPose.getX() + 1.0, robotPose.getY());
-			else
-				this.targetPosition = new Translation2d(robotPose.getX() - 1.0, robotPose.getY());
+			if (launchCalculator.getMode().equals("Pass Shot Only")){
+				if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue)
+					this.targetPosition = new Translation2d(robotPose.getX() - 1.0, robotPose.getY());
+				else
+					this.targetPosition = new Translation2d(robotPose.getX() + 1.0, robotPose.getY());
+			}
+			else {
+				if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue)
+					this.targetPosition = new Translation2d(robotPose.getX() + 1.0, robotPose.getY());
+				else
+					this.targetPosition = new Translation2d(robotPose.getX() - 1.0, robotPose.getY());
+			}
 		}
 		
 

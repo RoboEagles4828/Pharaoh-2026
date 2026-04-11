@@ -130,7 +130,7 @@ public class LaunchCalculator {
         }
         else if (currentMode == Mode.PASS_SHOT_ONLY) {
             targetVelocity = ShooterConstants.PASS_SHOT_VELOCITY;
-            targetVelocity = ShooterConstants.HOOD_MAX_POSITION;
+            targetHoodPosition = ShooterConstants.HOOD_MAX_POSITION;
         }
 
         // debugging - publish info
