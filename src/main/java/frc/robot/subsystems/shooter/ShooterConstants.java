@@ -97,6 +97,9 @@ public class ShooterConstants {
     }
 
     public static final InterpolatingDoubleTreeMap PASS_VELOCITY_MAP = new InterpolatingDoubleTreeMap();
+
+    public static final double PASS_SHOT_VELOCITY = 19.5274;
+
     static {
         // TODO make sure data is enough for the entire field
         PASS_VELOCITY_MAP.put(651.22, 41.82194);

@@ -199,10 +199,15 @@ public class RobotContainer {
     // Target presets
     driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
     driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+
     driverController.povRight().onTrue(Commands.runOnce(() -> launchCalculator.enterTowerShotMode()));
     driverController.povRight().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+
     driverController.povUp().onTrue(Commands.runOnce(() -> launchCalculator.enterFarShotMode()));
     driverController.povUp().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    
+    driverController.povLeft().onTrue(Commands.runOnce(() -> launchCalculator.enterPassShotMode()));
+    driverController.povLeft().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
 
     // Rumble the controller when we're ready to shoot (flywheel at speed and hood in position)
     readyToShoot = new Trigger(() -> shooter.isAtTargetParams() && driverController.leftBumper().getAsBoolean());

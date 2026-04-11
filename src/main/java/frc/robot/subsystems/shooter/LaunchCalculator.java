@@ -38,12 +38,14 @@ public class LaunchCalculator {
         TOWER_SHOT_ONLY,
         /** Hardcoded for far range corner shots */
         FAR_SHOT_ONLY,
+        /** Hardcoded for passing from midline */
+        PASS_SHOT_ONLY,
         /** Dynamically adjust launch calculations based on distance */
         SHOOT_FROM_ANYWHERE
     }
 
     public boolean doesModeLockOn() {
-        if (currentMode == Mode.HUB_SHOT_ONLY || currentMode == Mode.TOWER_SHOT_ONLY)
+        if (currentMode == Mode.HUB_SHOT_ONLY || currentMode == Mode.TOWER_SHOT_ONLY || currentMode == Mode.PASS_SHOT_ONLY)
             return false;
         return true;
     }
@@ -55,6 +57,12 @@ public class LaunchCalculator {
         }
         else if (currentMode == Mode.FAR_SHOT_ONLY) {
             return "Far Shot Only";
+        }
+        else if (currentMode == Mode.TOWER_SHOT_ONLY) {
+            return "Tower Shot Only";
+        }
+        else if (currentMode == Mode.PASS_SHOT_ONLY) {
+            return "Pass Shot Only";
         }
         return "Shoot From Anywhere";
     }
@@ -84,6 +92,10 @@ public class LaunchCalculator {
         currentMode = Mode.FAR_SHOT_ONLY;
         SmartDashboard.putString("Shot Mode", "Far");
     }
+    public void enterPassShotMode() {
+        currentMode = Mode.PASS_SHOT_ONLY;
+        SmartDashboard.putString("Shot Mode", "Pass");
+    }
     public void enterShootFromAnywhereMode() {
         currentMode = Mode.SHOOT_FROM_ANYWHERE;
         SmartDashboard.putString("Shot Mode", "Anywhere");
@@ -108,13 +120,17 @@ public class LaunchCalculator {
             targetVelocity = ShooterConstants.HUB_SHOT_VELOCITY;
             targetHoodPosition = ShooterConstants.HUB_SHOT_HOOD;
         }
-        else if (currentMode == Mode.TOWER_SHOT_ONLY){
+        else if (currentMode == Mode.TOWER_SHOT_ONLY) {
             targetVelocity = ShooterConstants.TOWER_SHOT_VELOCITY;
             targetHoodPosition = ShooterConstants.TOWER_SHOT_HOOD;
         }
-        else if (currentMode == Mode.FAR_SHOT_ONLY){
+        else if (currentMode == Mode.FAR_SHOT_ONLY) {
             targetVelocity = ShooterConstants.FAR_SHOT_VELOCITY;
             targetHoodPosition = ShooterConstants.FAR_SHOT_HOOD;
+        }
+        else if (currentMode == Mode.PASS_SHOT_ONLY) {
+            targetVelocity = ShooterConstants.PASS_SHOT_VELOCITY;
+            targetVelocity = ShooterConstants.HOOD_MAX_POSITION;
         }
 
         // debugging - publish info
