@@ -77,7 +77,7 @@ public class Climber extends SubsystemBase {
             .withSupplyCurrentLimit(ClimberConstants.CURRENT_LIMIT);
         climbMotor.getConfigurator().apply(motorCfg);
         
-        climbMotor.getPosition().setUpdateFrequency(30);
+        climbMotor.getPosition().setUpdateFrequency(25);
         climbMotor.getVelocity().setUpdateFrequency(10);
         climbMotor.getAcceleration().setUpdateFrequency(10);
     }

@@ -43,8 +43,8 @@ public class Kicker extends SubsystemBase {
 
         // Reduce update frequency to try to reduce can%
         kickerMotor.getPosition().setUpdateFrequency(10);
-        kickerMotor.getVelocity().setUpdateFrequency(20);
-        kickerMotor.getAcceleration().setUpdateFrequency(20);
+        kickerMotor.getVelocity().setUpdateFrequency(10);
+        kickerMotor.getAcceleration().setUpdateFrequency(10);
 
         SmartDashboard.putBoolean("Tuning/Kicker/SpinDuringIntake", true);
     }

@@ -116,9 +116,9 @@ public class Shooter extends SubsystemBase {
         shooterMotorThree.getConfigurator().apply(shooterMotorCfg);
         hoodMotor.getConfigurator().apply(hoodMotorCfg);
 
-        hoodMotor.getPosition().setUpdateFrequency(100);
-        hoodMotor.getVelocity().setUpdateFrequency(50);
-        hoodMotor.getAcceleration().setUpdateFrequency(50);
+        hoodMotor.getPosition().setUpdateFrequency(50);
+        hoodMotor.getVelocity().setUpdateFrequency(20);
+        hoodMotor.getAcceleration().setUpdateFrequency(20);
         
         shooterMotorOne.getPosition().setUpdateFrequency(10);
         shooterMotorTwo.getPosition().setUpdateFrequency(10);

@@ -30,9 +30,9 @@ public class Hopper extends SubsystemBase {
             .withSupplyCurrentLimit(HopperConstants.CURRENT_LIMIT);
         conveyorMotor.getConfigurator().apply(hopperMotorConfig);
 
-        conveyorMotor.getPosition().setUpdateFrequency(10);
-        conveyorMotor.getVelocity().setUpdateFrequency(10);
-        conveyorMotor.getAcceleration().setUpdateFrequency(10);
+        conveyorMotor.getPosition().setUpdateFrequency(4);
+        conveyorMotor.getVelocity().setUpdateFrequency(4);
+        conveyorMotor.getAcceleration().setUpdateFrequency(4);
     }
 
     /** Returns a command that runs the conveyer motors */

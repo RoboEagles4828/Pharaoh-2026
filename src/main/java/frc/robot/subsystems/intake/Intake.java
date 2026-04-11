@@ -80,13 +80,13 @@ public class Intake extends SubsystemBase {
 
         intakeMotor.getConfigurator().apply(intakeMotorCfg);
 
-        intakeMotor.getPosition().setUpdateFrequency(10);
-        intakeMotor.getVelocity().setUpdateFrequency(10);
-        intakeMotor.getAcceleration().setUpdateFrequency(10);
+        intakeMotor.getPosition().setUpdateFrequency(4);
+        intakeMotor.getVelocity().setUpdateFrequency(4);
+        intakeMotor.getAcceleration().setUpdateFrequency(4);
 
-        deployMotor.getPosition().setUpdateFrequency(100);
-        deployMotor.getVelocity().setUpdateFrequency(75);
-        deployMotor.getAcceleration().setUpdateFrequency(75);
+        deployMotor.getPosition().setUpdateFrequency(50);
+        deployMotor.getVelocity().setUpdateFrequency(25);
+        deployMotor.getAcceleration().setUpdateFrequency(25);
 
         // We start in the up position. Set the encoder so that 0.0 is the retracted position.
         // deployEncoder.setPosition(IntakeConstants.RAISED_POSITION);
