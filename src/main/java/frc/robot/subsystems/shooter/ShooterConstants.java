@@ -94,6 +94,7 @@ public class ShooterConstants {
 
     static {
         // TODO make sure data is enough for the entire field
+        PASS_VELOCITY_MAP.put(651.22, 41.82194);
         PASS_VELOCITY_MAP.put(345.851142, 25.0);
         PASS_VELOCITY_MAP.put(181.851142, 15.96);
         PASS_VELOCITY_MAP.put(109.851142, 12.0);
