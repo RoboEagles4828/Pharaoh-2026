@@ -220,7 +220,6 @@ public class RobotContainer {
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
     driverController.rightTrigger().whileTrue(intake.agitate());
-    driverController.rightTrigger().whileTrue(intake.startIntake());
     driverController.rightTrigger().whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
 
     // Reset intake to bottom after shooting

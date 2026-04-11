@@ -11,6 +11,7 @@ public class IntakeConstants {
     
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(2.25);
     public static final double INTAKE_DUTY_CYCLE = -0.9;
+    public static final double AGITATION_INTAKE_DUTY_CYCLE = -0.4;
 
     public static final double INTAKE_CURRENT_LIMIT = 40.0;
     public static final double DEPLOY_CURRENT_LIMIT = 40.0;

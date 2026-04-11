@@ -183,6 +183,14 @@ public class Intake extends SubsystemBase {
             }),
             Collections.emptySet());
     }
+    /** Returns a command that runs th eintake motor for agitation */
+    public Command startIntakeAgitate() {
+        return Commands.defer(
+            () -> Commands.run(() -> {
+                intakeMotor.set(IntakeConstants.AGITATION_INTAKE_DUTY_CYCLE);
+            }),
+            Collections.emptySet());
+    }
     /** Returns a command that runs the intake motor in reverse to outtake fuel */
     public Command outtakeIntake() {
         return Commands.defer(
@@ -217,7 +225,7 @@ public class Intake extends SubsystemBase {
                     .andThen(Commands.repeatingSequence(
                         retractIntakeAgitate().withTimeout(IntakeConstants.AGITATION_DELAY_SECONDS),
                         deployIntake().withTimeout(IntakeConstants.AGITATION_DELAY_SECONDS)
-                    )
+                    ).alongWith(startIntakeAgitate())
                 )
             ,
             Set.of(this)
