@@ -35,7 +35,7 @@ public class AutonCommands {
         return 
         Commands.sequence(
             Commands.deadline(
-                (new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator)).withTimeout(0.3),
+                (new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator)).withTimeout(0.5),
                 shooter.raiseHood(),
                 shooter.start()
             ),
