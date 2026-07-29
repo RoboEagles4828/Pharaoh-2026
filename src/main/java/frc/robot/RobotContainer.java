@@ -148,7 +148,7 @@ public class RobotContainer {
         drivetrain.applyRequest(() -> driveRequest
             .withVelocityX(driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) 
             .withVelocityY(driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) 
-            .withRotationalRate(driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) 
+            .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) 
         )
     );
 
@@ -163,10 +163,10 @@ public class RobotContainer {
     driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // Use dpad for basic movement in the 4 cardinal directions
-    // driverController.povUp().whileTrue(drivetrain.povUp(driveRequestRobotCentric));
-    // driverController.povDown().whileTrue(drivetrain.povDown(driveRequestRobotCentric));
-    // driverController.povRight().whileTrue(drivetrain.povRight(driveRequestRobotCentric));
-    // driverController.povLeft().whileTrue(drivetrain.povLeft(driveRequestRobotCentric));
+     driverController.povUp().whileTrue(drivetrain.povUp(driveRequestRobotCentric));
+     driverController.povDown().whileTrue(drivetrain.povDown(driveRequestRobotCentric));
+     driverController.povRight().whileTrue(drivetrain.povRight(driveRequestRobotCentric));
+     driverController.povLeft().whileTrue(drivetrain.povLeft(driveRequestRobotCentric));
 
     // Reset the field-centric heading
     driverController.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -197,17 +197,19 @@ public class RobotContainer {
     driverController.leftBumper().onFalse(shooter.lowerHood()); //< this is sort a $hack$ but it's ok for now...
 
     // Target presets
-    driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
-    driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    //driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
+    //driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
 
-    driverController.povRight().onTrue(Commands.runOnce(() -> launchCalculator.enterTowerShotMode()));
-    driverController.povRight().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    launchCalculator.enterHubShotMode();
 
-    driverController.povUp().onTrue(Commands.runOnce(() -> launchCalculator.enterFarShotMode()));
-    driverController.povUp().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    //driverController.povRight().onTrue(Commands.runOnce(() -> launchCalculator.enterTowerShotMode()));
+    //driverController.povRight().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+
+    //driverController.povUp().onTrue(Commands.runOnce(() -> launchCalculator.enterFarShotMode()));
+    //driverController.povUp().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
     
-    driverController.povLeft().onTrue(Commands.runOnce(() -> launchCalculator.enterPassShotMode()));
-    driverController.povLeft().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    //driverController.povLeft().onTrue(Commands.runOnce(() -> launchCalculator.enterPassShotMode()));
+    //driverController.povLeft().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
 
     // Rumble the controller when we're ready to shoot (flywheel at speed and hood in position)
     readyToShoot = new Trigger(() -> shooter.isAtTargetParams() && driverController.leftBumper().getAsBoolean());
