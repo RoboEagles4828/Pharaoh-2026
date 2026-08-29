@@ -146,8 +146,8 @@ public class RobotContainer {
     // Default command for drivetrain - drive according to driver controller joystick
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(() -> driveRequest
-            .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) 
-            .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) 
+            .withVelocityX(driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) 
+            .withVelocityY(driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) 
             .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) 
         )
     );
@@ -186,21 +186,19 @@ public class RobotContainer {
 
     /*** PREPARING TO SHOOT  ***/
     // Preparing to shoot
-    if (launchCalculator.doesModeLockOn() == true) {
-      driverController.leftBumper().whileTrue(
-        Commands.defer(() -> {
-          return new LockOnDriveCommand(drivetrain, driverController,false, launchCalculator);
-          }, Collections.emptySet()
-        )
-      );
-    }
+    driverController.leftBumper().whileTrue(
+      Commands.defer(() -> {
+        return new LockOnDriveCommand(drivetrain, driverController,false, launchCalculator);
+        }, Collections.emptySet()
+      )
+    );
     driverController.leftBumper().whileTrue(shooter.start());
     driverController.leftBumper().whileTrue(shooter.raiseHood());
     driverController.leftBumper().onFalse(shooter.lowerHood()); //< this is sort a $hack$ but it's ok for now...
 
     // Target presets
-    driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
-    driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    //driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
+    //driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
 
     launchCalculator.enterHubShotMode();
 
