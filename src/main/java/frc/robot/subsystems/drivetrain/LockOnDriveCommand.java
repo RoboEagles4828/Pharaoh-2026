@@ -143,15 +143,15 @@ public class LockOnDriveCommand extends Command {
 					.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
 					.withRotationalRate(omega));
 		}
-		// Otherwise just let the driver control everything
-		// else {
-		// 	drivetrain.setControl(
-		// 		driveRequest
-		// 			.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
-		// 			.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
-		// 			.withRotationalRate(-controller.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) );
+		 //Otherwise just let the driver control everything
+		 else {
+		 	drivetrain.setControl(
+		 		driveRequest
+		 			.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
+		 			.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
+		 			.withRotationalRate(-controller.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) );
 
-		// }
+		 }
 		
 	}
 
@@ -160,6 +160,7 @@ public class LockOnDriveCommand extends Command {
 		// Stop motion cleanly
 		drivetrain.setControl(
 			driveRequest
+		
 				.withVelocityX(0.0)
 				.withVelocityY(0.0)
 				.withRotationalRate(0.0)
