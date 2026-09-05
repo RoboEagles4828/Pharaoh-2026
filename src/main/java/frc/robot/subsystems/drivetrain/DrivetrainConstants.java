@@ -5,6 +5,9 @@ import static edu.wpi.first.units.Units.*;
 import com.pathplanner.lib.path.PathConstraints;
 
 public class DrivetrainConstants {
+    public static final double SPEED_LIMIT_MULTIPLIER = 0.5;
+    public static final double ANGULAR_SPEED_LIMIT_MULTIPLIER = 0.75;
+
     /** Teloperated max speed of the robot in meters per second */
     public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     public static final double DEADBAND = 0.1;

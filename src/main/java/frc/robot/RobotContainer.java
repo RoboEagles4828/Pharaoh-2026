@@ -146,9 +146,9 @@ public class RobotContainer {
     // Default command for drivetrain - drive according to driver controller joystick
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(() -> driveRequest
-            .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED) 
-            .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED) 
-            .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) 
+            .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER) 
+            .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER) 
+            .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ANGULAR_SPEED_LIMIT_MULTIPLIER) 
         )
     );
 

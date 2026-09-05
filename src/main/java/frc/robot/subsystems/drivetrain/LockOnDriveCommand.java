@@ -139,17 +139,17 @@ public class LockOnDriveCommand extends Command {
 		if (launchCalculator.doesModeLockOn()) {	
 			drivetrain.setControl(
 				driveRequest
-					.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
-					.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
+					.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER)
+					.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER)
 					.withRotationalRate(omega));
 		}
 		 //Otherwise just let the driver control everything
 		 else {
 		 	drivetrain.setControl(
 		 		driveRequest
-		 			.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED)
-		 			.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED)
-		 			.withRotationalRate(-controller.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE) );
+		 			.withVelocityX(-controller.getLeftY() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER)
+		 			.withVelocityY(-controller.getLeftX() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER)
+		 			.withRotationalRate(-controller.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER));
 
 		 }
 		

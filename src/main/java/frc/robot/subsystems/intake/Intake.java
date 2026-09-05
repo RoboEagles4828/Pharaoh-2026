@@ -50,9 +50,9 @@ public class Intake extends SubsystemBase {
     private static final TunableNumber retractGValue = new TunableNumber("Tuning/Intake/RetractGValue", IntakeConstants.RETRACT_G);
 
     // Positions to move the intake mechanism to
-    private static final TunableNumber deployedPosition = new TunableNumber("Tuning/Intake/DeployPosition", IntakeConstants.DEPLOYED_POSITION);
-    private static final TunableNumber raisedPosition = new TunableNumber("Tuning/Intake/RaisedPosition", IntakeConstants.RAISED_POSITION);
-    private static final TunableNumber agitatePosition = new TunableNumber("Tuning/Intake/AgitatePosition", IntakeConstants.AGITATE_POSITION);
+    private static final TunableNumber deployedPosition = new TunableNumber("Tuning/Intake/CTargetDeployPosition", IntakeConstants.DEPLOYED_POSITION);
+    private static final TunableNumber raisedPosition = new TunableNumber("Tuning/Intake/CTargetRaisedPosition", IntakeConstants.RAISED_POSITION);
+    private static final TunableNumber agitatePosition = new TunableNumber("Tuning/Intake/CTargetAgitatePosition", IntakeConstants.AGITATE_POSITION);
 
     // Motion Magic constants
     private static final TunableNumber motionMagicVelocity = new TunableNumber("Tuning/Intake/MotionMagicVelocity",IntakeConstants.MOTION_MAGIC_VELOCITY);
@@ -105,6 +105,8 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putBoolean(IntakeConstants.NT_RESET_INTAKE_ENCODER_BUTTON, false);
     
         SmartDashboard.putBoolean(IntakeConstants.NT_ENABLE_AGITATION, true);
+
+        SmartDashboard.putNumber("Tuning/Intake/Target Position", raisedPosition.get());
     }
 
     /** Updates the PID constants of the deploy motor */
@@ -183,7 +185,7 @@ public class Intake extends SubsystemBase {
             }),
             Collections.emptySet());
     }
-    /** Returns a command that runs th eintake motor for agitation */
+    /** Returns a command that runs the intake motor for agitation */
     public Command startIntakeAgitate() {
         return Commands.defer(
             () -> Commands.run(() -> {
