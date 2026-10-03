@@ -25,6 +25,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+//import frc.robot.subsystems.drivetrain.JiggleCommand;
 import frc.robot.subsystems.drivetrain.LockOnDriveCommand;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.hopper.Hopper;
@@ -146,9 +147,9 @@ public class RobotContainer {
     // Default command for drivetrain - drive according to driver controller joystick
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(() -> driveRequest
-            .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER) 
-            .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER) 
-            .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ANGULAR_SPEED_LIMIT_MULTIPLIER) 
+            .withVelocityX(driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER) 
+            .withVelocityY(driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER) 
+            .withRotationalRate(driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ANGULAR_SPEED_LIMIT_MULTIPLIER) 
         )
     );
 
@@ -228,6 +229,12 @@ public class RobotContainer {
     // Feeding balls into shooter, agitating fuel in hopper, and braking the drivetrain while shooting
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
+    // driverController.rightTrigger().whileTrue(
+    //     Commands.defer(() -> {
+    //       return new JiggleCommand(drivetrain, driverController,false);
+    //       }, Collections.emptySet()
+    //     )
+    //   );
     driverController.rightTrigger().whileTrue(intake.agitate());
     driverController.rightTrigger().whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
 
