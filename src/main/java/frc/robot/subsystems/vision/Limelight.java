@@ -79,11 +79,11 @@ public class Limelight {
         // SmartDashboard.putNumber(String.format("%s/%s", name, NT_TIMESTAMP),
         //         mostRecentPoseEstimate == null ? -1 : mostRecentPoseEstimate.timestampSeconds);
 
-        // RawFiducial bestTag = getBestTag(mostRecentPoseEstimate);
-        // SmartDashboard.putNumber(String.format("%s%s", name, NT_AMBIGUITY),
-        //     bestTag == null ?-1 : bestTag.ambiguity);
-        // SmartDashboard.putNumber(String.format("%s%s", name, NT_DISTANCE),
-        //     bestTag == null ?-1 : bestTag.distToCamera);
+        RawFiducial bestTag = getBestTag(mostRecentPoseEstimate);
+        SmartDashboard.putNumber(String.format("%s%s", name, NT_AMBIGUITY),
+            bestTag == null ?-1 : bestTag.ambiguity);
+        SmartDashboard.putNumber(String.format("%s%s", name, NT_DISTANCE),
+            bestTag == null ?-1 : bestTag.distToCamera);
 
         // double[] std_devs = NetworkTableInstance.getDefault().getTable("limelight").getEntry("stddevs").getDoubleArray(new double[6]);
         // SmartDashboard.putNumberArray("LL Standard Deviations", std_devs);
