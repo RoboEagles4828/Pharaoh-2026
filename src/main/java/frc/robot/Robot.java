@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,6 +46,40 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     SmartDashboard.putData("Field", Constants.FieldConstants.FIELD);
+
+    //Timer
+    double matchTime = DriverStation.getMatchTime();
+    if (matchTime <= 20 && matchTime >= 0 && DriverStation.isAutonomous()){
+        SmartDashboard.putNumber("Timer", matchTime);
+        SmartDashboard.putString("Phase", "Auto");
+    }
+    else if (matchTime <= 140 && matchTime >= 130 && !DriverStation.isAutonomous()) {
+        SmartDashboard.putNumber("Timer", matchTime - 130);
+        SmartDashboard.putString("Phase", "Transition");
+    }
+    else if (matchTime <= 130 && matchTime >= 105 && !DriverStation.isAutonomous()) {
+        SmartDashboard.putNumber("Timer", matchTime - 105);
+        SmartDashboard.putString("Phase", "Phase 1");
+    }
+    else if (matchTime <= 105 && matchTime >= 80 && !DriverStation.isAutonomous()) {
+        SmartDashboard.putNumber("Timer", matchTime - 80);
+        SmartDashboard.putString("Phase", "Phase 2");
+    }
+    else if (matchTime <= 80 && matchTime >= 55 && !DriverStation.isAutonomous()) {
+        SmartDashboard.putNumber("Timer", matchTime - 55);
+        SmartDashboard.putString("Phase", "Phase 3");
+    }
+    else if (matchTime <= 55 && matchTime >= 30 && !DriverStation.isAutonomous()) {
+        SmartDashboard.putNumber("Timer", matchTime - 30);
+        SmartDashboard.putString("Phase", "Phase 4");
+    }
+    else {
+        SmartDashboard.putNumber("Timer", matchTime);
+        SmartDashboard.putString("Phase", "End Game");
+    }
+
+
+
     // SmartDashboard.putBoolean("Tuning/Shooter/Ready to Shoot", robotContainer.readyToShoot.getAsBoolean());
     // SmartDashboard.putBoolean("Tuning/LockOn/Brake Trigger", robotContainer.brakeTrigger.getAsBoolean());
   }
