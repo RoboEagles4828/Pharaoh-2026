@@ -23,8 +23,8 @@ public class IntakeConstants {
     public static final double RETRACT_D = 1.0;
     public static final double RETRACT_G = 0;
 
-    public static final double MOTION_MAGIC_VELOCITY = 3.0; // in mechanism rotations per second
-    public static final double MOTION_MAGIC_ACCELERATION = 15.0; // in mechanism rotations per second squared
+    public static final double MOTION_MAGIC_VELOCITY = 6.0; // in mechanism rotations per second
+    public static final double MOTION_MAGIC_ACCELERATION = 20.0; // in mechanism rotations per second squared
 
     public static final double DEPLOYED_POSITION = 0.333251953125; // in mechanism rotations
     public static final double AGITATE_POSITION = 0.333251953125 / 2;

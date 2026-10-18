@@ -1,0 +1,145 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.414279600570612,
+        "y": 0.453
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.458381574006561,
+        "y": 0.643280732442965
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.035089285714285,
+        "y": 0.935483630952382
+      },
+      "prevControl": {
+        "x": 8.002462797617184,
+        "y": 0.5765922619094772
+      },
+      "nextControl": {
+        "x": 8.115644775767084,
+        "y": 1.8215940214709305
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.9176339285695665,
+        "y": 3.6630580357190006
+      },
+      "prevControl": {
+        "x": 8.531387595667152,
+        "y": 3.5397402533877473
+      },
+      "nextControl": {
+        "x": 6.784599601690617,
+        "y": 3.890711715014542
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.960044642855281,
+        "y": 0.6026934523809531
+      },
+      "prevControl": {
+        "x": 6.73610257578877,
+        "y": 0.6523592340255983
+      },
+      "nextControl": {
+        "x": 5.578818251139397,
+        "y": 0.5782959094596829
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7691741071428573,
+        "y": 0.7527752976190483
+      },
+      "prevControl": {
+        "x": 4.755268237763614,
+        "y": 0.6689631472158255
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ISIS-HP Swipe 1 Endpoint"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.2063174730107934,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.3816829381682834,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 1.81640625,
+      "rotationDegrees": 123.54126627017695
+    },
+    {
+      "waypointRelativePos": 2.26953125,
+      "rotationDegrees": -108.37939928669041
+    },
+    {
+      "waypointRelativePos": 2.71484375,
+      "rotationDegrees": -127.47244707368444
+    },
+    {
+      "waypointRelativePos": 3.25,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 3.76953125,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Intake Zone",
+      "minWaypointRelativePos": 1.1039260969976905,
+      "maxWaypointRelativePos": 2.6539682539682543,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 12.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 12.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 61.17600000000001
+  },
+  "reversed": false,
+  "folder": "ISIS Paths Updated Swipe",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}
