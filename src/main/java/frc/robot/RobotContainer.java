@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,6 +34,8 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.shooter.LaunchCalculator;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AutonCommands;
 import frc.robot.util.PoseSupplier;
@@ -55,13 +58,12 @@ public class RobotContainer {
   public CommandSwerveDrivetrain drivetrain = null;
   private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
       .withDeadband(DrivetrainConstants.MAX_SPEED * DrivetrainConstants.DEADBAND)
-      .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND) 
+      .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND)
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-	private final SwerveRequest.RobotCentric driveRequestRobotCentric = new SwerveRequest.RobotCentric()
+  private final SwerveRequest.RobotCentric driveRequestRobotCentric = new SwerveRequest.RobotCentric()
       .withDeadband(DrivetrainConstants.MAX_SPEED * DrivetrainConstants.DEADBAND)
-      .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND) 
+      .withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ROTATIONAL_DEADBAND)
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-
 
   /*** SHOOTER SUBSYSTEM ***/
   private Shooter shooter = null;
@@ -103,39 +105,50 @@ public class RobotContainer {
   public RobotContainer() {
     // For 2026, the field is rotationally symmetrical, not mirrored.
     // We need to tell PathPlanner this so it correctly rotates our
-    //  auto paths for the red alliance side. (By default, it mirrors, we want 180 rotation.)
+    // auto paths for the red alliance side. (By default, it mirrors, we want 180
+    // rotation.)
     FlippingUtil.symmetryType = FlippingUtil.FieldSymmetry.kRotational;
 
     /** SUBSYSTEMS **/
     drivetrain = TunerConstants.createDrivetrain();
     poseSupplier = new PoseSupplier(drivetrain);
 
-    launchCalculator = new LaunchCalculator(poseSupplier);
-    shooter = new Shooter(launchCalculator);
-    
+    if (RobotBase.isReal()) {
+      shooter = new Shooter(
+          new ShooterIOTalonFX(), launchCalculator);
+    } else {
+      shooter = new Shooter(
+          new ShooterIO() {},
+          launchCalculator);
+    }
+
     kicker = new Kicker();
 
     intake = new Intake();
-  
+
     hopper = new Hopper();
 
     climber = new Climber();
 
     vision = new Vision(drivetrain, poseSupplier);
-    
+
     driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
     /** PATHPLANNER **/
-    NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController, shooter, intake, hopper, kicker, launchCalculator), Collections.emptySet()));
-    // NamedCommands.registerCommand("ClimbRight", Commands.defer(() -> AutonCommands.climbRight(drivetrain, climber), Collections.emptySet()));
-    // NamedCommands.registerCommand("ClimbLeft", Commands.defer(() -> AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
-		NamedCommands.registerCommand("StartIntake", intake.intake());
-		NamedCommands.registerCommand("StopIntake", intake.stopAndRetract().withTimeout(1.0));
+    NamedCommands.registerCommand("Shoot", Commands.defer(() -> AutonCommands.aimAndShoot(drivetrain, driverController,
+        shooter, intake, hopper, kicker, launchCalculator), Collections.emptySet()));
+    // NamedCommands.registerCommand("ClimbRight", Commands.defer(() ->
+    // AutonCommands.climbRight(drivetrain, climber), Collections.emptySet()));
+    // NamedCommands.registerCommand("ClimbLeft", Commands.defer(() ->
+    // AutonCommands.climbLeft(drivetrain, climber), Collections.emptySet()));
+    NamedCommands.registerCommand("StartIntake", intake.intake());
+    NamedCommands.registerCommand("StopIntake", intake.stopAndRetract().withTimeout(1.0));
     NamedCommands.registerCommand("StopIntakeWheels", intake.stopIntake());
 
-		// Create and populate a SendableChooser with the autonomous routines from PathPlanner, and add it to dashboard.
-		autonomousChooser = AutoBuilder.buildAutoChooser();
-		SmartDashboard.putData("Auto Chooser", autonomousChooser);
+    // Create and populate a SendableChooser with the autonomous routines from
+    // PathPlanner, and add it to dashboard.
+    autonomousChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autonomousChooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -144,30 +157,33 @@ public class RobotContainer {
   private void configureBindings() {
 
     /*** DRIVETRAIN ***/
-    // Default command for drivetrain - drive according to driver controller joystick
+    // Default command for drivetrain - drive according to driver controller
+    // joystick
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(() -> driveRequest
-            .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER) 
-            .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER) 
-            .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE * DrivetrainConstants.ANGULAR_SPEED_LIMIT_MULTIPLIER) 
-        )
-    );
+            .withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED
+                * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER)
+            .withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED
+                * DrivetrainConstants.SPEED_LIMIT_MULTIPLIER)
+            .withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE
+                * DrivetrainConstants.ANGULAR_SPEED_LIMIT_MULTIPLIER)));
 
     // While disabled, idle.
     final var idle = new SwerveRequest.Idle();
     RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-    // Run SysId routines when holding back/start and X/Y. Note that each routine should be run exactly once in a single log.
-    //driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    //driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    //driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    //driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    // Run SysId routines when holding back/start and X/Y. Note that each routine
+    // should be run exactly once in a single log.
+    // driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    // driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    // driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    // driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // Use dpad for basic movement in the 4 cardinal directions
-     driverController.povUp().whileTrue(drivetrain.povUp(driveRequestRobotCentric));
-     driverController.povDown().whileTrue(drivetrain.povDown(driveRequestRobotCentric));
-     driverController.povRight().whileTrue(drivetrain.povRight(driveRequestRobotCentric));
-     driverController.povLeft().whileTrue(drivetrain.povLeft(driveRequestRobotCentric));
+    driverController.povUp().whileTrue(drivetrain.povUp(driveRequestRobotCentric));
+    driverController.povDown().whileTrue(drivetrain.povDown(driveRequestRobotCentric));
+    driverController.povRight().whileTrue(drivetrain.povRight(driveRequestRobotCentric));
+    driverController.povLeft().whileTrue(drivetrain.povLeft(driveRequestRobotCentric));
 
     // Reset the field-centric heading
     driverController.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -185,68 +201,70 @@ public class RobotContainer {
     driverController.b().whileTrue(intake.outtake());
     driverController.b().whileTrue(hopper.startConveyorOuttake());
 
-    /*** PREPARING TO SHOOT  ***/
+    /*** PREPARING TO SHOOT ***/
     // Preparing to shoot
     if (launchCalculator.doesModeLockOn() == true) {
       driverController.leftBumper().whileTrue(
-        Commands.defer(() -> {
-          return new LockOnDriveCommand(drivetrain, driverController,false, launchCalculator);
-          }, Collections.emptySet()
-        )
-      );
+          Commands.defer(() -> {
+            return new LockOnDriveCommand(drivetrain, driverController, false, launchCalculator);
+          }, Collections.emptySet()));
     }
     driverController.leftBumper().whileTrue(shooter.start());
     driverController.leftBumper().whileTrue(shooter.raiseHood());
-    driverController.leftBumper().onFalse(shooter.lowerHood()); //< this is sort a $hack$ but it's ok for now...
+    driverController.leftBumper().onFalse(shooter.lowerHood()); // < this is sort a $hack$ but it's ok for now...
 
     // Target presets
     driverController.x().onTrue(Commands.runOnce(() -> launchCalculator.enterHubShotMode()));
     driverController.x().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
 
-    //launchCalculator.enterHubShotMode();
+    // launchCalculator.enterHubShotMode();
 
-    //driverController.povRight().onTrue(Commands.runOnce(() -> launchCalculator.enterTowerShotMode()));
-    //driverController.povRight().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    // driverController.povRight().onTrue(Commands.runOnce(() ->
+    // launchCalculator.enterTowerShotMode()));
+    // driverController.povRight().onFalse(Commands.runOnce(() ->
+    // launchCalculator.enterShootFromAnywhereMode()));
 
-    //driverController.povUp().onTrue(Commands.runOnce(() -> launchCalculator.enterFarShotMode()));
-    //driverController.povUp().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
-    
-    //driverController.povLeft().onTrue(Commands.runOnce(() -> launchCalculator.enterPassShotMode()));
-    //driverController.povLeft().onFalse(Commands.runOnce(() -> launchCalculator.enterShootFromAnywhereMode()));
+    // driverController.povUp().onTrue(Commands.runOnce(() ->
+    // launchCalculator.enterFarShotMode()));
+    // driverController.povUp().onFalse(Commands.runOnce(() ->
+    // launchCalculator.enterShootFromAnywhereMode()));
 
-    // Rumble the controller when we're ready to shoot (flywheel at speed and hood in position)
+    // driverController.povLeft().onTrue(Commands.runOnce(() ->
+    // launchCalculator.enterPassShotMode()));
+    // driverController.povLeft().onFalse(Commands.runOnce(() ->
+    // launchCalculator.enterShootFromAnywhereMode()));
+
+    // Rumble the controller when we're ready to shoot (flywheel at speed and hood
+    // in position)
     readyToShoot = new Trigger(() -> shooter.isAtTargetParams() && driverController.leftBumper().getAsBoolean());
     readyToShoot.onTrue(
-      Commands.sequence(
-        new InstantCommand(() -> driverController.setRumble(RumbleType.kBothRumble, 0.5)),
-        Commands.waitSeconds(0.5),
-        new InstantCommand(() -> driverController.setRumble(RumbleType.kBothRumble, 0))
-      )
-    );
-
+        Commands.sequence(
+            new InstantCommand(() -> driverController.setRumble(RumbleType.kBothRumble, 0.5)),
+            Commands.waitSeconds(0.5),
+            new InstantCommand(() -> driverController.setRumble(RumbleType.kBothRumble, 0))));
 
     /*** SHOOTING ***/
-    // Feeding balls into shooter, agitating fuel in hopper, and braking the drivetrain while shooting
+    // Feeding balls into shooter, agitating fuel in hopper, and braking the
+    // drivetrain while shooting
     driverController.rightTrigger().whileTrue(hopper.startConveyor());
     driverController.rightTrigger().whileTrue(kicker.start());
-    //Jiggle Command Here
+    // Jiggle Command Here
     driverController.rightTrigger().whileTrue(
         Commands.defer(() -> {
-          return new JiggleCommand(drivetrain, driverController,false);
-          }, Collections.emptySet()
-        )
-      );
+          return new JiggleCommand(drivetrain, driverController, false);
+        }, Collections.emptySet()));
     driverController.rightTrigger().whileTrue(intake.agitate());
     driverController.rightTrigger().whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
 
     // Reset intake to bottom after shooting
     driverController.rightTrigger().onFalse(intake.deployIntake());
     driverController.rightTrigger().onFalse(intake.stopIntake());
-    // brakeTrigger = new Trigger(() -> 
-    //     Math.abs(driverController.getLeftX()) < DrivetrainConstants.DEADBAND &&
-    //     Math.abs(driverController.getLeftY()) < DrivetrainConstants.DEADBAND &&
-    //     Math.abs(driverController.getRightX()) < DrivetrainConstants.ROTATIONAL_DEADBAND &&
-    //     driverController.rightTrigger().getAsBoolean()
+    // brakeTrigger = new Trigger(() ->
+    // Math.abs(driverController.getLeftX()) < DrivetrainConstants.DEADBAND &&
+    // Math.abs(driverController.getLeftY()) < DrivetrainConstants.DEADBAND &&
+    // Math.abs(driverController.getRightX()) <
+    // DrivetrainConstants.ROTATIONAL_DEADBAND &&
+    // driverController.rightTrigger().getAsBoolean()
     // );
     // brakeTrigger.whileTrue(drivetrain.applyRequest(SwerveRequest.SwerveDriveBrake::new));
 
@@ -258,7 +276,8 @@ public class RobotContainer {
   }
 
   public void setDefaultCommands() {
-    // Set defaults after the autonomous performs so it doesn't interfere with the command
+    // Set defaults after the autonomous performs so it doesn't interfere with the
+    // command
     shooter.setDefaultCommand(shooter.stop());
     kicker.setDefaultCommand(kicker.stop());
     // intake.setDefaultCommand(intake.stopAndRetract());
