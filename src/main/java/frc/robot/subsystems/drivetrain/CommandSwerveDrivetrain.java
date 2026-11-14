@@ -17,6 +17,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -310,6 +311,24 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private void init() {
         configureAutoBuilder();
+
+        // Register AdvantageKit drivetrain telemetry
+        registerTelemetry(state -> {
+                // Overall robot state
+                Logger.recordOutput("Odometry/Robot", state.Pose);
+                Logger.recordOutput("Odometry/RawHeading", state.RawHeading);
+                Logger.recordOutput("Odometry/Speeds", state.Speeds);
+
+                // Swerve module state
+                Logger.recordOutput("Swerve/ModuleStates", state.ModuleStates);
+                Logger.recordOutput("Swerve/ModuleTargets", state.ModuleTargets);
+                Logger.recordOutput("Swerve/ModulePositions", state.ModulePositions);
+
+                // Odometry health
+                Logger.recordOutput("Odometry/Period", state.OdometryPeriod);
+                Logger.recordOutput("Odometry/SuccessfulDaqs", state.SuccessfulDaqs);
+                Logger.recordOutput("Odometry/FailedDaqs", state.FailedDaqs);
+        });
 
         SmartDashboard.putNumber(NT_SEED_X, 0);
         SmartDashboard.putNumber(NT_SEED_Y, 0);
