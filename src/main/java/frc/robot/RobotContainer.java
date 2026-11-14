@@ -113,6 +113,8 @@ public class RobotContainer {
     drivetrain = TunerConstants.createDrivetrain();
     poseSupplier = new PoseSupplier(drivetrain);
 
+    launchCalculator = new LaunchCalculator(poseSupplier);
+
     if (RobotBase.isReal()) {
       shooter = new Shooter(
           new ShooterIOTalonFX(), launchCalculator);
